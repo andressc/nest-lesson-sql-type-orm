@@ -3,7 +3,7 @@ import { BlogsService } from '../blogs.service';
 import { BlogModel } from '../../domain/blog.schema';
 import { BlogsRepositoryInterface } from '../../interfaces/blogs.repository.interface';
 import { BadRequestException, Inject } from '@nestjs/common';
-import { BlogInjectionToken } from '../blog.injection.token';
+import { BlogInjectionToken } from '../../infrastructure/providers/blog.injection.token';
 import { UsersService } from '../../../users/application/users.service';
 import { UserModel } from '../../../users/domain/user.schema';
 

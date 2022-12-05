@@ -7,7 +7,7 @@ import {
 import { Inject, Injectable } from '@nestjs/common';
 import { BlogModel } from '../../../features/blogs/domain/blog.schema';
 import { BlogsRepositoryInterface } from '../../../features/blogs/interfaces/blogs.repository.interface';
-import { BlogInjectionToken } from '../../../features/blogs/application/blog.injection.token';
+import { BlogInjectionToken } from '../../../features/blogs/infrastructure/providers/blog.injection.token';
 
 @ValidatorConstraint({ async: true })
 @Injectable()

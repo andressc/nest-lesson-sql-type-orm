@@ -8,7 +8,7 @@ import { BlogNotFoundException } from '../../../../common/exceptions';
 import { QueryBlogsRepositoryInterface } from '../../../blogs/interfaces/query.blogs.repository.interface';
 import { QueryPostsRepositoryInterface } from '../../interfaces/query.posts.repository.interface';
 import { Inject } from '@nestjs/common';
-import { BlogInjectionToken } from '../../../blogs/application/blog.injection.token';
+import { BlogInjectionToken } from '../../../blogs/infrastructure/providers/blog.injection.token';
 import { ObjectId } from 'mongodb';
 import { PostInjectionToken } from '../post.injection.token';
 

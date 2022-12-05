@@ -8,7 +8,7 @@ import { LikesRepositoryInterface } from '../../../likes/interfaces/likes.reposi
 import { InjectThrottlerStorage } from '@nestjs/throttler';
 import { ThrottlerStorageService } from '../../../../shared/throttler/application/throttler.storage.service';
 import { Inject } from '@nestjs/common';
-import { BlogInjectionToken } from '../../../blogs/application/blog.injection.token';
+import { BlogInjectionToken } from '../../../blogs/infrastructure/providers/blog.injection.token';
 import { PostInjectionToken } from '../../../posts/application/post.injection.token';
 import { CommentInjectionToken } from '../../../comments/application/comment.injection.token';
 import { LikeInjectionToken } from '../../../likes/application/like.injection.token';

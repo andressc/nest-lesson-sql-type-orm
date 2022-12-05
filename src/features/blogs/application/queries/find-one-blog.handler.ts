@@ -4,7 +4,7 @@ import { BlogNotFoundException } from '../../../../common/exceptions';
 import { BlogModel } from '../../domain/blog.schema';
 import { QueryBlogsRepositoryInterface } from '../../interfaces/query.blogs.repository.interface';
 import { Inject } from '@nestjs/common';
-import { BlogInjectionToken } from '../blog.injection.token';
+import { BlogInjectionToken } from '../../infrastructure/providers/blog.injection.token';
 import { ObjectId } from 'mongodb';
 
 export class FindOneBlogCommand {

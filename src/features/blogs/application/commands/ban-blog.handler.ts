@@ -4,7 +4,7 @@ import { BlogModel } from '../../domain/blog.schema';
 import { ValidationService } from '../../../../shared/validation/application/validation.service';
 import { BlogsRepositoryInterface } from '../../interfaces/blogs.repository.interface';
 import { Inject } from '@nestjs/common';
-import { BlogInjectionToken } from '../blog.injection.token';
+import { BlogInjectionToken } from '../../infrastructure/providers/blog.injection.token';
 import { BanBlogDto } from '../../dto/ban-blog.dto';
 import { BanUnbanPostCommand } from '../../../posts/application/commands/ban-unban-post.handler';
 

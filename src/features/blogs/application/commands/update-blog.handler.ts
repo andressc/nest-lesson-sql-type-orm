@@ -5,7 +5,7 @@ import { BlogModel } from '../../domain/blog.schema';
 import { ValidationService } from '../../../../shared/validation/application/validation.service';
 import { BlogsRepositoryInterface } from '../../interfaces/blogs.repository.interface';
 import { ForbiddenException, Inject } from '@nestjs/common';
-import { BlogInjectionToken } from '../blog.injection.token';
+import { BlogInjectionToken } from '../../infrastructure/providers/blog.injection.token';
 
 export class UpdateBlogCommand {
 	constructor(public id: string, public data: UpdateBlogDto, public currentUserId: string) {}

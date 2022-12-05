@@ -10,7 +10,7 @@ import { BlogModel } from '../../domain/blog.schema';
 import { BlogsService } from '../blogs.service';
 import { UserIdBadRequestException } from '../../../../common/exceptions/userIdBadRequestException';
 import { BlogsRepositoryInterface } from '../../interfaces/blogs.repository.interface';
-import { BlogInjectionToken } from '../blog.injection.token';
+import { BlogInjectionToken } from '../../infrastructure/providers/blog.injection.token';
 import { BanModel } from '../../domain/ban.schema';
 
 export class BanUnbanBlogOfUserCommand implements ICommand {

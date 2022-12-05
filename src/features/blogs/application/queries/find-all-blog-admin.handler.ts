@@ -5,7 +5,7 @@ import { BlogModel } from '../../domain/blog.schema';
 import { PaginationService } from '../../../../shared/pagination/application/pagination.service';
 import { QueryBlogsRepositoryInterface } from '../../interfaces/query.blogs.repository.interface';
 import { Inject } from '@nestjs/common';
-import { BlogInjectionToken } from '../blog.injection.token';
+import { BlogInjectionToken } from '../../infrastructure/providers/blog.injection.token';
 import { ResponseBlogAdminDto } from '../../dto/response-blog-admin.dto';
 
 export class FindAllBlogAdminCommand {

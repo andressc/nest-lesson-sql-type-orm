@@ -5,7 +5,7 @@ import { CommandHandler, ICommand, ICommandHandler } from '@nestjs/cqrs';
 import { ValidationService } from '../../../../shared/validation/application/validation.service';
 import { BlogsRepositoryInterface } from '../../interfaces/blogs.repository.interface';
 import { Inject } from '@nestjs/common';
-import { BlogInjectionToken } from '../blog.injection.token';
+import { BlogInjectionToken } from '../../infrastructure/providers/blog.injection.token';
 
 export class CreateBlogCommand implements ICommand {
 	constructor(

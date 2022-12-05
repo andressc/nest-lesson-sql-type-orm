@@ -3,7 +3,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BlogsService } from '../blogs.service';
 import { BlogsRepositoryInterface } from '../../interfaces/blogs.repository.interface';
 import { ForbiddenException, Inject } from '@nestjs/common';
-import { BlogInjectionToken } from '../blog.injection.token';
+import { BlogInjectionToken } from '../../infrastructure/providers/blog.injection.token';
 
 export class RemoveBlogCommand {
 	constructor(public id: string, public currentUserId: string) {}

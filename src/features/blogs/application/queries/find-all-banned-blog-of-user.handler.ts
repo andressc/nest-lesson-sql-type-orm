@@ -4,7 +4,7 @@ import { PaginationCalc, PaginationDto } from '../../../../common/dto';
 import { PaginationService } from '../../../../shared/pagination/application/pagination.service';
 import { QueryBlogsRepositoryInterface } from '../../interfaces/query.blogs.repository.interface';
 import { ForbiddenException, Inject } from '@nestjs/common';
-import { BlogInjectionToken } from '../blog.injection.token';
+import { BlogInjectionToken } from '../../infrastructure/providers/blog.injection.token';
 import { ResponseBannedBlogOfUserDto } from '../../dto/response-banned-blog-of-user.dto';
 import { BanModel } from '../../domain/ban.schema';
 import { BlogsRepositoryInterface } from '../../interfaces/blogs.repository.interface';

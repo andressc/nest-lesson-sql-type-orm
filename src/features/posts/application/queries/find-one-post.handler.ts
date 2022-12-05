@@ -6,7 +6,7 @@ import { QueryPostsRepositoryInterface } from '../../interfaces/query.posts.repo
 import { ObjectId } from 'mongodb';
 import { Inject } from '@nestjs/common';
 import { PostInjectionToken } from '../post.injection.token';
-import { BlogInjectionToken } from '../../../blogs/application/blog.injection.token';
+import { BlogInjectionToken } from '../../../blogs/infrastructure/providers/blog.injection.token';
 import { QueryBlogsRepositoryInterface } from '../../../blogs/interfaces/query.blogs.repository.interface';
 
 export class FindOnePostCommand {

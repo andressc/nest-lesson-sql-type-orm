@@ -5,7 +5,7 @@ import { BlogModel } from '../../domain/blog.schema';
 import { PaginationService } from '../../../../shared/pagination/application/pagination.service';
 import { QueryBlogsRepositoryInterface } from '../../interfaces/query.blogs.repository.interface';
 import { Inject } from '@nestjs/common';
-import { BlogInjectionToken } from '../blog.injection.token';
+import { BlogInjectionToken } from '../../infrastructure/providers/blog.injection.token';
 
 export class FindAllBlogCommand {
 	constructor(public query: QueryBlogDto, public currentUserId?: string) {}

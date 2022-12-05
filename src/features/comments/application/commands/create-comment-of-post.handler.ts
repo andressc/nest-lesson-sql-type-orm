@@ -9,7 +9,7 @@ import { ValidationService } from '../../../../shared/validation/application/val
 import { CommentsRepositoryInterface } from '../../interfaces/comments.repository.interface';
 import { ForbiddenException, Inject } from '@nestjs/common';
 import { CommentInjectionToken } from '../comment.injection.token';
-import { BlogInjectionToken } from '../../../blogs/application/blog.injection.token';
+import { BlogInjectionToken } from '../../../blogs/infrastructure/providers/blog.injection.token';
 import { BlogsRepositoryInterface } from '../../../blogs/interfaces/blogs.repository.interface';
 import { BanModel } from '../../../blogs/domain/ban.schema';
 import { PostModel } from '../../../posts/domain/post.schema';
