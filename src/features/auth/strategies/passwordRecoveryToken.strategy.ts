@@ -7,7 +7,7 @@ import { EmailBadRequestException } from '../../../common/exceptions';
 import { AuthConfig } from '../../../configuration';
 import { UserModel } from '../../users/domain/user.schema';
 import { UsersRepositoryInterface } from '../../users/interfaces/users.repository.interface';
-import { UserInjectionToken } from '../../users/application/user.injection.token';
+import { UserInjectionToken } from '../../users/infrastructure/providers/user.injection.token';
 
 @Injectable()
 export class PasswordRecoveryTokenStrategy extends PassportStrategy(

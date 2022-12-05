@@ -2,7 +2,7 @@ import { CommandHandler, ICommand, ICommandHandler } from '@nestjs/cqrs';
 import { ObjectId } from 'mongodb';
 import { CommentsRepositoryInterface } from '../../interfaces/comments.repository.interface';
 import { Inject } from '@nestjs/common';
-import { CommentInjectionToken } from '../comment.injection.token';
+import { CommentInjectionToken } from '../../infrastructure/providers/comment.injection.token';
 
 export class BanUnbanCommentCommand implements ICommand {
 	constructor(public userId: string, public isBanned: boolean) {}

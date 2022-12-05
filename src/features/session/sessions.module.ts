@@ -1,27 +1,17 @@
 import { Module } from '@nestjs/common';
 import { SessionsController } from './api/sessions.controller';
-import { SessionsRepository } from './infrastructure/repository/sessions.repository';
-import { QuerySessionsRepository } from './infrastructure/query/query-sessions.repository';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Session, SessionSchema } from './domain/session.schema';
 import { FindAllSessionHandler } from './application/queries/find-all-session.handler';
 import { RemoveAllUserSessionHandler } from './application/commands/remove-all-user-session.handler';
 import { RemoveUserSessionHandler } from './application/commands/remove-user-session.handler';
 import { CqrsModule } from '@nestjs/cqrs';
-import { SessionInjectionToken } from './application/session.injection.token';
+import { QuerySessionsRepositoryProvider } from './infrastructure/providers/query-sessions-repository.provider';
+import { SessionsRepositoryProvider } from './infrastructure/providers/sessions-repository.provider';
 
 export const CommandHandlers = [RemoveAllUserSessionHandler, RemoveUserSessionHandler];
 export const QueryHandlers = [FindAllSessionHandler];
-export const Repositories = [
-	{
-		provide: SessionInjectionToken.QUERY_SESSION_REPOSITORY,
-		useClass: QuerySessionsRepository,
-	},
-	{
-		provide: SessionInjectionToken.SESSION_REPOSITORY,
-		useClass: SessionsRepository,
-	},
-];
+export const Repositories = [QuerySessionsRepositoryProvider, SessionsRepositoryProvider];
 export const Services = [];
 
 @Module({
@@ -37,11 +27,6 @@ export const Services = [];
 
 	controllers: [SessionsController],
 	providers: [...Services, ...Repositories, ...CommandHandlers, ...QueryHandlers],
-	exports: [
-		{
-			provide: SessionInjectionToken.SESSION_REPOSITORY,
-			useClass: SessionsRepository,
-		},
-	],
+	exports: [SessionsRepositoryProvider],
 })
 export class SessionsModule {}

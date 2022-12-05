@@ -3,7 +3,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostsService } from '../posts.service';
 import { PostsRepositoryInterface } from '../../interfaces/posts.repository.interface';
 import { ForbiddenException, Inject } from '@nestjs/common';
-import { PostInjectionToken } from '../post.injection.token';
+import { PostInjectionToken } from '../../infrastructure/providers/post.injection.token';
 import { BlogModel } from '../../../blogs/domain/blog.schema';
 import { BlogsService } from '../../../blogs/application/blogs.service';
 

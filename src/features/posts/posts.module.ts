@@ -6,8 +6,6 @@ import { RemovePostHandler } from './application/commands/remove-post.handler';
 import { UpdatePostHandler } from './application/commands/update-post.handler';
 import { FindOnePostHandler } from './application/queries/find-one-post.handler';
 import { FindAllPostHandler } from './application/queries/find-all-post.handler';
-import { QueryPostsRepository } from './infrastructure/query/query-posts.repository';
-import { PostsRepository } from './infrastructure/repository/posts.repository';
 import { PostsService } from './application/posts.service';
 import { Post, PostSchema } from './domain/post.schema';
 import { BlogsModule } from '../blogs/blogs.module';
@@ -17,8 +15,9 @@ import { UsersModule } from '../users/users.module';
 import { LikesModule } from '../likes/likes.module';
 import { CreateLikePostHandler } from './application/commands/create-like-post.handler';
 import { PaginationModule } from '../../shared/pagination/pagination.module';
-import { PostInjectionToken } from './application/post.injection.token';
 import { BanUnbanPostHandler } from './application/commands/ban-unban-post.handler';
+import { QueryPostsRepositoryProvider } from './infrastructure/providers/query-posts-repository.provider';
+import { PostsRepositoryProvider } from './infrastructure/providers/posts-repository.provider';
 
 export const CommandHandlers = [
 	CreatePostHandler,
@@ -29,16 +28,7 @@ export const CommandHandlers = [
 	BanUnbanPostHandler,
 ];
 export const QueryHandlers = [FindOnePostHandler, FindAllPostHandler];
-export const Repositories = [
-	{
-		provide: PostInjectionToken.QUERY_POST_REPOSITORY,
-		useClass: QueryPostsRepository,
-	},
-	{
-		provide: PostInjectionToken.POST_REPOSITORY,
-		useClass: PostsRepository,
-	},
-];
+export const Repositories = [QueryPostsRepositoryProvider, PostsRepositoryProvider];
 export const Services = [PostsService];
 export const Modules = [
 	MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
@@ -54,16 +44,6 @@ export const Modules = [
 	controllers: [PostsController],
 	providers: [...Services, ...Repositories, ...QueryHandlers, ...CommandHandlers],
 
-	exports: [
-		PostsService,
-		{
-			provide: PostInjectionToken.QUERY_POST_REPOSITORY,
-			useClass: QueryPostsRepository,
-		},
-		{
-			provide: PostInjectionToken.POST_REPOSITORY,
-			useClass: PostsRepository,
-		},
-	],
+	exports: [PostsService, QueryPostsRepositoryProvider, PostsRepositoryProvider],
 })
 export class PostsModule {}

@@ -6,8 +6,8 @@ import { PaginationService } from '../../../../shared/pagination/application/pag
 import { QueryCommentsRepositoryInterface } from '../../interfaces/query.comments.repository.interface';
 import { QueryPostsRepositoryInterface } from '../../../posts/interfaces/query.posts.repository.interface';
 import { Inject } from '@nestjs/common';
-import { CommentInjectionToken } from '../comment.injection.token';
-import { PostInjectionToken } from '../../../posts/application/post.injection.token';
+import { CommentInjectionToken } from '../../infrastructure/providers/comment.injection.token';
+import { PostInjectionToken } from '../../../posts/infrastructure/providers/post.injection.token';
 import { ResponseCommentOfPostsDto } from '../../dto/response-comment-of-posts.dto';
 
 export class FindAllCommentOfBlogsCommand {

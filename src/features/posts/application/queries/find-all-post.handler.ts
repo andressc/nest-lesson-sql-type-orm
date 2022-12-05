@@ -10,7 +10,7 @@ import { QueryPostsRepositoryInterface } from '../../interfaces/query.posts.repo
 import { Inject } from '@nestjs/common';
 import { BlogInjectionToken } from '../../../blogs/infrastructure/providers/blog.injection.token';
 import { ObjectId } from 'mongodb';
-import { PostInjectionToken } from '../post.injection.token';
+import { PostInjectionToken } from '../../infrastructure/providers/post.injection.token';
 
 export class FindAllPostCommand {
 	constructor(

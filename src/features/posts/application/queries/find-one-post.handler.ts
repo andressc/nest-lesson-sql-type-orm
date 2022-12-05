@@ -5,7 +5,7 @@ import { PostModel } from '../../domain/post.schema';
 import { QueryPostsRepositoryInterface } from '../../interfaces/query.posts.repository.interface';
 import { ObjectId } from 'mongodb';
 import { Inject } from '@nestjs/common';
-import { PostInjectionToken } from '../post.injection.token';
+import { PostInjectionToken } from '../../infrastructure/providers/post.injection.token';
 import { BlogInjectionToken } from '../../../blogs/infrastructure/providers/blog.injection.token';
 import { QueryBlogsRepositoryInterface } from '../../../blogs/interfaces/query.blogs.repository.interface';
 

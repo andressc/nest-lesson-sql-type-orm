@@ -7,7 +7,7 @@ import { UsersService } from '../../../users/application/users.service';
 import { ValidationService } from '../../../../shared/validation/application/validation.service';
 import { CommentsRepositoryInterface } from '../../interfaces/comments.repository.interface';
 import { Inject } from '@nestjs/common';
-import { CommentInjectionToken } from '../comment.injection.token';
+import { CommentInjectionToken } from '../../infrastructure/providers/comment.injection.token';
 
 export class UpdateCommentCommand {
 	constructor(public id: string, public data: UpdateCommentDto, public authUserId: string) {}

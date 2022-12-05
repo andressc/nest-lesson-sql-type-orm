@@ -1,7 +1,7 @@
 import { CommandHandler, ICommand, ICommandHandler } from '@nestjs/cqrs';
 import { SessionsRepositoryInterface } from '../../interfaces/sessions.repository.interface';
 import { Inject } from '@nestjs/common';
-import { SessionInjectionToken } from '../session.injection.token';
+import { SessionInjectionToken } from '../../infrastructure/providers/session.injection.token';
 
 export class RemoveAllUserSessionCommand implements ICommand {
 	constructor(public userId: string, public deviceId: string) {}

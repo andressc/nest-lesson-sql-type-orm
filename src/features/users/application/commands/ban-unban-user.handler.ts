@@ -8,8 +8,8 @@ import { SessionsRepositoryInterface } from '../../../session/interfaces/session
 import { BanUnbanLikeCommand } from '../../../likes/application/command/ban-unban-like.handler';
 import { BanUnbanCommentCommand } from '../../../comments/application/commands/ban-unban-comment.handler';
 import { Inject } from '@nestjs/common';
-import { SessionInjectionToken } from '../../../session/application/session.injection.token';
-import { UserInjectionToken } from '../user.injection.token';
+import { SessionInjectionToken } from '../../../session/infrastructure/providers/session.injection.token';
+import { UserInjectionToken } from '../../infrastructure/providers/user.injection.token';
 
 export class BanUnbanUserCommand implements ICommand {
 	constructor(public id: string, public data: BanUnbanUserDto) {}

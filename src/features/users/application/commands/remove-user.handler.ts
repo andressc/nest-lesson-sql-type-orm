@@ -3,7 +3,7 @@ import { UsersService } from '../users.service';
 import { UserModel } from '../../domain/user.schema';
 import { UsersRepositoryInterface } from '../../interfaces/users.repository.interface';
 import { Inject } from '@nestjs/common';
-import { UserInjectionToken } from '../user.injection.token';
+import { UserInjectionToken } from '../../infrastructure/providers/user.injection.token';
 
 export class RemoveUserCommand {
 	constructor(public id: string) {}

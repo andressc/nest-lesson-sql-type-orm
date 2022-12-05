@@ -6,7 +6,7 @@ import { CommentsRepositoryInterface } from '../../interfaces/comments.repositor
 import { CreateLikeCommand } from '../../../likes/application/command/create-like.handler';
 import { CommentNotFoundException } from '../../../../common/exceptions';
 import { Inject } from '@nestjs/common';
-import { CommentInjectionToken } from '../comment.injection.token';
+import { CommentInjectionToken } from '../../infrastructure/providers/comment.injection.token';
 
 export class CreateLikeCommentCommand implements ICommand {
 	constructor(

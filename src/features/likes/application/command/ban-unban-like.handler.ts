@@ -2,7 +2,7 @@ import { CommandHandler, ICommand, ICommandHandler } from '@nestjs/cqrs';
 import { LikesRepositoryInterface } from '../../interfaces/likes.repository.interface';
 import { ObjectId } from 'mongodb';
 import { Inject } from '@nestjs/common';
-import { LikeInjectionToken } from '../like.injection.token';
+import { LikeInjectionToken } from '../../infrastructure/providers/like.injection.token';
 
 export class BanUnbanLikeCommand implements ICommand {
 	constructor(public userId: string, public isBanned: boolean) {}

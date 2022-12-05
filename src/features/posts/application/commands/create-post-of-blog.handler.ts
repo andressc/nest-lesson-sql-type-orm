@@ -6,7 +6,7 @@ import { BlogModel } from '../../../blogs/domain/blog.schema';
 import { ValidationService } from '../../../../shared/validation/application/validation.service';
 import { PostsRepositoryInterface } from '../../interfaces/posts.repository.interface';
 import { ForbiddenException, Inject } from '@nestjs/common';
-import { PostInjectionToken } from '../post.injection.token';
+import { PostInjectionToken } from '../../infrastructure/providers/post.injection.token';
 
 export class CreatePostOfBlogCommand implements ICommand {
 	constructor(

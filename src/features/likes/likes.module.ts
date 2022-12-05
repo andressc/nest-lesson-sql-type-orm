@@ -2,19 +2,13 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CqrsModule } from '@nestjs/cqrs';
 import { Like, LikeSchema } from './domain/like.schema';
-import { LikesRepository } from './infrastructure/repository/likes.repository';
 import { CreateLikeHandler } from './application/command/create-like.handler';
 import { BanUnbanLikeHandler } from './application/command/ban-unban-like.handler';
-import { LikeInjectionToken } from './application/like.injection.token';
+import { LikesRepositoryProvider } from './infrastructure/providers/likes-repository.provider';
 
 export const CommandHandlers = [CreateLikeHandler, BanUnbanLikeHandler];
 export const QueryHandlers = [];
-export const Repositories = [
-	{
-		provide: LikeInjectionToken.LIKE_REPOSITORY,
-		useClass: LikesRepository,
-	},
-];
+export const Repositories = [LikesRepositoryProvider];
 export const Services = [];
 export const Modules = [
 	MongooseModule.forFeature([{ name: Like.name, schema: LikeSchema }]),
@@ -25,11 +19,6 @@ export const Modules = [
 	imports: Modules,
 	providers: [...Services, ...Repositories, ...QueryHandlers, ...CommandHandlers],
 
-	exports: [
-		{
-			provide: LikeInjectionToken.LIKE_REPOSITORY,
-			useClass: LikesRepository,
-		},
-	],
+	exports: [LikesRepositoryProvider],
 })
 export class LikesModule {}

@@ -6,7 +6,7 @@ import { AuthService } from '../auth.service';
 import { Inject, UnauthorizedException } from '@nestjs/common';
 import { SessionModel } from '../../../session/domain/session.schema';
 import { SessionsRepositoryInterface } from '../../../session/interfaces/sessions.repository.interface';
-import { SessionInjectionToken } from '../../../session/application/session.injection.token';
+import { SessionInjectionToken } from '../../../session/infrastructure/providers/session.injection.token';
 
 export class RefreshTokenAuthCommand {
 	constructor(public refreshTokenData: RefreshTokenDataDto) {}

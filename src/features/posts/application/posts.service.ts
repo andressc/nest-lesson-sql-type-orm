@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { PostModel } from '../domain/post.schema';
 import { PostNotFoundException } from '../../../common/exceptions';
 import { PostsRepositoryInterface } from '../interfaces/posts.repository.interface';
-import { PostInjectionToken } from './post.injection.token';
+import { PostInjectionToken } from '../infrastructure/providers/post.injection.token';
 
 @Injectable()
 export class PostsService {

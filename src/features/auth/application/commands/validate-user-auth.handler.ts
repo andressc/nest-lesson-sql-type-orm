@@ -3,7 +3,7 @@ import { Inject, UnauthorizedException } from '@nestjs/common';
 import { generateHash } from '../../../../common/helpers';
 import { UserModel } from '../../../users/domain/user.schema';
 import { UsersRepositoryInterface } from '../../../users/interfaces/users.repository.interface';
-import { UserInjectionToken } from '../../../users/application/user.injection.token';
+import { UserInjectionToken } from '../../../users/infrastructure/providers/user.injection.token';
 
 export class ValidateUserAuthCommand {
 	constructor(public login: string, public password: string) {}

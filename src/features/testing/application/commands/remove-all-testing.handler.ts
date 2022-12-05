@@ -9,11 +9,11 @@ import { InjectThrottlerStorage } from '@nestjs/throttler';
 import { ThrottlerStorageService } from '../../../../shared/throttler/application/throttler.storage.service';
 import { Inject } from '@nestjs/common';
 import { BlogInjectionToken } from '../../../blogs/infrastructure/providers/blog.injection.token';
-import { PostInjectionToken } from '../../../posts/application/post.injection.token';
-import { CommentInjectionToken } from '../../../comments/application/comment.injection.token';
-import { LikeInjectionToken } from '../../../likes/application/like.injection.token';
-import { SessionInjectionToken } from '../../../session/application/session.injection.token';
-import { UserInjectionToken } from '../../../users/application/user.injection.token';
+import { PostInjectionToken } from '../../../posts/infrastructure/providers/post.injection.token';
+import { CommentInjectionToken } from '../../../comments/infrastructure/providers/comment.injection.token';
+import { LikeInjectionToken } from '../../../likes/infrastructure/providers/like.injection.token';
+import { SessionInjectionToken } from '../../../session/infrastructure/providers/session.injection.token';
+import { UserInjectionToken } from '../../../users/infrastructure/providers/user.injection.token';
 
 export class RemoveAllTestingCommand implements ICommand {}
 

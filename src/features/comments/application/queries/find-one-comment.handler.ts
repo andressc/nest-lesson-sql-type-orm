@@ -5,7 +5,7 @@ import { ResponseCommentDto } from '../../dto';
 import { QueryCommentsRepositoryInterface } from '../../interfaces/query.comments.repository.interface';
 import { ObjectId } from 'mongodb';
 import { Inject } from '@nestjs/common';
-import { CommentInjectionToken } from '../comment.injection.token';
+import { CommentInjectionToken } from '../../infrastructure/providers/comment.injection.token';
 
 export class FindOneCommentCommand {
 	constructor(public id: string, public currentUserId: string | null) {}

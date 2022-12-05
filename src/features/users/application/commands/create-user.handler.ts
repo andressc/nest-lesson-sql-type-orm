@@ -7,7 +7,7 @@ import { UserModel } from '../../domain/user.schema';
 import { ValidationService } from '../../../../shared/validation/application/validation.service';
 import { UsersRepositoryInterface } from '../../interfaces/users.repository.interface';
 import { Inject } from '@nestjs/common';
-import { UserInjectionToken } from '../user.injection.token';
+import { UserInjectionToken } from '../../infrastructure/providers/user.injection.token';
 
 export class CreateUserCommand implements ICommand {
 	constructor(public data: CreateUserDto, public isConfirmed = false) {}

@@ -3,7 +3,7 @@ import { DeviceIdNotFoundException } from '../../../../common/exceptions';
 import { ForbiddenException, Inject } from '@nestjs/common';
 import { SessionModel } from '../../domain/session.schema';
 import { SessionsRepositoryInterface } from '../../interfaces/sessions.repository.interface';
-import { SessionInjectionToken } from '../session.injection.token';
+import { SessionInjectionToken } from '../../infrastructure/providers/session.injection.token';
 
 export class RemoveUserSessionCommand implements ICommand {
 	constructor(public userId: string, public deviceId: string) {}

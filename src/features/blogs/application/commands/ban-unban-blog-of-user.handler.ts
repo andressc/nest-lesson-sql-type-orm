@@ -4,7 +4,7 @@ import { UserModel } from '../../../users/domain/user.schema';
 import { ValidationService } from '../../../../shared/validation/application/validation.service';
 import { UsersRepositoryInterface } from '../../../users/interfaces/users.repository.interface';
 import { ForbiddenException, Inject } from '@nestjs/common';
-import { UserInjectionToken } from '../../../users/application/user.injection.token';
+import { UserInjectionToken } from '../../../users/infrastructure/providers/user.injection.token';
 import { BanUnbanBlogOfUserDto } from '../../dto/ban-unban-blog-of-user.dto';
 import { BlogModel } from '../../domain/blog.schema';
 import { BlogsService } from '../blogs.service';

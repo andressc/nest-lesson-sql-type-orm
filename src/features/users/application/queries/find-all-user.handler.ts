@@ -5,7 +5,7 @@ import { UserModel } from '../../domain/user.schema';
 import { PaginationService } from '../../../../shared/pagination/application/pagination.service';
 import { QueryUsersRepositoryInterface } from '../../interfaces/query.users.repository.interface';
 import { Inject } from '@nestjs/common';
-import { UserInjectionToken } from '../user.injection.token';
+import { UserInjectionToken } from '../../infrastructure/providers/user.injection.token';
 
 export class FindAllUserCommand {
 	constructor(public query: QueryUserDto) {}

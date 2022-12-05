@@ -6,7 +6,7 @@ import { BlogsService } from '../../../blogs/application/blogs.service';
 import { ValidationService } from '../../../../shared/validation/application/validation.service';
 import { PostsRepositoryInterface } from '../../interfaces/posts.repository.interface';
 import { Inject } from '@nestjs/common';
-import { PostInjectionToken } from '../post.injection.token';
+import { PostInjectionToken } from '../../infrastructure/providers/post.injection.token';
 
 export class CreatePostCommand implements ICommand {
 	constructor(public data: CreatePostDto) {}

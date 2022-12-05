@@ -9,8 +9,8 @@ import { QueryCommentsRepositoryInterface } from '../../interfaces/query.comment
 import { QueryPostsRepositoryInterface } from '../../../posts/interfaces/query.posts.repository.interface';
 import { ObjectId } from 'mongodb';
 import { Inject } from '@nestjs/common';
-import { CommentInjectionToken } from '../comment.injection.token';
-import { PostInjectionToken } from '../../../posts/application/post.injection.token';
+import { CommentInjectionToken } from '../../infrastructure/providers/comment.injection.token';
+import { PostInjectionToken } from '../../../posts/infrastructure/providers/post.injection.token';
 
 export class FindAllCommentOfPostCommand {
 	constructor(

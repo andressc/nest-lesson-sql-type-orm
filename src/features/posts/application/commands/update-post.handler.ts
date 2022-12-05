@@ -6,7 +6,7 @@ import { PostModel } from '../../domain/post.schema';
 import { ValidationService } from '../../../../shared/validation/application/validation.service';
 import { PostsRepositoryInterface } from '../../interfaces/posts.repository.interface';
 import { ForbiddenException, Inject } from '@nestjs/common';
-import { PostInjectionToken } from '../post.injection.token';
+import { PostInjectionToken } from '../../infrastructure/providers/post.injection.token';
 import { UpdatePostOfBlogDto } from '../../dto/update-post-of-blog.dto';
 
 export class UpdatePostCommand {

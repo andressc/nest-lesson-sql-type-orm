@@ -6,7 +6,7 @@ import { CreateRequestLikeDto } from '../../../comments/dto';
 import { ValidationService } from '../../../../shared/validation/application/validation.service';
 import { ObjectId } from 'mongodb';
 import { Inject } from '@nestjs/common';
-import { LikeInjectionToken } from '../like.injection.token';
+import { LikeInjectionToken } from '../../infrastructure/providers/like.injection.token';
 
 export class CreateLikeCommand implements ICommand {
 	constructor(

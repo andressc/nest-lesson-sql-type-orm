@@ -4,7 +4,7 @@ import { UsersService } from '../../../users/application/users.service';
 import { CommentModel } from '../../domain/comment.schema';
 import { Inject } from '@nestjs/common';
 import { CommentsRepositoryInterface } from '../../interfaces/comments.repository.interface';
-import { CommentInjectionToken } from '../comment.injection.token';
+import { CommentInjectionToken } from '../../infrastructure/providers/comment.injection.token';
 
 export class RemoveCommentCommand {
 	constructor(public id: string, public authUserId: string) {}

@@ -7,7 +7,7 @@ import { AuthService } from '../auth.service';
 import { SessionModel } from '../../../session/domain/session.schema';
 import { SessionsRepositoryInterface } from '../../../session/interfaces/sessions.repository.interface';
 import { Inject } from '@nestjs/common';
-import { SessionInjectionToken } from '../../../session/application/session.injection.token';
+import { SessionInjectionToken } from '../../../session/infrastructure/providers/session.injection.token';
 
 export class LoginAuthCommand {
 	constructor(public userId: string, public ip: string, public userAgent: string) {}

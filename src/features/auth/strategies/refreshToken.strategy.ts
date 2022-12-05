@@ -9,8 +9,8 @@ import { UserModel } from '../../users/domain/user.schema';
 import { SessionModel } from '../../session/domain/session.schema';
 import { SessionsRepositoryInterface } from '../../session/interfaces/sessions.repository.interface';
 import { UsersRepositoryInterface } from '../../users/interfaces/users.repository.interface';
-import { SessionInjectionToken } from '../../session/application/session.injection.token';
-import { UserInjectionToken } from '../../users/application/user.injection.token';
+import { SessionInjectionToken } from '../../session/infrastructure/providers/session.injection.token';
+import { UserInjectionToken } from '../../users/infrastructure/providers/user.injection.token';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
