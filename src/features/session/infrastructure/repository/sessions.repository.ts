@@ -3,19 +3,33 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { SessionsRepositoryInterface } from '../../interfaces/sessions.repository.interface';
 import { Session, SessionModel } from '../../domain/session.schema';
-import { MainRepository } from '../../../shared/infrastructure/repository/main.repository';
 import { CreateSessionDto } from '../../dto/create-session.dto';
 
 @Injectable()
-export class SessionsRepository
-	extends MainRepository<SessionModel, CreateSessionDto>
-	implements SessionsRepositoryInterface
-{
+export class SessionsRepository implements SessionsRepositoryInterface {
 	constructor(
 		@InjectModel(Session.name)
 		private readonly sessionModel: Model<SessionModel>,
-	) {
-		super(sessionModel);
+	) {}
+
+	async create(data: CreateSessionDto): Promise<SessionModel> {
+		return new this.sessionModel(data);
+	}
+
+	async find(id: string): Promise<SessionModel | null> {
+		return this.sessionModel.findById(id);
+	}
+
+	async save(model: SessionModel): Promise<SessionModel> {
+		return model.save();
+	}
+
+	async delete(model: SessionModel): Promise<void> {
+		await model.delete();
+	}
+
+	async deleteAll(): Promise<void> {
+		await this.sessionModel.deleteMany();
 	}
 
 	async findSession(

@@ -3,18 +3,31 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserModel } from '../../domain/user.schema';
 import { QueryUsersRepositoryInterface } from '../../interfaces/query.users.repository.interface';
-import { MainQueryRepository } from '../../../shared/infrastructure/query/main.query.repository';
+import { ObjectId } from 'mongodb';
+import { Sort } from '../../../../common/dto';
 
 @Injectable()
-export class QueryUsersRepository
-	extends MainQueryRepository<UserModel>
-	implements QueryUsersRepositoryInterface
-{
+export class QueryUsersRepository implements QueryUsersRepositoryInterface {
 	constructor(
 		@InjectModel(User.name)
 		private readonly userModel: Model<UserModel>,
-	) {
-		super(userModel);
+	) {}
+
+	async find(id: ObjectId): Promise<UserModel | null> {
+		return this.userModel.findById(id);
+	}
+
+	async findQuery(
+		searchString: Record<string, unknown>,
+		sortBy: Sort,
+		skip: number,
+		pageSize: number,
+	): Promise<UserModel[] | null> {
+		return this.userModel.find(searchString).sort(sortBy).skip(skip).limit(pageSize);
+	}
+
+	async count(searchString): Promise<number> {
+		return this.userModel.countDocuments(searchString);
 	}
 
 	public searchTerm(login: string | undefined, email: string | undefined): Record<string, unknown> {

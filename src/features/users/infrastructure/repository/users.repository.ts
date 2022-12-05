@@ -4,18 +4,32 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserExtendsDto } from '../../dto';
 import { User, UserModel } from '../../domain/user.schema';
 import { UsersRepositoryInterface } from '../../interfaces/users.repository.interface';
-import { MainRepository } from '../../../shared/infrastructure/repository/main.repository';
 
 @Injectable()
-export class UsersRepository
-	extends MainRepository<UserModel, CreateUserExtendsDto>
-	implements UsersRepositoryInterface
-{
+export class UsersRepository implements UsersRepositoryInterface {
 	constructor(
 		@InjectModel(User.name)
 		private readonly userModel: Model<UserModel>,
-	) {
-		super(userModel);
+	) {}
+
+	async create(data: CreateUserExtendsDto): Promise<UserModel> {
+		return new this.userModel(data);
+	}
+
+	async find(id: string): Promise<UserModel | null> {
+		return this.userModel.findById(id);
+	}
+
+	async save(model: UserModel): Promise<UserModel> {
+		return model.save();
+	}
+
+	async delete(model: UserModel): Promise<void> {
+		await model.delete();
+	}
+
+	async deleteAll(): Promise<void> {
+		await this.userModel.deleteMany();
 	}
 
 	async findUserByLogin(login: string): Promise<UserModel | null> {

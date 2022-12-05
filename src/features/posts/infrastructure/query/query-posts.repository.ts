@@ -6,19 +6,13 @@ import { Post, PostModel } from '../../domain/post.schema';
 import { QueryPostsRepositoryInterface } from '../../interfaces/query.posts.repository.interface';
 import { ObjectId } from 'mongodb';
 import { LikeDbDto } from '../../../likes/dto/like-db.dto';
-import { MainQueryRepository } from '../../../shared/infrastructure/query/main.query.repository';
 
 @Injectable()
-export class QueryPostsRepository
-	extends MainQueryRepository<PostModel>
-	implements QueryPostsRepositoryInterface
-{
+export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 	constructor(
 		@InjectModel(Post.name)
 		private readonly postModel: Model<PostModel>,
-	) {
-		super(postModel);
-	}
+	) {}
 
 	async find(id: ObjectId): Promise<PostModel | null> {
 		const post: PostModel[] = await this.postModel.aggregate([

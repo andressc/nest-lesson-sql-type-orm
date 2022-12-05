@@ -6,19 +6,13 @@ import { Comment, CommentModel } from '../../domain/comment.schema';
 import { QueryCommentsRepositoryInterface } from '../../interfaces/query.comments.repository.interface';
 import { ObjectId } from 'mongodb';
 import { LikeDbDto } from '../../../likes/dto/like-db.dto';
-import { MainQueryRepository } from '../../../shared/infrastructure/query/main.query.repository';
 
 @Injectable()
-export class QueryCommentsRepository
-	extends MainQueryRepository<CommentModel>
-	implements QueryCommentsRepositoryInterface
-{
+export class QueryCommentsRepository implements QueryCommentsRepositoryInterface {
 	constructor(
 		@InjectModel(Comment.name)
 		private readonly commentModel: Model<CommentModel>,
-	) {
-		super(commentModel);
-	}
+	) {}
 
 	async find(id: ObjectId): Promise<CommentModel | null> {
 		const comment = await this.commentModel.aggregate([

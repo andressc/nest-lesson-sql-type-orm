@@ -5,18 +5,32 @@ import { Comment, CommentModel } from '../../domain/comment.schema';
 import { CreateCommentExtendsDto } from '../../dto';
 import { CommentsRepositoryInterface } from '../../interfaces/comments.repository.interface';
 import { ObjectId } from 'mongodb';
-import { MainRepository } from '../../../shared/infrastructure/repository/main.repository';
 
 @Injectable()
-export class CommentsRepository
-	extends MainRepository<CommentModel, CreateCommentExtendsDto>
-	implements CommentsRepositoryInterface
-{
+export class CommentsRepository implements CommentsRepositoryInterface {
 	constructor(
 		@InjectModel(Comment.name)
 		private readonly commentModel: Model<CommentModel>,
-	) {
-		super(commentModel);
+	) {}
+
+	async create(data: CreateCommentExtendsDto): Promise<CommentModel> {
+		return new this.commentModel(data);
+	}
+
+	async find(id: string): Promise<CommentModel | null> {
+		return this.commentModel.findById(id);
+	}
+
+	async save(model: CommentModel): Promise<CommentModel> {
+		return model.save();
+	}
+
+	async delete(model: CommentModel): Promise<void> {
+		await model.delete();
+	}
+
+	async deleteAll(): Promise<void> {
+		await this.commentModel.deleteMany();
 	}
 
 	async setBan(userId: ObjectId, isBanned: boolean): Promise<void> {
