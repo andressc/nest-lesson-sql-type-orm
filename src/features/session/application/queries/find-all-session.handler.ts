@@ -17,7 +17,7 @@ export class FindAllSessionHandler implements IQueryHandler<FindAllSessionComman
 	) {}
 
 	async execute(command: FindAllSessionCommand): Promise<ResponseSessionDto[]> {
-		const session: SessionModel[] = await this.querySessionRepository.findAllSessionsByuserId(
+		const session: SessionModel[] = await this.querySessionRepository.findAllSessionsByUserId(
 			command.currentuserId,
 		);
 

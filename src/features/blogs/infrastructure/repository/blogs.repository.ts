@@ -20,16 +20,28 @@ export class BlogsRepository implements BlogsRepositoryInterface {
 	) {}
 
 	async create(data: CreateBlogExtendsDto): Promise<BlogModel> {
-		return this.dataSource.query(
+		const blog = await this.dataSource.query(
 			`INSERT INTO "Blogs"
-    (name, "websiteUrl", "createdAt", description, "userId","userLogin", "isBanned", "banDate")
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-			[data.name, data.createdAt, data.description, data.userId, data.userLogin, false, null],
+    ("name", "websiteUrl", "createdAt", description, "userId", "userLogin", "isBanned", "banDate")
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;`,
+			[
+				data.name,
+				data.websiteUrl,
+				data.createdAt,
+				data.description,
+				data.userId,
+				data.userLogin,
+				false,
+				null,
+			],
 		);
+
+		return blog[0];
 	}
 
 	async find(id: string): Promise<BlogModel | null> {
-		return this.dataSource.query(`SELECT * FROM "Blogs" WHERE "id"=$1`, [id]);
+		const blog = await this.dataSource.query(`SELECT * FROM "Blogs" WHERE "id"=$1`, [id]);
+		return blog[0];
 	}
 
 	//????

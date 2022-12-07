@@ -1,7 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
 
-export type SessionModel = Session & Document;
+//export type SessionModel = Session & Document;
+
+export class SessionModel {
+	id: string;
+	ip: string;
+	title: string;
+	userAgent: string;
+	lastActiveDate: string;
+	expirationDate: string;
+	deviceId: string;
+	userId: string;
+}
 
 @Schema()
 export class Session {

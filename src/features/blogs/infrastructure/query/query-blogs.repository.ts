@@ -17,7 +17,8 @@ export class QueryBlogsRepository implements QueryBlogsRepositoryInterface {
 	) {}
 
 	async find(id: string): Promise<BlogModel | null> {
-		return this.dataSource.query(`SELECT * FROM "Blogs" WHERE "id"=$1`, [id]);
+		const post = await this.dataSource.query(`SELECT * FROM "Blogs" WHERE "id"=$1`, [id]);
+		return post[0];
 	}
 
 	async findQuery(

@@ -17,7 +17,7 @@ export class RemoveUserSessionHandler implements ICommandHandler<RemoveUserSessi
 	) {}
 
 	async execute(command: RemoveUserSessionCommand): Promise<void> {
-		const session: SessionModel | null = await this.sessionsRepository.findSessionOndeviceId(
+		const session: SessionModel | null = await this.sessionsRepository.findSessionOnDeviceId(
 			command.deviceId,
 		);
 		if (!session) throw new deviceIdNotFoundException(command.deviceId);

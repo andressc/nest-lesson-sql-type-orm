@@ -35,13 +35,13 @@ export class RefreshTokenAuthHandler implements ICommandHandler<RefreshTokenAuth
 		);
 		const payload: PayloadTokenDto = this.jwtService.decode(tokens.refreshToken) as PayloadTokenDto;
 
-		await session.updateSession(
+		await this.sessionsRepository.update(
 			payloadDateCreator(payload.iat),
 			payloadDateCreator(payload.exp),
 			command.refreshTokenData.ip,
 			command.refreshTokenData.userAgent,
+			session.id,
 		);
-		await this.sessionsRepository.save(session);
 
 		return tokens;
 	}

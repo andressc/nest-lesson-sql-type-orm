@@ -3,17 +3,18 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Session, SessionModel } from '../../domain/session.schema';
 import { QuerySessionsRepositoryInterface } from '../../interfaces/query.sessions.repository.interface';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class QuerySessionsRepository implements QuerySessionsRepositoryInterface {
 	constructor(
+		@InjectDataSource() protected dataSource: DataSource,
 		@InjectModel(Session.name)
 		private readonly sessionModel: Model<SessionModel>,
 	) {}
 
-	async findAllSessionsByuserId(currentuserId: string): Promise<SessionModel[]> {
-		return this.sessionModel.find({
-			userId: currentuserId,
-		});
+	async findAllSessionsByUserId(currentUserId: string): Promise<SessionModel[]> {
+		return this.dataSource.query(`SELECT * FROM "Sessions" WHERE "userId"=$1`, [currentUserId]);
 	}
 }
