@@ -3,7 +3,7 @@ import { ObjectIdDto } from '../../../common/dto';
 import { GuestGuard } from '../../../common/guards';
 import { QueryBlogDto } from '../dto';
 import { QueryPostDto } from '../../posts/dto';
-import { CurrentUserIdNonAuthorized } from '../../../common/decorators/Param';
+import { CurrentuserIdNonAuthorized } from '../../../common/decorators/Param';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { FindOneBlogCommand } from '../application/queries/find-one-blog.handler';
 import { FindAllBlogCommand } from '../application/queries/find-all-blog.handler';
@@ -23,9 +23,9 @@ export class BlogsController {
 	findAllPostsOfBlog(
 		@Query() query: QueryPostDto,
 		@Param() param: ObjectIdDto,
-		@CurrentUserIdNonAuthorized() currentUserId: ObjectIdDto | null,
+		@CurrentuserIdNonAuthorized() currentuserId: ObjectIdDto | null,
 	) {
-		return this.queryBus.execute(new FindAllPostCommand(query, currentUserId.id, param.id));
+		return this.queryBus.execute(new FindAllPostCommand(query, currentuserId.id, param.id));
 	}
 
 	@Get(':id')
@@ -45,10 +45,10 @@ export class BlogsController {
 	async createPostOfBlog(
 		@Body() data: CreatePostOfBlogDto,
 		@Param() param: ObjectIdDto,
-		@CurrentUserIdNonAuthorized() currentUserId,
+		@CurrentuserIdNonAuthorized() currentuserId,
 	) {
 		const postId = await this.commandBus.execute(new CreatePostOfBlogCommand(data, param.id));
-		return this.queryBus.execute(new FindOnePostCommand(postId, currentUserId));
+		return this.queryBus.execute(new FindOnePostCommand(postId, currentuserId));
 	}
 
 	@HttpCode(204)

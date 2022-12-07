@@ -29,13 +29,18 @@ export class UsersController {
 
 	@Post()
 	async createUser(@Body() data: CreateUserDto) {
-		const userId = await this.commandBus.execute(new CreateUserCommand(data, true));
+		const userId: string = await this.commandBus.execute(new CreateUserCommand(data, true));
 		return this.queryBus.execute(new FindOneUserCommand(userId));
 	}
 
 	@Get()
 	findAllUsers(@Query() query: QueryUserDto) {
 		return this.queryBus.execute(new FindAllUserCommand(query));
+	}
+
+	@Get(':id')
+	findUserById(@Param() param) {
+		return this.queryBus.execute(new FindOneUserCommand(param.id));
 	}
 
 	@HttpCode(204)

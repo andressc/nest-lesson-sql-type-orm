@@ -11,9 +11,9 @@ export class QuerySessionsRepository implements QuerySessionsRepositoryInterface
 		private readonly sessionModel: Model<SessionModel>,
 	) {}
 
-	async findAllSessionsByUserId(currentUserId: string): Promise<SessionModel[]> {
+	async findAllSessionsByuserId(currentuserId: string): Promise<SessionModel[]> {
 		return this.sessionModel.find({
-			userId: currentUserId,
+			userId: currentuserId,
 		});
 	}
 }

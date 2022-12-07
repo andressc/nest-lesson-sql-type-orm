@@ -17,7 +17,7 @@ export class SessionsRepository implements SessionsRepositoryInterface {
 	}
 
 	async find(id: string): Promise<SessionModel | null> {
-		return this.sessionModel.findById(id);
+		return this.sessionModel.findById(+id);
 	}
 
 	async save(model: SessionModel): Promise<SessionModel> {
@@ -44,7 +44,7 @@ export class SessionsRepository implements SessionsRepositoryInterface {
 		});
 	}
 
-	async findSessionOnDeviceId(deviceId: string): Promise<SessionModel | null> {
+	async findSessionOndeviceId(deviceId: string): Promise<SessionModel | null> {
 		return this.sessionModel.findOne({
 			deviceId,
 		});

@@ -23,6 +23,7 @@ export class UsersService {
 
 	public async findUserByLoginOrErrorThrow(login: string): Promise<UserModel> {
 		const user: UserModel | null = await this.usersRepository.findUserByLogin(login);
+
 		if (user) throw new UserExistsLoginException(login);
 		return user;
 	}

@@ -3,12 +3,11 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { CommentNotFoundException } from '../../../../common/exceptions';
 import { ResponseCommentDto } from '../../dto';
 import { QueryCommentsRepositoryInterface } from '../../interfaces/query.comments.repository.interface';
-import { ObjectId } from 'mongodb';
 import { Inject } from '@nestjs/common';
 import { CommentInjectionToken } from '../../infrastructure/providers/comment.injection.token';
 
 export class FindOneCommentCommand {
-	constructor(public id: string, public currentUserId: string | null) {}
+	constructor(public id: string, public currentuserId: string | null) {}
 }
 
 @QueryHandler(FindOneCommentCommand)
@@ -19,12 +18,10 @@ export class FindOneCommentHandler implements IQueryHandler<FindOneCommentComman
 	) {}
 
 	async execute(command: FindOneCommentCommand): Promise<ResponseCommentDto> {
-		const comment: CommentModel | null = await this.queryCommentsRepository.find(
-			new ObjectId(command.id),
-		);
+		const comment: CommentModel | null = await this.queryCommentsRepository.find(command.id);
 		if (!comment) throw new CommentNotFoundException(command.id);
 
-		const likesInfo = this.queryCommentsRepository.countLikes(comment, command.currentUserId);
+		const likesInfo = this.queryCommentsRepository.countLikes(comment, command.currentuserId);
 
 		return {
 			id: comment._id.toString(),

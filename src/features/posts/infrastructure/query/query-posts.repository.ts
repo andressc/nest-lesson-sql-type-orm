@@ -14,7 +14,7 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 		private readonly postModel: Model<PostModel>,
 	) {}
 
-	async find(id: ObjectId): Promise<PostModel | null> {
+	async find(id: string): Promise<PostModel | null> {
 		const post: PostModel[] = await this.postModel.aggregate([
 			{ $match: { _id: id, isBanned: false } },
 			{
@@ -59,7 +59,7 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 		return this.postModel.countDocuments({ ...searchString, isBanned: false });
 	}
 
-	public countLikes(post: PostModel, currentUserId: string | null): LikesInfoExtended {
+	public countLikes(post: PostModel, currentuserId: string | null): LikesInfoExtended {
 		const likesCount = post.likes.filter(
 			(v: LikeDbDto) => v.likeStatus === LikeStatusEnum.Like && !v.isBanned,
 		).length;
@@ -81,7 +81,7 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 			}));
 
 		post.likes.forEach((it: LikeDbDto) => {
-			if (currentUserId && new ObjectId(it.userId).equals(currentUserId)) myStatus = it.likeStatus;
+			if (currentuserId && new ObjectId(it.userId).equals(currentuserId)) myStatus = it.likeStatus;
 		});
 
 		return {

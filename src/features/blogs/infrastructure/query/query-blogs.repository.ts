@@ -5,30 +5,33 @@ import { Blog, BlogModel } from '../../domain/blog.schema';
 import { QueryBlogsRepositoryInterface } from '../../interfaces/query.blogs.repository.interface';
 import { Ban, BanModel } from '../../domain/ban.schema';
 import { Sort } from '../../../../common/dto';
-import { ObjectId } from 'mongodb';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class QueryBlogsRepository implements QueryBlogsRepositoryInterface {
 	constructor(
+		@InjectDataSource() protected dataSource: DataSource,
 		@InjectModel(Blog.name) private readonly blogModel: Model<BlogModel>,
 		@InjectModel(Ban.name) private readonly banModel: Model<BanModel>,
 	) {}
 
-	async find(id: ObjectId): Promise<BlogModel | null> {
-		return this.blogModel.findById(id);
+	async find(id: string): Promise<BlogModel | null> {
+		return this.dataSource.query(`SELECT * FROM "Blogs" WHERE "id"=$1`, [id]);
 	}
 
 	async findQuery(
-		searchString: Record<string, unknown>,
+		searchString: any,
 		sortBy: Sort,
 		skip: number,
 		pageSize: number,
 	): Promise<BlogModel[] | null> {
-		return this.blogModel.find(searchString).sort(sortBy).skip(skip).limit(pageSize);
+		return this.dataSource.query(`SELECT * FROM "Blogs"`);
 	}
 
 	async count(searchString): Promise<number> {
-		return this.blogModel.countDocuments(searchString);
+		const count = await this.dataSource.query(`SELECT COUNT(id) FROM "Blogs"`);
+		return +count[0].count;
 	}
 
 	async findBanModel(

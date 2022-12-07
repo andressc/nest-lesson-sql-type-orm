@@ -1,6 +1,6 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
-export const CurrentUserIdNonAuthorized = createParamDecorator(
+export const CurrentuserIdNonAuthorized = createParamDecorator(
 	(data: unknown, context: ExecutionContext) => {
 		const request = context.switchToHttp().getRequest();
 		if (!request.user?.userId) return { id: null };

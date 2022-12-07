@@ -33,7 +33,7 @@ export class LikesRepository implements LikesRepositoryInterface {
 		await this.likeModel.deleteMany();
 	}
 
-	async findLikeByItemIdAndUserId(itemId: ObjectId, userId: ObjectId): Promise<LikeModel> {
+	async findLikeByitemIdAnduserId(itemId: ObjectId, userId: ObjectId): Promise<LikeModel> {
 		return this.likeModel.findOne({ itemId, userId });
 	}
 

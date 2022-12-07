@@ -3,7 +3,6 @@ import { UserNotFoundException } from '../../../../common/exceptions';
 import { ResponseUserMeDto } from '../../dto';
 import { UserModel } from '../../domain/user.schema';
 import { QueryUsersRepositoryInterface } from '../../interfaces/query.users.repository.interface';
-import { ObjectId } from 'mongodb';
 import { Inject } from '@nestjs/common';
 import { UserInjectionToken } from '../../infrastructure/providers/user.injection.token';
 
@@ -19,13 +18,13 @@ export class FindMeUserHandler implements IQueryHandler<FindMeUserCommand> {
 	) {}
 
 	async execute(command: FindMeUserCommand): Promise<ResponseUserMeDto> {
-		const user: UserModel | null = await this.queryUsersRepository.find(new ObjectId(command.id));
+		const user: UserModel | null = await this.queryUsersRepository.find(command.id);
 		if (!user) throw new UserNotFoundException(command.id);
 
 		return {
 			email: user.email,
 			login: user.login,
-			userId: user._id,
+			userId: user.id.toString(),
 		};
 	}
 }

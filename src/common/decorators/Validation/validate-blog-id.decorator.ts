@@ -29,7 +29,7 @@ export class IsUserCommentValidatorConstraint implements ValidatorConstraintInte
 	}
 }
 
-export function ValidateBlogIdDecorator(validationOptions?: ValidationOptions) {
+export function ValidateblogIdDecorator(validationOptions?: ValidationOptions) {
 	return function (object: any, propertyName: string) {
 		registerDecorator({
 			name: 'IsUserComment',

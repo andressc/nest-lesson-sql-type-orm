@@ -44,7 +44,7 @@ export class FindAllUserHandler implements IQueryHandler<FindAllUserCommand> {
 			pageSize: paginationData.pageSize,
 			totalCount: totalCount,
 			items: user.map((v: UserModel) => ({
-				id: v._id.toString(),
+				id: v.id.toString(),
 				login: v.login,
 				email: v.email,
 				createdAt: v.createdAt,

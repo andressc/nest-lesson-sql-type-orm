@@ -7,7 +7,7 @@ import { CommentsRepositoryInterface } from '../../interfaces/comments.repositor
 import { CommentInjectionToken } from '../../infrastructure/providers/comment.injection.token';
 
 export class RemoveCommentCommand {
-	constructor(public id: string, public authUserId: string) {}
+	constructor(public id: string, public authuserId: string) {}
 }
 
 @CommandHandler(RemoveCommentCommand)
@@ -20,11 +20,11 @@ export class RemoveCommentHandler implements ICommandHandler<RemoveCommentComman
 	) {}
 
 	async execute(command: RemoveCommentCommand): Promise<void> {
-		await this.usersService.findUserByIdOrErrorThrow(command.authUserId);
+		await this.usersService.findUserByIdOrErrorThrow(command.authuserId);
 
 		const comment: CommentModel = await this.commentsService.findCommentOrErrorThrow(
 			command.id,
-			command.authUserId,
+			command.authuserId,
 		);
 		await this.commentsRepository.delete(comment);
 	}

@@ -18,7 +18,7 @@ export class CreateCommentOfPostCommand implements ICommand {
 	constructor(
 		public data: CreateCommentOfPostDto,
 		public postId: string,
-		public authUserId: string,
+		public authuserId: string,
 	) {}
 }
 
@@ -37,25 +37,25 @@ export class CreateCommentOfPostHandler implements ICommandHandler<CreateComment
 	async execute(command: CreateCommentOfPostCommand): Promise<string> {
 		await this.validationService.validate(command.data, CreateCommentOfPostDto);
 
-		const user: UserModel = await this.usersService.findUserByIdOrErrorThrow(command.authUserId);
+		const user: UserModel = await this.usersService.findUserByIdOrErrorThrow(command.authuserId);
 		const post: PostModel = await this.postsService.findPostOrErrorThrow(command.postId);
 
-		const banned: BanModel | null = await this.blogsRepository.findBanByBlogIdAndUserId(
+		const banned: BanModel | null = await this.blogsRepository.findBanByblogIdAnduserId(
 			post.blogId,
-			command.authUserId,
+			command.authuserId,
 		);
 
 		if (banned && banned.isBanned === true) throw new ForbiddenException();
 
 		const newComment: CommentModel = await this.commentsRepository.create({
 			...command.data,
-			userId: command.authUserId,
+			userId: command.authuserId,
 			userLogin: user.login,
 			postId: command.postId,
 			blogId: post.blogId,
 			blogName: post.blogName,
 			postTitle: post.title,
-			blogUserId: post.blogUserId,
+			bloguserId: post.bloguserId,
 			createdAt: createDate(),
 		});
 

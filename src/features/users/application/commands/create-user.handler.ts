@@ -42,7 +42,6 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
 			createdAt: createDate(),
 		});
 
-		const result = await this.usersRepository.save(newUser);
-		return result.id.toString();
+		return newUser.id;
 	}
 }

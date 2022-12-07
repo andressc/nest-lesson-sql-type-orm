@@ -1,10 +1,9 @@
 import { Sort } from '../../../common/dto';
-import { ObjectId } from 'mongodb';
 
 export interface MainQueryRepositoryInterface<MODEL> {
-	find(id: ObjectId): Promise<MODEL | null>;
+	find(id: string): Promise<MODEL | null>;
 	findQuery(
-		searchString: Record<string, unknown>,
+		searchString: any,
 		sortBy: Sort,
 		skip: number,
 		pageSize: number,

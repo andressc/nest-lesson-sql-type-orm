@@ -10,7 +10,7 @@ export interface SessionsRepositoryInterface
 		deviceId: string,
 		lastActiveDate: string,
 	): Promise<SessionModel | null>;
-	findSessionOnDeviceId(deviceId: string): Promise<SessionModel | null>;
+	findSessionOndeviceId(deviceId: string): Promise<SessionModel | null>;
 	removeAllUserSessionsExceptCurrent(userId: string, deviceId: string): Promise<void>;
 	removeAllUserSessions(userId: string): Promise<void>;
 }

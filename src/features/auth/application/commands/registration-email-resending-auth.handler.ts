@@ -33,8 +33,7 @@ export class RegistrationEmailResendingAuthHandler
 		if (user.isConfirmed) throw new EmailBadRequestException();
 
 		const newConfirmationCode = uuidv4();
-		user.updateConfirmationCode(newConfirmationCode);
-		await this.usersRepository.save(user);
+		await this.usersRepository.updateConfirmationCode(newConfirmationCode, user.id);
 
 		try {
 			await this.commandBus.execute(

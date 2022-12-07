@@ -23,6 +23,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		if (!user.isConfirmed) throw new UnauthorizedException();
 		if (user.isBanned) throw new UnauthorizedException();
 
-		return { userId: user._id };
+		return { userId: user.id };
 	}
 }

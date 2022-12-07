@@ -9,13 +9,12 @@ import { QueryBlogsRepositoryInterface } from '../../../blogs/interfaces/query.b
 import { QueryPostsRepositoryInterface } from '../../interfaces/query.posts.repository.interface';
 import { Inject } from '@nestjs/common';
 import { BlogInjectionToken } from '../../../blogs/infrastructure/providers/blog.injection.token';
-import { ObjectId } from 'mongodb';
 import { PostInjectionToken } from '../../infrastructure/providers/post.injection.token';
 
 export class FindAllPostCommand {
 	constructor(
 		public query: QueryDto,
-		public currentUserId: string | null,
+		public currentuserId: string | null,
 		public blogId?: string,
 	) {}
 }
@@ -35,9 +34,7 @@ export class FindAllPostHandler implements IQueryHandler<FindAllPostCommand> {
 			? { blogId: command.blogId, isBanned: false }
 			: { isBanned: false };
 
-		const blog: BlogModel | null = await this.queryBlogsRepository.find(
-			new ObjectId(command.blogId),
-		);
+		const blog: BlogModel | null = await this.queryBlogsRepository.find(command.blogId);
 		if (!blog && command.blogId) throw new BlogNotFoundException(command.blogId);
 
 		const totalCount: number = await this.queryPostsRepository.count(searchString);
@@ -61,7 +58,7 @@ export class FindAllPostHandler implements IQueryHandler<FindAllPostCommand> {
 			pageSize: paginationData.pageSize,
 			totalCount: totalCount,
 			items: post.map((v: PostModel) => {
-				likesInfo = this.queryPostsRepository.countLikes(v, command.currentUserId);
+				likesInfo = this.queryPostsRepository.countLikes(v, command.currentuserId);
 
 				return {
 					id: v._id.toString(),

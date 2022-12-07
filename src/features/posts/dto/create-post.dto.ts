@@ -1,5 +1,5 @@
 import { IsMongoId, IsNotEmpty, IsString, MaxLength } from 'class-validator';
-import { ValidateBlogIdDecorator } from '../../../common/decorators/Validation';
+import { ValidateblogIdDecorator } from '../../../common/decorators/Validation';
 import { trim } from '../../../common/helpers';
 import { Transform } from 'class-transformer';
 
@@ -19,7 +19,7 @@ export class CreatePostDto {
 	@MaxLength(1000)
 	content: string;
 
-	@ValidateBlogIdDecorator()
+	@ValidateblogIdDecorator()
 	@IsMongoId()
 	@IsString()
 	blogId: string;

@@ -37,7 +37,7 @@ export class PasswordRecoveryTokenStrategy extends PassportStrategy(
 		if (!user) throw new EmailBadRequestException();
 
 		return {
-			userId: user._id,
+			userId: user.id,
 		};
 	}
 }

@@ -12,7 +12,7 @@ export class CreatePostOfBlogCommand implements ICommand {
 	constructor(
 		public data: CreatePostOfBlogDto,
 		public blogId: string,
-		public currentUserId: string,
+		public currentuserId: string,
 	) {}
 }
 
@@ -30,13 +30,13 @@ export class CreatePostOfBlogHandler implements ICommandHandler<CreatePostOfBlog
 
 		const blog: BlogModel = await this.blogsService.findBlogOrErrorThrow(command.blogId);
 
-		if (blog.userId !== command.currentUserId) throw new ForbiddenException();
+		if (blog.userId !== command.currentuserId) throw new ForbiddenException();
 
 		const newPost = await this.postsRepository.create({
 			...command.data,
 			blogId: command.blogId,
 			blogName: blog.name,
-			blogUserId: blog.userId,
+			bloguserId: blog.userId,
 			createdAt: createDate(),
 		});
 

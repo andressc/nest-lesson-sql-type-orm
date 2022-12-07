@@ -31,7 +31,12 @@ export class BanUnbanUserHandler implements ICommandHandler<BanUnbanUserCommand>
 		await this.validationService.validate(command.data, BanUnbanUserDto);
 
 		const user: UserModel = await this.usersService.findUserByIdOrErrorThrow(command.id);
-		user.banUnbanUser(command.data.isBanned, command.data.banReason, new Date().toISOString());
+		await this.usersRepository.banUnbanUser(
+			command.data.isBanned,
+			command.data.banReason,
+			new Date().toISOString(),
+			user.id,
+		);
 
 		await this.commandBus.execute(new BanUnbanLikeCommand(user.id, command.data.isBanned));
 		await this.commandBus.execute(new BanUnbanCommentCommand(user.id, command.data.isBanned));

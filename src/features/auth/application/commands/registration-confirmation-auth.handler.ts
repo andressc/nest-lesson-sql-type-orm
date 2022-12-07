@@ -31,7 +31,7 @@ export class RegistrationConfirmationAuthHandler
 		if (!user) throw new ConfirmCodeBadRequestException();
 		if (user.isConfirmed) throw new ConfirmCodeBadRequestException();
 
-		user.updateIsConfirmed(true);
+		await this.usersRepository.updateIsConfirmed(true, user.id);
 		await this.usersRepository.save(user);
 	}
 }

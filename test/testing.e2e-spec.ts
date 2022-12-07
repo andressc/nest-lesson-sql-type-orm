@@ -37,7 +37,7 @@ describe('PostController (e2e)', () => {
 		content: 'content',
 		blogId: 'blogId',
 		blogName: 'blogName',
-		blogUserId: 'blogUserId',
+		bloguserId: 'bloguserId',
 	};
 
 	beforeAll(async () => {

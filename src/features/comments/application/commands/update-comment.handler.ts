@@ -10,7 +10,7 @@ import { Inject } from '@nestjs/common';
 import { CommentInjectionToken } from '../../infrastructure/providers/comment.injection.token';
 
 export class UpdateCommentCommand {
-	constructor(public id: string, public data: UpdateCommentDto, public authUserId: string) {}
+	constructor(public id: string, public data: UpdateCommentDto, public authuserId: string) {}
 }
 
 @CommandHandler(UpdateCommentCommand)
@@ -27,10 +27,10 @@ export class UpdateCommentHandler implements ICommandHandler<UpdateCommentComman
 	async execute(command: UpdateCommentCommand): Promise<void> {
 		await this.validationService.validate(command.data, UpdateCommentDto);
 
-		await this.usersService.findUserByIdOrErrorThrow(command.authUserId);
+		await this.usersService.findUserByIdOrErrorThrow(command.authuserId);
 		const comment: CommentModel = await this.commentsService.findCommentOrErrorThrow(
 			command.id,
-			command.authUserId,
+			command.authuserId,
 		);
 
 		comment.updateData(command.data);

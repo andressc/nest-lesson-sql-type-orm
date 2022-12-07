@@ -31,8 +31,7 @@ export class BanBlogHandler implements ICommandHandler<BanBlogCommand> {
 
 		if (command.data.isBanned) banDate = new Date().toISOString();
 
-		blog.ban(command.data.isBanned, banDate);
-		await this.blogsRepository.save(blog);
+		await this.blogsRepository.banBlog(command.data.isBanned, banDate, blog.id);
 
 		await this.commandBus.execute(new BanUnbanPostCommand(blog.id, command.data.isBanned));
 	}

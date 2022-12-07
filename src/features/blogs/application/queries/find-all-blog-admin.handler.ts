@@ -49,7 +49,7 @@ export class FindAllBlogAdminHandler implements IQueryHandler<FindAllBlogAdminCo
 			pageSize: paginationData.pageSize,
 			totalCount: totalCount,
 			items: blog.map((v: BlogModel) => ({
-				id: v._id.toString(),
+				id: v.id.toString(),
 				name: v.name,
 				description: v.description,
 				websiteUrl: v.websiteUrl,

@@ -100,7 +100,7 @@ describe('CommentController (e2e)', () => {
 		content: 'content content content content content',
 		blogId: blogData.id,
 		blogName: blogData.name,
-		blogUserId: new ObjectId().toString(),
+		bloguserId: new ObjectId().toString(),
 		createdAt: expect.any(String),
 		extendedLikesInfo: {
 			dislikesCount: 0,
@@ -293,13 +293,13 @@ describe('CommentController (e2e)', () => {
 	});
 
 	describe('edit, delete alien comment must be forbidden', () => {
-		const alienUserId = new ObjectId().toString();
-		const alienCommentId = new ObjectId().toString();
+		const alienuserId = new ObjectId().toString();
+		const aliencommentId = new ObjectId().toString();
 		beforeAll(async () => {
 			await connection.dropDatabase();
 
 			await CommentModel.create(
-				commentCreator('Content', alienUserId, 'alienUserLogin', postData.id, 1, alienCommentId),
+				commentCreator('Content', alienuserId, 'alienUserLogin', postData.id, 1, aliencommentId),
 			);
 		});
 
@@ -328,7 +328,7 @@ describe('CommentController (e2e)', () => {
 
 		it('edit alien comment must be forbidden', async () => {
 			await request(app)
-				.put(`/comments/${alienCommentId}`)
+				.put(`/comments/${aliencommentId}`)
 				.set('authorization', `Bearer ${token}`)
 				.send({
 					content: 'content content content content content content content content',
@@ -338,7 +338,7 @@ describe('CommentController (e2e)', () => {
 
 		it('delete alien comment must be forbidden', async () => {
 			await request(app)
-				.delete(`/comments/${alienCommentId}`)
+				.delete(`/comments/${aliencommentId}`)
 				.set('authorization', `Bearer ${token}`)
 				.expect(403);
 		});

@@ -10,18 +10,6 @@ on:
       - master
 
 jobs:
-  tests:
-    name: Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Install dependencies
-        run: yarn
-
-      - name: Test
-        run: yarn run test:e2e
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -38,7 +26,7 @@ jobs:
 
   deploy:
     name: Deploy
-    needs: [tests, lint]
+    needs: [lint]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

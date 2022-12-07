@@ -14,7 +14,7 @@ export class UpdatePostCommand {
 		public blogId: string,
 		public postId: string,
 		public data: UpdatePostOfBlogDto,
-		public currentUserId: string,
+		public currentuserId: string,
 	) {}
 }
 
@@ -32,7 +32,7 @@ export class UpdatePostHandler implements ICommandHandler<UpdatePostCommand> {
 		await this.validationService.validate(command.data, UpdatePostOfBlogDto);
 
 		const blog: BlogModel = await this.blogsService.findBlogOrErrorThrow(command.blogId);
-		if (blog.userId !== command.currentUserId) throw new ForbiddenException();
+		if (blog.userId !== command.currentuserId) throw new ForbiddenException();
 
 		const post: PostModel = await this.postsService.findPostOrErrorThrow(command.postId);
 		post.updateData(command.data);

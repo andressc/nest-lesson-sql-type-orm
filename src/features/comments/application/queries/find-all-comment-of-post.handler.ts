@@ -7,7 +7,6 @@ import { CommentModel } from '../../domain/comment.schema';
 import { PaginationService } from '../../../../shared/pagination/application/pagination.service';
 import { QueryCommentsRepositoryInterface } from '../../interfaces/query.comments.repository.interface';
 import { QueryPostsRepositoryInterface } from '../../../posts/interfaces/query.posts.repository.interface';
-import { ObjectId } from 'mongodb';
 import { Inject } from '@nestjs/common';
 import { CommentInjectionToken } from '../../infrastructure/providers/comment.injection.token';
 import { PostInjectionToken } from '../../../posts/infrastructure/providers/post.injection.token';
@@ -16,7 +15,7 @@ export class FindAllCommentOfPostCommand {
 	constructor(
 		public query: QueryCommentDto,
 		public postId: string,
-		public currentUserId: string | null,
+		public currentuserId: string | null,
 	) {}
 }
 
@@ -35,9 +34,7 @@ export class FindAllCommentOfPostHandler implements IQueryHandler<FindAllComment
 	): Promise<PaginationDto<ResponseCommentDto[]>> {
 		const searchString = { postId: command.postId };
 
-		const post: PostModel | null = await this.queryPostsRepository.find(
-			new ObjectId(command.postId),
-		);
+		const post: PostModel | null = await this.queryPostsRepository.find(command.postId);
 		if (!post) throw new PostNotFoundException(command.postId);
 
 		const totalCount: number = await this.queryCommentsRepository.count(searchString);
@@ -61,7 +58,7 @@ export class FindAllCommentOfPostHandler implements IQueryHandler<FindAllComment
 			pageSize: paginationData.pageSize,
 			totalCount: totalCount,
 			items: comments.map((v: CommentModel) => {
-				likesInfo = this.queryCommentsRepository.countLikes(v, command.currentUserId);
+				likesInfo = this.queryCommentsRepository.countLikes(v, command.currentuserId);
 
 				return {
 					id: v._id.toString(),

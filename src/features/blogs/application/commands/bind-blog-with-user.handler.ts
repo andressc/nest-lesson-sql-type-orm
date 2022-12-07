@@ -26,7 +26,6 @@ export class BindBlogWithUserHandler implements ICommandHandler<BindBlogWithUser
 
 		if (blog.userId) throw new BadRequestException();
 
-		blog.bindBlogWithUser(command.userId, user.login);
-		await this.blogsRepository.save(blog);
+		await this.blogsRepository.bindBlogWithUser(command.userId, user.login, blog.id);
 	}
 }

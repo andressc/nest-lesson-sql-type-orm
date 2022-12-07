@@ -3,18 +3,21 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserModel } from '../../domain/user.schema';
 import { QueryUsersRepositoryInterface } from '../../interfaces/query.users.repository.interface';
-import { ObjectId } from 'mongodb';
 import { Sort } from '../../../../common/dto';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class QueryUsersRepository implements QueryUsersRepositoryInterface {
 	constructor(
+		@InjectDataSource() protected dataSource: DataSource,
 		@InjectModel(User.name)
 		private readonly userModel: Model<UserModel>,
 	) {}
 
-	async find(id: ObjectId): Promise<UserModel | null> {
-		return this.userModel.findById(id);
+	async find(id: string): Promise<UserModel | null> {
+		const user = await this.dataSource.query(`SELECT * FROM "Users" WHERE "id"=$1`, [id]);
+		return user[0];
 	}
 
 	async findQuery(
@@ -23,11 +26,12 @@ export class QueryUsersRepository implements QueryUsersRepositoryInterface {
 		skip: number,
 		pageSize: number,
 	): Promise<UserModel[] | null> {
-		return this.userModel.find(searchString).sort(sortBy).skip(skip).limit(pageSize);
+		return this.dataSource.query(`SELECT * FROM "Users"`);
 	}
 
 	async count(searchString): Promise<number> {
-		return this.userModel.countDocuments(searchString);
+		const count = await this.dataSource.query(`SELECT COUNT(id) FROM "Users"`);
+		return +count[0].count;
 	}
 
 	public searchTerm(login: string | undefined, email: string | undefined): Record<string, unknown> {

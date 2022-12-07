@@ -20,7 +20,7 @@ export class Comment {
 	postId: string;
 
 	@Prop({ required: true })
-	blogUserId: string;
+	bloguserId: string;
 
 	@Prop({ required: true })
 	postTitle: string;

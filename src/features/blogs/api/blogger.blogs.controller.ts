@@ -14,7 +14,7 @@ import { ObjectIdDto, QueryDto } from '../../../common/dto';
 import { AccessTokenGuard } from '../../../common/guards';
 import { CreateBlogDto, QueryBlogDto, UpdateBlogDto } from '../dto';
 import { CreatePostOfBlogDto } from '../../posts/dto';
-import { CurrentUserId, CurrentUserLogin } from '../../../common/decorators/Param';
+import { CurrentuserId, CurrentUserLogin } from '../../../common/decorators/Param';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { FindOneBlogCommand } from '../application/queries/find-one-blog.handler';
 import { FindAllBlogCommand } from '../application/queries/find-all-blog.handler';
@@ -35,23 +35,23 @@ export class BloggerBlogsController {
 	constructor(private readonly commandBus: CommandBus, private readonly queryBus: QueryBus) {}
 
 	@Get()
-	findAllBlogs(@Query() query: QueryBlogDto, @CurrentUserId() currentUserId) {
-		return this.queryBus.execute(new FindAllBlogCommand(query, currentUserId));
+	findAllBlogs(@Query() query: QueryBlogDto, @CurrentuserId() currentuserId) {
+		return this.queryBus.execute(new FindAllBlogCommand(query, currentuserId));
 	}
 
 	@Get('comments')
-	findAllCommentsOfPosts(@Query() query: QueryDto, @CurrentUserId() currentUserId) {
-		return this.queryBus.execute(new FindAllCommentOfBlogsCommand(query, currentUserId));
+	findAllCommentsOfPosts(@Query() query: QueryDto, @CurrentuserId() currentuserId) {
+		return this.queryBus.execute(new FindAllCommentOfBlogsCommand(query, currentuserId));
 	}
 
 	@Post()
 	async createBlog(
 		@Body() data: CreateBlogDto,
-		@CurrentUserId() currentUserId,
+		@CurrentuserId() currentuserId,
 		@CurrentUserLogin() currentUserLogin,
 	) {
 		const blogId = await this.commandBus.execute(
-			new CreateBlogCommand(data, currentUserId, currentUserLogin),
+			new CreateBlogCommand(data, currentuserId, currentUserLogin),
 		);
 		return this.queryBus.execute(new FindOneBlogCommand(blogId));
 	}
@@ -60,12 +60,12 @@ export class BloggerBlogsController {
 	async createPostOfBlog(
 		@Body() data: CreatePostOfBlogDto,
 		@Param() param: ObjectIdDto,
-		@CurrentUserId() currentUserId,
+		@CurrentuserId() currentuserId,
 	) {
 		const postId = await this.commandBus.execute(
-			new CreatePostOfBlogCommand(data, param.id, currentUserId),
+			new CreatePostOfBlogCommand(data, param.id, currentuserId),
 		);
-		return this.queryBus.execute(new FindOnePostCommand(postId, currentUserId));
+		return this.queryBus.execute(new FindOnePostCommand(postId, currentuserId));
 	}
 
 	@HttpCode(204)
@@ -73,15 +73,15 @@ export class BloggerBlogsController {
 	async updateBlog(
 		@Param() param: ObjectIdDto,
 		@Body() data: UpdateBlogDto,
-		@CurrentUserId() currentUserId,
+		@CurrentuserId() currentuserId,
 	) {
-		await this.commandBus.execute(new UpdateBlogCommand(param.id, data, currentUserId));
+		await this.commandBus.execute(new UpdateBlogCommand(param.id, data, currentuserId));
 	}
 
 	@HttpCode(204)
 	@Delete(':id')
-	async removeBlog(@Param() param: ObjectIdDto, @CurrentUserId() currentUserId) {
-		await this.commandBus.execute(new RemoveBlogCommand(param.id, currentUserId));
+	async removeBlog(@Param() param: ObjectIdDto, @CurrentuserId() currentuserId) {
+		await this.commandBus.execute(new RemoveBlogCommand(param.id, currentuserId));
 	}
 
 	@HttpCode(204)
@@ -89,16 +89,16 @@ export class BloggerBlogsController {
 	async updatePost(
 		@Param() param: ObjectIdsDto,
 		@Body() data: UpdatePostOfBlogDto,
-		@CurrentUserId() currentUserId,
+		@CurrentuserId() currentuserId,
 	) {
 		await this.commandBus.execute(
-			new UpdatePostCommand(param.blogId, param.postId, data, currentUserId),
+			new UpdatePostCommand(param.blogId, param.postId, data, currentuserId),
 		);
 	}
 
 	@HttpCode(204)
 	@Delete(':blogId/posts/:postId')
-	async removePost(@Param() param: ObjectIdsDto, @CurrentUserId() currentUserId) {
-		await this.commandBus.execute(new RemovePostCommand(param.blogId, param.postId, currentUserId));
+	async removePost(@Param() param: ObjectIdsDto, @CurrentuserId() currentuserId) {
+		await this.commandBus.execute(new RemovePostCommand(param.blogId, param.postId, currentuserId));
 	}
 }

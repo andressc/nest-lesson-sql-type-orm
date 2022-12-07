@@ -28,7 +28,7 @@ export class CreateLikeHandler implements ICommandHandler<CreateLikeCommand> {
 	async execute(command: CreateLikeCommand): Promise<void> {
 		await this.validationService.validate(command.data, CreateRequestLikeDto);
 
-		const like: LikeModel | null = await this.likesRepository.findLikeByItemIdAndUserId(
+		const like: LikeModel | null = await this.likesRepository.findLikeByitemIdAnduserId(
 			new ObjectId(command.itemId),
 			new ObjectId(command.userId),
 		);

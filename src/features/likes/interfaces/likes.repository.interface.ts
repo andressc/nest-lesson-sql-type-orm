@@ -6,12 +6,12 @@ import { BanRepositoryInterface } from '../../shared/interfaces/ban.repository.i
 /* eslint-disable */
 export interface LikesRepositoryInterface
 	extends BanRepositoryInterface<LikeModel, CreateLikeExtendsDto> {
-	findLikeByItemIdAndUserId(itemId: ObjectId, userId: ObjectId): Promise<LikeModel>;
+	findLikeByitemIdAnduserId(itemId: ObjectId, userId: ObjectId): Promise<LikeModel>;
 }
 
 /*export abstract class LikesRepositoryInterface {
 	abstract createLikeModel(data: CreateLikeExtendsDto): Promise<LikeModel>;
-	abstract findLikeModelByItemIdAndUserId(itemId: ObjectId, userId: ObjectId): Promise<LikeModel>;
+	abstract findLikeModelByitemIdAnduserId(itemId: ObjectId, userId: ObjectId): Promise<LikeModel>;
 	abstract setBan(userId: ObjectId, isBanned: boolean): Promise<void>;
 	abstract save(likeModel: LikeModel): Promise<LikeModel>;
 	abstract deleteAll(): Promise<void>;

@@ -13,7 +13,7 @@ import {
 
 import {
 	CurrentUserAgent,
-	CurrentUserId,
+	CurrentuserId,
 	CurrentUserIp,
 	RefreshTokenData,
 } from '../../../common/decorators/Param';
@@ -49,13 +49,13 @@ export class AuthController {
 	@UseGuards(RateLimitGuard, LocalAuthGuard)
 	@Post('login')
 	async login(
-		@CurrentUserId() currentUserId: string,
+		@CurrentuserId() currentuserId: string,
 		@CurrentUserIp() ip: string,
 		@CurrentUserAgent() userAgent: string,
 		@Res({ passthrough: true }) res: Response,
 	) {
 		const tokens: ResponseTokensDto = await this.commandBus.execute(
-			new LoginAuthCommand(currentUserId, ip, userAgent),
+			new LoginAuthCommand(currentuserId, ip, userAgent),
 		);
 
 		res.cookie(
@@ -68,8 +68,8 @@ export class AuthController {
 
 	@UseGuards(AccessTokenGuard)
 	@Get('me')
-	async getProfile(@CurrentUserId() currentUserId: string) {
-		return this.queryBus.execute(new FindMeUserCommand(currentUserId));
+	async getProfile(@CurrentuserId() currentuserId: string) {
+		return this.queryBus.execute(new FindMeUserCommand(currentuserId));
 	}
 
 	@HttpCode(200)
@@ -133,7 +133,7 @@ export class AuthController {
 	@HttpCode(204)
 	@UseGuards(RateLimitGuard, PasswordRecoveryTokenGuard)
 	@Post('new-password')
-	async newPassword(@Body() data: NewPasswordDto, @CurrentUserId() currentUserId: string) {
-		await this.commandBus.execute(new NewPasswordAuthCommand(data, currentUserId));
+	async newPassword(@Body() data: NewPasswordDto, @CurrentuserId() currentuserId: string) {
+		await this.commandBus.execute(new NewPasswordAuthCommand(data, currentuserId));
 	}
 }

@@ -11,7 +11,7 @@ import { PostInjectionToken } from '../../../posts/infrastructure/providers/post
 import { ResponseCommentOfPostsDto } from '../../dto/response-comment-of-posts.dto';
 
 export class FindAllCommentOfBlogsCommand {
-	constructor(public query: QueryCommentDto, public currentUserId: string | null) {}
+	constructor(public query: QueryCommentDto, public currentuserId: string | null) {}
 }
 
 @QueryHandler(FindAllCommentOfBlogsCommand)
@@ -27,7 +27,7 @@ export class FindAllCommentOfBlogsHandler implements IQueryHandler<FindAllCommen
 	async execute(
 		command: FindAllCommentOfBlogsCommand,
 	): Promise<PaginationDto<ResponseCommentOfPostsDto[]>> {
-		const searchString = { blogUserId: command.currentUserId };
+		const searchString = { bloguserId: command.currentuserId };
 
 		const totalCount: number = await this.queryCommentsRepository.count(searchString);
 		const paginationData: PaginationCalc = this.paginationService.pagination({
@@ -50,7 +50,7 @@ export class FindAllCommentOfBlogsHandler implements IQueryHandler<FindAllCommen
 			pageSize: paginationData.pageSize,
 			totalCount: totalCount,
 			items: comments.map((v: CommentModel) => {
-				likesInfo = this.queryCommentsRepository.countLikes(v, command.currentUserId);
+				likesInfo = this.queryCommentsRepository.countLikes(v, command.currentuserId);
 
 				return {
 					id: v._id.toString(),

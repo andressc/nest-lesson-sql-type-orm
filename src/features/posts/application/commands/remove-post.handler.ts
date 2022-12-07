@@ -8,7 +8,7 @@ import { BlogModel } from '../../../blogs/domain/blog.schema';
 import { BlogsService } from '../../../blogs/application/blogs.service';
 
 export class RemovePostCommand {
-	constructor(public blogId: string, public postId: string, public currentUserId: string) {}
+	constructor(public blogId: string, public postId: string, public currentuserId: string) {}
 }
 
 @CommandHandler(RemovePostCommand)
@@ -22,7 +22,7 @@ export class RemovePostHandler implements ICommandHandler<RemovePostCommand> {
 
 	async execute(command: RemovePostCommand): Promise<void> {
 		const blog: BlogModel = await this.blogsService.findBlogOrErrorThrow(command.blogId);
-		if (blog.userId !== command.currentUserId) throw new ForbiddenException();
+		if (blog.userId !== command.currentuserId) throw new ForbiddenException();
 
 		const post: PostModel = await this.postsService.findPostOrErrorThrow(command.postId);
 		await this.postsRepository.delete(post);

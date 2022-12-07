@@ -1,9 +1,23 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { generateHash } from '../../../common/helpers';
 
-export type UserModel = User & Document;
+//export type UserModel = User & Document;
+
+export class UserModel {
+	id: string;
+	login: string;
+	email: string;
+	password: string;
+	salt: string;
+	confirmationCode: string;
+	expirationDate: Date;
+	isConfirmed: boolean;
+	isBanned: boolean;
+	banReason: string;
+	banDate: string;
+	createdAt: string;
+}
 
 @Schema()
 export class User {

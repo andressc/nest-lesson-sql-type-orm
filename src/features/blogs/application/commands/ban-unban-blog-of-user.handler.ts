@@ -8,7 +8,7 @@ import { UserInjectionToken } from '../../../users/infrastructure/providers/user
 import { BanUnbanBlogOfUserDto } from '../../dto/ban-unban-blog-of-user.dto';
 import { BlogModel } from '../../domain/blog.schema';
 import { BlogsService } from '../blogs.service';
-import { UserIdBadRequestException } from '../../../../common/exceptions/userIdBadRequestException';
+import { userIdBadRequestException } from '../../../../common/exceptions/userIdBadRequestException';
 import { BlogsRepositoryInterface } from '../../interfaces/blogs.repository.interface';
 import { BlogInjectionToken } from '../../infrastructure/providers/blog.injection.token';
 import { BanModel } from '../../domain/ban.schema';
@@ -17,7 +17,7 @@ export class BanUnbanBlogOfUserCommand implements ICommand {
 	constructor(
 		public userId: string,
 		public data: BanUnbanBlogOfUserDto,
-		public currentUserId: string,
+		public currentuserId: string,
 	) {}
 }
 
@@ -39,14 +39,14 @@ export class BanUnbanBlogOfUserHandler implements ICommandHandler<BanUnbanBlogOf
 		let banDate = null;
 
 		const user: UserModel = await this.usersService.findUserByIdOrErrorThrow(command.userId);
-		if (user.id === command.currentUserId) throw new UserIdBadRequestException();
+		if (user.id === command.currentuserId) throw new userIdBadRequestException();
 
 		const blog: BlogModel = await this.blogsService.findBlogOrErrorThrow(command.data.blogId);
-		if (blog.userId !== command.currentUserId) throw new ForbiddenException();
+		if (blog.userId !== command.currentuserId) throw new ForbiddenException();
 
 		if (command.data.isBanned) banDate = new Date().toISOString();
 
-		const banned: BanModel | null = await this.blogsRepository.findBanByBlogIdAndUserId(
+		const banned: BanModel | null = await this.blogsRepository.findBanByblogIdAnduserId(
 			command.data.blogId,
 			command.userId,
 		);

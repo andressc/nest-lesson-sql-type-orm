@@ -1,8 +1,19 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
 import { UpdateBlogDto } from '../dto';
 
-export type BlogModel = Blog & Document;
+//export type BlogModel = Blog & Document;
+
+export class BlogModel {
+	id: string;
+	name: string;
+	websiteUrl: string;
+	createdAt: string;
+	description: string;
+	userId: string;
+	userLogin: string;
+	isBanned: boolean;
+	banDate: string;
+}
 
 @Schema()
 export class Blog {
@@ -42,7 +53,7 @@ export class Blog {
 	}
 
 	bindBlogWithUser(userId: string, userLogin: string): void {
-		this.userId = userId;
+		//this.userId = userId;
 		this.userLogin = userLogin;
 	}
 }

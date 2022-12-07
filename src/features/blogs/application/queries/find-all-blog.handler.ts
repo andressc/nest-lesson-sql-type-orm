@@ -8,7 +8,7 @@ import { Inject } from '@nestjs/common';
 import { BlogInjectionToken } from '../../infrastructure/providers/blog.injection.token';
 
 export class FindAllBlogCommand {
-	constructor(public query: QueryBlogDto, public currentUserId?: string) {}
+	constructor(public query: QueryBlogDto, public currentuserId?: string) {}
 }
 
 @QueryHandler(FindAllBlogCommand)
@@ -20,11 +20,11 @@ export class FindAllBlogHandler implements IQueryHandler<FindAllBlogCommand> {
 	) {}
 
 	async execute(command: FindAllBlogCommand): Promise<PaginationDto<ResponseBlogDto[]>> {
-		const blogCurrentUser = command.currentUserId
-			? { userId: command.currentUserId, isBanned: false }
-			: { isBanned: false };
+		/*const blogCurrentUser = command.currentuserId
+			? { userId: command.currentuserId, isBanned: false }
+			: { isBanned: false };*/
 
-		const searchString = command.query.searchNameTerm
+		/*const searchString = command.query.searchNameTerm
 			? {
 					name: {
 						$regex: command.query.searchNameTerm,
@@ -32,7 +32,9 @@ export class FindAllBlogHandler implements IQueryHandler<FindAllBlogCommand> {
 					},
 					...blogCurrentUser,
 			  }
-			: blogCurrentUser;
+			: blogCurrentUser;*/
+
+		const searchString = '';
 
 		const totalCount: number = await this.queryBlogsRepository.count(searchString);
 		const paginationData: PaginationCalc = this.paginationService.pagination({
@@ -53,7 +55,7 @@ export class FindAllBlogHandler implements IQueryHandler<FindAllBlogCommand> {
 			pageSize: paginationData.pageSize,
 			totalCount: totalCount,
 			items: blog.map((v: BlogModel) => ({
-				id: v._id.toString(),
+				id: v.id.toString(),
 				name: v.name,
 				description: v.description,
 				websiteUrl: v.websiteUrl,
