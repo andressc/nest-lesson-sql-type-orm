@@ -1,4 +1,4 @@
-name: Test & Deploy on Vercel
+name: Test & Deploy on Vercel1
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
