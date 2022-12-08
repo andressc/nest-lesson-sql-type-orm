@@ -1,10 +1,19 @@
-import { Body, Controller, Get, HttpCode, Param, Put, Query, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Get,
+	HttpCode,
+	Param,
+	ParseIntPipe,
+	Put,
+	Query,
+	UseGuards,
+} from '@nestjs/common';
 
 import { AccessTokenGuard } from '../../../common/guards';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { BanUnbanBlogOfUserDto } from '../../blogs/dto/ban-unban-blog-of-user.dto';
 import { CurrentuserId } from '../../../common/decorators/Param';
-import { ObjectIdDto } from '../../../common/dto';
 import { BanUnbanBlogOfUserCommand } from '../../blogs/application/commands/ban-unban-blog-of-user.handler';
 import { QueryBlogDto } from '../../blogs/dto';
 import { FindAllBannedBlogOfUserCommand } from '../../blogs/application/queries/find-all-banned-blog-of-user.handler';
@@ -17,21 +26,19 @@ export class BloggerUsersController {
 	@HttpCode(204)
 	@Put(':id/ban')
 	async banUnbanUser(
-		@Param() param: ObjectIdDto,
+		@Param('id', new ParseIntPipe({ errorHttpStatusCode: 404 })) id: string,
 		@Body() data: BanUnbanBlogOfUserDto,
-		@CurrentuserId() currentuserId,
+		@CurrentuserId() currentUserId,
 	) {
-		await this.commandBus.execute(new BanUnbanBlogOfUserCommand(param.id, data, currentuserId));
+		await this.commandBus.execute(new BanUnbanBlogOfUserCommand(id, data, currentUserId));
 	}
 
 	@Get('blog/:id')
 	findAllBannedUsersOfBlog(
-		@Param() param: ObjectIdDto,
+		@Param('id', new ParseIntPipe({ errorHttpStatusCode: 404 })) id: string,
 		@Query() query: QueryBlogDto,
 		@CurrentuserId() currentuserId,
 	) {
-		return this.queryBus.execute(
-			new FindAllBannedBlogOfUserCommand(param.id, query, currentuserId),
-		);
+		return this.queryBus.execute(new FindAllBannedBlogOfUserCommand(id, query, currentuserId));
 	}
 }

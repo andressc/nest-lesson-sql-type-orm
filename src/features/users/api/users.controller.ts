@@ -5,6 +5,7 @@ import {
 	Get,
 	HttpCode,
 	Param,
+	ParseIntPipe,
 	Post,
 	Put,
 	Query,
@@ -12,7 +13,6 @@ import {
 } from '@nestjs/common';
 
 import { CreateUserDto, QueryUserDto } from '../dto';
-import { ObjectIdDto } from '../../../common/dto';
 import { BasicAuthGuard } from '../../../common/guards';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { RemoveUserCommand } from '../application/commands/remove-user.handler';
@@ -39,19 +39,22 @@ export class UsersController {
 	}
 
 	@Get(':id')
-	findUserById(@Param() param) {
-		return this.queryBus.execute(new FindOneUserCommand(param.id));
+	findUserById(@Param('id', new ParseIntPipe({ errorHttpStatusCode: 404 })) id: string) {
+		return this.queryBus.execute(new FindOneUserCommand(id));
 	}
 
 	@HttpCode(204)
 	@Put(':id/ban')
-	banUser(@Param() param: ObjectIdDto, @Body() data: BanUnbanUserDto) {
-		return this.commandBus.execute(new BanUnbanUserCommand(param.id, data));
+	banUser(
+		@Param('id', new ParseIntPipe({ errorHttpStatusCode: 404 })) id: string,
+		@Body() data: BanUnbanUserDto,
+	) {
+		return this.commandBus.execute(new BanUnbanUserCommand(id, data));
 	}
 
 	@HttpCode(204)
 	@Delete(':id')
-	async removeUser(@Param() param: ObjectIdDto) {
-		await this.commandBus.execute(new RemoveUserCommand(param.id));
+	async removeUser(@Param('id', new ParseIntPipe({ errorHttpStatusCode: 404 })) id: string) {
+		await this.commandBus.execute(new RemoveUserCommand(id));
 	}
 }

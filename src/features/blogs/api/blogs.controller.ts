@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
 import { ObjectIdDto } from '../../../common/dto';
 import { GuestGuard } from '../../../common/guards';
 import { QueryBlogDto } from '../dto';
@@ -22,46 +22,14 @@ export class BlogsController {
 	@UseGuards(GuestGuard)
 	findAllPostsOfBlog(
 		@Query() query: QueryPostDto,
-		@Param() param: ObjectIdDto,
-		@CurrentuserIdNonAuthorized() currentuserId: ObjectIdDto | null,
+		@Param('id', new ParseIntPipe({ errorHttpStatusCode: 404 })) id: string,
+		@CurrentuserIdNonAuthorized() currentUserId: ObjectIdDto | null,
 	) {
-		return this.queryBus.execute(new FindAllPostCommand(query, currentuserId.id, param.id));
+		return this.queryBus.execute(new FindAllPostCommand(query, currentUserId.id, id));
 	}
 
 	@Get(':id')
-	findOneBlog(@Param() param: ObjectIdDto) {
-		return this.queryBus.execute(new FindOneBlogCommand(param.id));
+	findOneBlog(@Param('id', new ParseIntPipe({ errorHttpStatusCode: 404 })) id: string) {
+		return this.queryBus.execute(new FindOneBlogCommand(id));
 	}
-
-	/*@UseGuards(BasicAuthGuard)
-	@Post()
-	async createBlog(@Body() data: CreateBlogDto) {
-		const blogId = await this.commandBus.execute(new CreateBlogCommand(data));
-		return this.queryBus.execute(new FindOneBlogCommand(blogId));
-	}
-
-	@UseGuards(BasicAuthGuard)
-	@Post(':id/posts')
-	async createPostOfBlog(
-		@Body() data: CreatePostOfBlogDto,
-		@Param() param: ObjectIdDto,
-		@CurrentuserIdNonAuthorized() currentuserId,
-	) {
-		const postId = await this.commandBus.execute(new CreatePostOfBlogCommand(data, param.id));
-		return this.queryBus.execute(new FindOnePostCommand(postId, currentuserId));
-	}
-
-	@HttpCode(204)
-	@UseGuards(BasicAuthGuard)
-	@Put(':id')
-	async updateBlog(@Param() param: ObjectIdDto, @Body() data: UpdateBlogDto) {
-		await this.commandBus.execute(new UpdateBlogCommand(param.id, data));
-	}
-
-	@HttpCode(204)
-	@UseGuards(BasicAuthGuard)
-	@Delete(':id')
-	async removeBlog(@Param() param: ObjectIdDto) {
-		await this.commandBus.execute(new RemoveBlogCommand(param.id));
-	}*/
 }
