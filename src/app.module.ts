@@ -14,13 +14,23 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 			isGlobal: true,
 			envFilePath: ['.env.local', '.env'],
 		}),
-		TypeOrmModule.forRoot({
+		/*TypeOrmModule.forRoot({
 			type: 'postgres',
 			host: 'localhost',
 			port: 5433,
 			username: 'postgres',
 			password: 'sa',
 			database: 'Lesson',
+			autoLoadEntities: false,
+			synchronize: false,
+		}),*/
+		TypeOrmModule.forRoot({
+			type: 'postgres',
+			host: 'tiny.db.elephantsql.com',
+			port: 5432,
+			username: 'ygkdtxvf',
+			password: 'liticX_vL8wzN1Z_Py3sUrQtr2mkFFaR',
+			database: 'ygkdtxvf',
 			autoLoadEntities: false,
 			synchronize: false,
 		}),
