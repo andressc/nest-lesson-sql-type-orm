@@ -47,6 +47,7 @@ export class FindAllPostHandler implements IQueryHandler<FindAllPostCommand> {
 		const post: PostModel[] = await this.queryPostsRepository.findQuery(
 			searchString,
 			paginationData.sortBy,
+			paginationData.sortDirection,
 			paginationData.skip,
 			paginationData.pageSize,
 		);

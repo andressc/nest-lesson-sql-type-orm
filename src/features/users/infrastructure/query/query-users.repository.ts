@@ -21,40 +21,38 @@ export class QueryUsersRepository implements QueryUsersRepositoryInterface {
 	}
 
 	async findQuery(
-		searchString: Record<string, unknown>,
+		searchString: string,
 		sortBy: Sort,
+		sortDirection: string,
 		skip: number,
 		pageSize: number,
 	): Promise<UserModel[] | null> {
-		return this.dataSource.query(`SELECT * FROM "Users"`);
+		let order = `"${sortBy}" ${sortDirection}`;
+		if (sortBy === 'login') order = `"login" ${sortDirection}`;
+		if (sortBy === 'email') order = `"email" ${sortDirection}`;
+
+		return this.dataSource.query(
+			`SELECT * FROM "Users" ${searchString} ORDER BY ${order} LIMIT $1 OFFSET $2`,
+			[pageSize, skip],
+		);
 	}
 
 	async count(searchString): Promise<number> {
-		const count = await this.dataSource.query(`SELECT COUNT(id) FROM "Users"`);
+		const count = await this.dataSource.query(`SELECT COUNT(id) FROM "Users" ${searchString}`);
 		return +count[0].count;
 	}
 
-	public searchTerm(login: string | undefined, email: string | undefined): Record<string, unknown> {
-		let searchString = {};
+	public searchTerm(login: string | undefined, email: string | undefined): string {
+		let searchString;
 
-		const searchLoginTerm = login
-			? {
-					login: { $regex: login, $options: 'i' },
-			  }
-			: null;
-		const searchEmailTerm = email
-			? {
-					email: { $regex: email, $options: 'i' },
-			  }
-			: null;
+		const searchLoginTerm = login ? `'%${login}%'` : null;
+		const searchEmailTerm = email ? `'%${email}%'` : null;
 
-		if (searchLoginTerm) searchString = searchLoginTerm;
-		if (searchEmailTerm) searchString = searchEmailTerm;
+		if (searchLoginTerm) searchString = `WHERE LOWER("login") LIKE LOWER(${searchLoginTerm})`;
+		if (searchEmailTerm) searchString = `WHERE LOWER("email") LIKE LOWER(${searchEmailTerm})`;
 
 		if (searchLoginTerm && searchEmailTerm)
-			searchString = {
-				$or: [searchLoginTerm, searchEmailTerm],
-			};
+			searchString = `WHERE LOWER("login") LIKE LOWER(${searchLoginTerm}) OR LOWER("email") LIKE ${searchEmailTerm}`;
 
 		return searchString;
 	}

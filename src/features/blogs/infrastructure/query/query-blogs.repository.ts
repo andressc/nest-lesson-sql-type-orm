@@ -24,6 +24,7 @@ export class QueryBlogsRepository implements QueryBlogsRepositoryInterface {
 	async findQuery(
 		searchString: any,
 		sortBy: Sort,
+		sortDirection: string,
 		skip: number,
 		pageSize: number,
 	): Promise<BlogModel[] | null> {

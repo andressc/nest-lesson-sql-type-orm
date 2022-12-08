@@ -46,6 +46,7 @@ export class FindAllCommentOfPostHandler implements IQueryHandler<FindAllComment
 		const comments: CommentModel[] = await this.queryCommentsRepository.findQuery(
 			searchString,
 			paginationData.sortBy,
+			paginationData.sortDirection,
 			paginationData.skip,
 			paginationData.pageSize,
 		);

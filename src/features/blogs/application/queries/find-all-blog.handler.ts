@@ -45,6 +45,7 @@ export class FindAllBlogHandler implements IQueryHandler<FindAllBlogCommand> {
 		const blog: BlogModel[] = await this.queryBlogsRepository.findQuery(
 			searchString,
 			paginationData.sortBy,
+			paginationData.sortDirection,
 			paginationData.skip,
 			paginationData.pageSize,
 		);

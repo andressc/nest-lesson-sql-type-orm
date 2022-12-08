@@ -1,14 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { PaginationCalc, QueryPaginationDto, Sort } from '../../../common/dto';
+import { PaginationCalc, QueryPaginationDto } from '../../../common/dto';
 
 @Injectable()
 export class PaginationService {
 	pagination(query: QueryPaginationDto): PaginationCalc {
-		const sortDirection = query.sortDirection === 'asc' ? 1 : -1;
-
-		const sortBy: Sort = query.sortBy
-			? { [query.sortBy]: sortDirection }
-			: { createdAt: sortDirection };
+		const sortDirection = query.sortDirection === 'asc' ? 'ASC' : 'DESC';
+		const sortBy = !query.sortBy ? `createdAt` : query.sortBy;
 
 		if (!query.pageNumber || query.pageNumber === 0) {
 			query.pageNumber = 1;
@@ -27,6 +24,7 @@ export class PaginationService {
 			pageSize: query.pageSize,
 			skip,
 			sortBy,
+			sortDirection,
 		};
 	}
 }

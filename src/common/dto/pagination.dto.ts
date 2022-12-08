@@ -27,6 +27,7 @@ export class PaginationCalc {
 	pageSize: number;
 	skip: number;
 	sortBy: Sort;
+	sortDirection: string;
 }
 
 export class QueryPaginationDto extends QueryDto {

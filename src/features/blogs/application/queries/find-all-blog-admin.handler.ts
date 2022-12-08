@@ -39,6 +39,7 @@ export class FindAllBlogAdminHandler implements IQueryHandler<FindAllBlogAdminCo
 		const blog: BlogModel[] = await this.queryBlogsRepository.findQuery(
 			searchString,
 			paginationData.sortBy,
+			paginationData.sortDirection,
 			paginationData.skip,
 			paginationData.pageSize,
 		);

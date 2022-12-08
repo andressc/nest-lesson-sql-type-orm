@@ -4,5 +4,5 @@ import { MainQueryRepositoryInterface } from '../../shared/interfaces/main.query
 /* eslint-disable */
 export interface QueryUsersRepositoryInterface
 	extends MainQueryRepositoryInterface<UserModel> {
-	searchTerm(login: string | undefined, email: string | undefined): Record<string, unknown>;
+	searchTerm(login: string | undefined, email: string | undefined): string;
 }

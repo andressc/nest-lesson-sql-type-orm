@@ -5,6 +5,7 @@ export interface MainQueryRepositoryInterface<MODEL> {
 	findQuery(
 		searchString: any,
 		sortBy: Sort,
+		sortDirection: string,
 		skip: number,
 		pageSize: number,
 	): Promise<MODEL[] | null>;

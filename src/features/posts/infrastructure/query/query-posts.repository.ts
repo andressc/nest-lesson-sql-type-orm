@@ -34,6 +34,7 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 	async findQuery(
 		searchString: Record<string, unknown>,
 		sortBy: any,
+		sortDirection: string,
 		skip: number,
 		pageSize: number,
 	): Promise<PostModel[] | null> {
