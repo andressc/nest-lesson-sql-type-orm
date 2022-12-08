@@ -108,7 +108,6 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *;`,
 
 	async findUserByEmail(email: string): Promise<UserModel | null> {
 		const user = await this.dataSource.query(`SELECT * FROM "Users" WHERE "email"=$1`, [email]);
-		console.log(user);
 		return user[0];
 	}
 

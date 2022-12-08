@@ -26,13 +26,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 		}),*/
 		TypeOrmModule.forRoot({
 			type: 'postgres',
-			host: 'tiny.db.elephantsql.com',
+			host: 'ep-divine-glitter-102279.us-east-2.aws.neon.tech',
 			port: 5432,
-			username: 'ygkdtxvf',
-			password: 'liticX_vL8wzN1Z_Py3sUrQtr2mkFFaR',
-			database: 'ygkdtxvf',
+			username: 'andressc',
+			password: 'e2Ji8jTuSPok',
+			database: 'neondb',
 			autoLoadEntities: false,
 			synchronize: false,
+			ssl: true,
 		}),
 		CommentsModule,
 		TestingModule,
