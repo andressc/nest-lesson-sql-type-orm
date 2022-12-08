@@ -37,7 +37,7 @@ export class RegistrationEmailResendingAuthHandler
 
 		try {
 			await this.commandBus.execute(
-				new SendEmailRegistrationMessageMailerCommand(user.email, user.confirmationCode),
+				new SendEmailRegistrationMessageMailerCommand(user.email, newConfirmationCode),
 			);
 		} catch (e) {
 			throw new RequestTimeoutException('Message not sent' + e);
