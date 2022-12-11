@@ -12,7 +12,7 @@ import { BlogModel } from '../../domain/blog.schema';
 import { BlogsService } from '../blogs.service';
 
 export class FindAllBannedBlogOfUserCommand {
-	constructor(public blogId: string, public query: QueryBlogDto, public currentuserId: string) {}
+	constructor(public blogId: string, public query: QueryBlogDto, public currentUserId: string) {}
 }
 
 @QueryHandler(FindAllBannedBlogOfUserCommand)
@@ -43,7 +43,7 @@ export class FindAllBannedBlogOfUserHandler
 			: { blogId: command.blogId, isBanned: true };
 
 		const blog: BlogModel = await this.blogsService.findBlogOrErrorThrow(command.blogId);
-		if (blog.userId !== command.currentuserId) throw new ForbiddenException();
+		if (blog.userId !== command.currentUserId) throw new ForbiddenException();
 
 		const totalCount: number = await this.queryBlogsRepository.countBan(searchString);
 		const paginationData: PaginationCalc = this.paginationService.pagination({

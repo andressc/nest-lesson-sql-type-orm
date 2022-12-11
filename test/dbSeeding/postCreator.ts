@@ -9,7 +9,7 @@ export const postCreator = (title: string, postData, hours: number, id?: string)
 		content: postData.content,
 		blogId: postData.blogId,
 		blogName: postData.blogName,
-		bloguserId: postData.bloguserId ? postData.bloguserId : new ObjectId().toString(),
+		blogUserId: postData.blogUserId ? postData.blogUserId : new ObjectId().toString(),
 		createdAt: add(new Date(), {
 			hours: hours,
 		}),

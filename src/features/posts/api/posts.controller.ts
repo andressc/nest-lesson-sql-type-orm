@@ -14,7 +14,7 @@ import { AccessTokenGuard, GuestGuard } from '../../../common/guards';
 import { QueryPostDto } from '../dto';
 import { CreateCommentOfPostDto, CreateRequestLikeDto, QueryCommentDto } from '../../comments/dto';
 import {
-	CurrentuserId,
+	CurrentUserId,
 	CurrentuserIdNonAuthorized,
 	CurrentUserLogin,
 } from '../../../common/decorators/Param';
@@ -35,12 +35,12 @@ export class PostsController {
 	async createCommentOfPost(
 		@Body() data: CreateCommentOfPostDto,
 		@Param() param: ObjectIdDto,
-		@CurrentuserId() currentuserId,
+		@CurrentUserId() currentUserId,
 	) {
 		const commentId = await this.commandBus.execute(
-			new CreateCommentOfPostCommand(data, param.id, currentuserId),
+			new CreateCommentOfPostCommand(data, param.id, currentUserId),
 		);
-		return this.queryBus.execute(new FindOneCommentCommand(commentId, currentuserId));
+		return this.queryBus.execute(new FindOneCommentCommand(commentId, currentUserId));
 	}
 
 	@UseGuards(GuestGuard)
@@ -48,9 +48,9 @@ export class PostsController {
 	findAllPosts(
 		@Query() query: QueryPostDto,
 		@CurrentuserIdNonAuthorized()
-		currentuserId: ObjectIdDto | null,
+		currentUserId: ObjectIdDto | null,
 	) {
-		return this.queryBus.execute(new FindAllPostCommand(query, currentuserId.id));
+		return this.queryBus.execute(new FindAllPostCommand(query, currentUserId.id));
 	}
 
 	@UseGuards(GuestGuard)
@@ -59,10 +59,10 @@ export class PostsController {
 		@Param() param: ObjectIdDto,
 		@Query() query: QueryCommentDto,
 		@CurrentuserIdNonAuthorized()
-		currentuserId: ObjectIdDto | null,
+		currentUserId: ObjectIdDto | null,
 	) {
 		return this.queryBus.execute(
-			new FindAllCommentOfPostCommand(query, param.id, currentuserId.id),
+			new FindAllCommentOfPostCommand(query, param.id, currentUserId.id),
 		);
 	}
 
@@ -71,9 +71,9 @@ export class PostsController {
 	findOnePost(
 		@Param() param: ObjectIdDto,
 		@CurrentuserIdNonAuthorized()
-		currentuserId: ObjectIdDto | null,
+		currentUserId: ObjectIdDto | null,
 	) {
-		return this.queryBus.execute(new FindOnePostCommand(param.id, currentuserId.id));
+		return this.queryBus.execute(new FindOnePostCommand(param.id, currentUserId.id));
 	}
 
 	@HttpCode(204)
@@ -81,37 +81,12 @@ export class PostsController {
 	@Put(':id/like-status')
 	async setLike(
 		@Param() param: ObjectIdDto,
-		@CurrentuserId() currentuserId,
+		@CurrentUserId() currentUserId,
 		@CurrentUserLogin() currentUserLogin,
 		@Body() data: CreateRequestLikeDto,
 	) {
 		await this.commandBus.execute(
-			new CreateLikePostCommand(param.id, currentuserId, currentUserLogin, data),
+			new CreateLikePostCommand(param.id, currentUserId, currentUserLogin, data),
 		);
 	}
-
-	/*@UseGuards(BasicAuthGuard)
-	@Post()
-	async createPost(
-		@Body() data: CreatePostDto,
-		@CurrentuserIdNonAuthorized()
-		currentuserId: ObjectIdDto | null,
-	) {
-		const postId = await this.commandBus.execute(new CreatePostCommand(data));
-		return this.queryBus.execute(new FindOnePostCommand(postId, currentuserId.id));
-	}
-
-	@HttpCode(204)
-	@UseGuards(BasicAuthGuard)
-	@Put(':id')
-	async updatePost(@Param() param: ObjectIdDto, @Body() data: UpdatePostDto) {
-		await this.commandBus.execute(new UpdatePostCommand(param.id, data));
-	}
-
-	@HttpCode(204)
-	@UseGuards(BasicAuthGuard)
-	@Delete(':id')
-	async removePost(@Param() param: ObjectIdDto) {
-		await this.commandBus.execute(new RemovePostCommand(param.id));
-	}*/
 }

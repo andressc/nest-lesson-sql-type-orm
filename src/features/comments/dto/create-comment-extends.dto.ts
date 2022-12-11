@@ -7,6 +7,6 @@ export class CreateCommentExtendsDto extends CreateCommentDto {
 	blogId: string;
 	blogName: string;
 	postTitle: string;
-	bloguserId: string;
+	blogUserId: string;
 	createdAt: string;
 }

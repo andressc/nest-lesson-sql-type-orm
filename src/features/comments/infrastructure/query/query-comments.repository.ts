@@ -60,7 +60,7 @@ export class QueryCommentsRepository implements QueryCommentsRepositoryInterface
 		return this.commentModel.countDocuments({ ...searchString, isBanned: false });
 	}
 
-	public countLikes(comment: CommentModel, currentuserId: string | null): LikesInfo {
+	public countLikes(comment: CommentModel, currentUserId: string | null): LikesInfo {
 		const likesCount = comment.likes.filter(
 			(v: LikeDbDto) => v.likeStatus === LikeStatusEnum.Like && !v.isBanned,
 		).length;
@@ -72,7 +72,7 @@ export class QueryCommentsRepository implements QueryCommentsRepositoryInterface
 		let myStatus = LikeStatusEnum.None;
 
 		comment.likes.forEach((it: LikeDbDto) => {
-			if (currentuserId && new ObjectId(it.userId).equals(currentuserId)) myStatus = it.likeStatus;
+			if (currentUserId && new ObjectId(it.userId).equals(currentUserId)) myStatus = it.likeStatus;
 		});
 
 		return {

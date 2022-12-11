@@ -15,7 +15,7 @@ import { QueryDto } from '../../../common/dto';
 import { AccessTokenGuard } from '../../../common/guards';
 import { CreateBlogDto, QueryBlogDto, UpdateBlogDto } from '../dto';
 import { CreatePostOfBlogDto } from '../../posts/dto';
-import { CurrentuserId, CurrentUserLogin } from '../../../common/decorators/Param';
+import { CurrentUserId, CurrentUserLogin } from '../../../common/decorators/Param';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { FindOneBlogCommand } from '../application/queries/find-one-blog.handler';
 import { FindAllBlogCommand } from '../application/queries/find-all-blog.handler';
@@ -35,23 +35,23 @@ export class BloggerBlogsController {
 	constructor(private readonly commandBus: CommandBus, private readonly queryBus: QueryBus) {}
 
 	@Get()
-	findAllBlogs(@Query() query: QueryBlogDto, @CurrentuserId() currentuserId) {
-		return this.queryBus.execute(new FindAllBlogCommand(query, currentuserId));
+	findAllBlogs(@Query() query: QueryBlogDto, @CurrentUserId() currentUserId) {
+		return this.queryBus.execute(new FindAllBlogCommand(query, currentUserId));
 	}
 
 	@Get('comments')
-	findAllCommentsOfPosts(@Query() query: QueryDto, @CurrentuserId() currentuserId) {
-		return this.queryBus.execute(new FindAllCommentOfBlogsCommand(query, currentuserId));
+	findAllCommentsOfPosts(@Query() query: QueryDto, @CurrentUserId() currentUserId) {
+		return this.queryBus.execute(new FindAllCommentOfBlogsCommand(query, currentUserId));
 	}
 
 	@Post()
 	async createBlog(
 		@Body() data: CreateBlogDto,
-		@CurrentuserId() currentuserId,
+		@CurrentUserId() currentUserId,
 		@CurrentUserLogin() currentUserLogin,
 	) {
 		const blogId = await this.commandBus.execute(
-			new CreateBlogCommand(data, currentuserId, currentUserLogin),
+			new CreateBlogCommand(data, currentUserId, currentUserLogin),
 		);
 		return this.queryBus.execute(new FindOneBlogCommand(blogId));
 	}
@@ -60,7 +60,7 @@ export class BloggerBlogsController {
 	async createPostOfBlog(
 		@Param('id', new ParseIntPipe({ errorHttpStatusCode: 404 })) id: string,
 		@Body() data: CreatePostOfBlogDto,
-		@CurrentuserId() currentUserId,
+		@CurrentUserId() currentUserId,
 	) {
 		const postId = await this.commandBus.execute(
 			new CreatePostOfBlogCommand(data, id, currentUserId),
@@ -73,7 +73,7 @@ export class BloggerBlogsController {
 	async updateBlog(
 		@Param('id', new ParseIntPipe({ errorHttpStatusCode: 404 })) id: string,
 		@Body() data: UpdateBlogDto,
-		@CurrentuserId() currentUserId,
+		@CurrentUserId() currentUserId,
 	) {
 		await this.commandBus.execute(new UpdateBlogCommand(id, data, currentUserId));
 	}
@@ -82,7 +82,7 @@ export class BloggerBlogsController {
 	@Delete(':id')
 	async removeBlog(
 		@Param('id', new ParseIntPipe({ errorHttpStatusCode: 404 })) id: string,
-		@CurrentuserId() currentUserId,
+		@CurrentUserId() currentUserId,
 	) {
 		await this.commandBus.execute(new RemoveBlogCommand(id, currentUserId));
 	}
@@ -93,7 +93,7 @@ export class BloggerBlogsController {
 		@Param('postId', new ParseIntPipe({ errorHttpStatusCode: 404 })) postId: string,
 		@Param('blogId', new ParseIntPipe({ errorHttpStatusCode: 404 })) blogId: string,
 		@Body() data: UpdatePostOfBlogDto,
-		@CurrentuserId() currentUserId,
+		@CurrentUserId() currentUserId,
 	) {
 		await this.commandBus.execute(new UpdatePostCommand(blogId, postId, data, currentUserId));
 	}
@@ -103,7 +103,7 @@ export class BloggerBlogsController {
 	async removePost(
 		@Param('postId', new ParseIntPipe({ errorHttpStatusCode: 404 })) postId: string,
 		@Param('blogId', new ParseIntPipe({ errorHttpStatusCode: 404 })) blogId: string,
-		@CurrentuserId() currentUserId,
+		@CurrentUserId() currentUserId,
 	) {
 		await this.commandBus.execute(new RemovePostCommand(blogId, postId, currentUserId));
 	}

@@ -14,7 +14,7 @@ import { PostInjectionToken } from '../../infrastructure/providers/post.injectio
 export class FindAllPostCommand {
 	constructor(
 		public query: QueryDto,
-		public currentuserId: string | null,
+		public currentUserId: string | null,
 		public blogId?: string,
 	) {}
 }
@@ -59,10 +59,10 @@ export class FindAllPostHandler implements IQueryHandler<FindAllPostCommand> {
 			pageSize: paginationData.pageSize,
 			totalCount: totalCount,
 			items: post.map((v: PostModel) => {
-				likesInfo = this.queryPostsRepository.countLikes(v, command.currentuserId);
+				likesInfo = this.queryPostsRepository.countLikes(v, command.currentUserId);
 
 				return {
-					id: v._id.toString(),
+					id: v.id.toString(),
 					title: v.title,
 					shortDescription: v.shortDescription,
 					content: v.content,

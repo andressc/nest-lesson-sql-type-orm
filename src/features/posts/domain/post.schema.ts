@@ -1,9 +1,21 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
 import { LikesDto } from '../../../common/dto';
 import { UpdatePostOfBlogDto } from '../dto/update-post-of-blog.dto';
 
-export type PostModel = Post & Document;
+//export type PostModel = Post & Document;
+
+export class PostModel {
+	id: string;
+	title: string;
+	shortDescription: string;
+	content: string;
+	blogId: string;
+	blogName: string;
+	//blogUserId: string;
+	isBanned: boolean;
+	createdAt: string;
+	likes: LikesDto[];
+}
 
 @Schema()
 export class Post {
@@ -23,7 +35,7 @@ export class Post {
 	blogName: string;
 
 	@Prop({ required: true })
-	bloguserId: string;
+	blogUserId: string;
 
 	@Prop({ default: false })
 	isBanned: boolean;

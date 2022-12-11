@@ -8,7 +8,7 @@ import { Inject } from '@nestjs/common';
 import { BlogInjectionToken } from '../../infrastructure/providers/blog.injection.token';
 
 export class FindAllBlogCommand {
-	constructor(public query: QueryBlogDto, public currentuserId?: string) {}
+	constructor(public query: QueryBlogDto, public currentUserId?: string) {}
 }
 
 @QueryHandler(FindAllBlogCommand)
@@ -20,8 +20,8 @@ export class FindAllBlogHandler implements IQueryHandler<FindAllBlogCommand> {
 	) {}
 
 	async execute(command: FindAllBlogCommand): Promise<PaginationDto<ResponseBlogDto[]>> {
-		/*const blogCurrentUser = command.currentuserId
-			? { userId: command.currentuserId, isBanned: false }
+		/*const blogCurrentUser = command.currentUserId
+			? { userId: command.currentUserId, isBanned: false }
 			: { isBanned: false };*/
 
 		/*const searchString = command.query.searchNameTerm

@@ -9,7 +9,7 @@ import { BlogInjectionToken } from '../../../blogs/infrastructure/providers/blog
 import { QueryBlogsRepositoryInterface } from '../../../blogs/interfaces/query.blogs.repository.interface';
 
 export class FindOnePostCommand {
-	constructor(public id: string, public currentuserId: string | null) {}
+	constructor(public id: string, public currentUserId: string | null) {}
 }
 
 @QueryHandler(FindOnePostCommand)
@@ -25,15 +25,15 @@ export class FindOnePostHandler implements IQueryHandler<FindOnePostCommand> {
 		const post: PostModel | null = await this.queryPostsRepository.find(command.id);
 		if (!post) throw new PostNotFoundException(command.id);
 
-		const extendedLikesInfo = this.queryPostsRepository.countLikes(post, command.currentuserId);
+		const extendedLikesInfo = this.queryPostsRepository.countLikes(post, command.currentUserId);
 
 		return {
-			id: post._id.toString(),
+			id: post.id,
 			title: post.title,
 			shortDescription: post.shortDescription,
 			content: post.content,
 			blogId: post.blogId,
-			blogName: post.blogName,
+			blogName: post.blogId,
 			createdAt: post.createdAt,
 			extendedLikesInfo,
 		};

@@ -53,9 +53,9 @@ export class CreateCommentOfPostHandler implements ICommandHandler<CreateComment
 			userLogin: user.login,
 			postId: command.postId,
 			blogId: post.blogId,
-			blogName: post.blogName,
+			blogName: 'blogName',
 			postTitle: post.title,
-			bloguserId: post.bloguserId,
+			blogUserId: 'blogUserId',
 			createdAt: createDate(),
 		});
 

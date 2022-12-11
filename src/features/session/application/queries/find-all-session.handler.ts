@@ -6,7 +6,7 @@ import { Inject } from '@nestjs/common';
 import { SessionInjectionToken } from '../../infrastructure/providers/session.injection.token';
 
 export class FindAllSessionCommand {
-	constructor(public currentuserId: string) {}
+	constructor(public currentUserId: string) {}
 }
 
 @QueryHandler(FindAllSessionCommand)
@@ -18,7 +18,7 @@ export class FindAllSessionHandler implements IQueryHandler<FindAllSessionComman
 
 	async execute(command: FindAllSessionCommand): Promise<ResponseSessionDto[]> {
 		const session: SessionModel[] = await this.querySessionRepository.findAllSessionsByUserId(
-			command.currentuserId,
+			command.currentUserId,
 		);
 
 		return session.map((v: SessionModel) => ({

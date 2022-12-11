@@ -17,7 +17,7 @@ export class BanUnbanBlogOfUserCommand implements ICommand {
 	constructor(
 		public userId: string,
 		public data: BanUnbanBlogOfUserDto,
-		public currentuserId: string,
+		public currentUserId: string,
 	) {}
 }
 
@@ -39,10 +39,10 @@ export class BanUnbanBlogOfUserHandler implements ICommandHandler<BanUnbanBlogOf
 		let banDate = null;
 
 		const user: UserModel = await this.usersService.findUserByIdOrErrorThrow(command.userId);
-		if (user.id === command.currentuserId) throw new userIdBadRequestException();
+		if (user.id === command.currentUserId) throw new userIdBadRequestException();
 
 		const blog: BlogModel = await this.blogsService.findBlogOrErrorThrow(command.data.blogId);
-		if (blog.userId !== command.currentuserId) throw new ForbiddenException();
+		if (blog.userId !== command.currentUserId) throw new ForbiddenException();
 
 		if (command.data.isBanned) banDate = new Date().toISOString();
 

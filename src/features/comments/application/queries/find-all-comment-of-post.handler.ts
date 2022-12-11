@@ -15,7 +15,7 @@ export class FindAllCommentOfPostCommand {
 	constructor(
 		public query: QueryCommentDto,
 		public postId: string,
-		public currentuserId: string | null,
+		public currentUserId: string | null,
 	) {}
 }
 
@@ -59,7 +59,7 @@ export class FindAllCommentOfPostHandler implements IQueryHandler<FindAllComment
 			pageSize: paginationData.pageSize,
 			totalCount: totalCount,
 			items: comments.map((v: CommentModel) => {
-				likesInfo = this.queryCommentsRepository.countLikes(v, command.currentuserId);
+				likesInfo = this.queryCommentsRepository.countLikes(v, command.currentUserId);
 
 				return {
 					id: v._id.toString(),

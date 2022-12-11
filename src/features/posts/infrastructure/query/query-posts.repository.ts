@@ -6,29 +6,54 @@ import { Post, PostModel } from '../../domain/post.schema';
 import { QueryPostsRepositoryInterface } from '../../interfaces/query.posts.repository.interface';
 import { ObjectId } from 'mongodb';
 import { LikeDbDto } from '../../../likes/dto/like-db.dto';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 	constructor(
+		@InjectDataSource() protected dataSource: DataSource,
 		@InjectModel(Post.name)
 		private readonly postModel: Model<PostModel>,
 	) {}
 
 	async find(id: string): Promise<PostModel | null> {
-		const post: PostModel[] = await this.postModel.aggregate([
-			{ $match: { _id: id, isBanned: false } },
-			{
-				$graphLookup: {
-					from: 'likes',
-					startWith: '$_id',
-					connectFromField: '_id',
-					connectToField: 'itemId',
-					as: 'likes',
-				},
-			},
-		]);
+		const post = await this.dataSource.query(
+			`SELECT
+				 p."id",
+				 p."title",
+				 p."shortDescription",
+				 p."content",
+				 p."blogId",
+				 p."createdAt",
+				 p."isBanned",
+				 b."name",
+				 l."userId",
+				 l."likeStatus",
+				 l."addedAt" AS "likeAddedAt",
+				 u."login"
+			 FROM "Posts" p
+			     LEFT JOIN "PostLikes" l
+			         ON p."id" = l."postId"
+					 LEFT JOIN "Blogs" b
+										 ON p."blogId" = b."id"
+					 LEFT JOIN "Users" u
+										 ON l."userId" = u."id"
+			 WHERE p."id"=$1 AND p."isBanned"=$2 AND l."isBanned"=$2`,
+			[id, false],
+		);
 
-		return post[0];
+		return {
+			id: post[0].id,
+			title: post[0].title,
+			shortDescription: post[0].description,
+			content: post[0].content,
+			blogId: post[0].blogId,
+			blogName: post[0].blogName,
+			isBanned: post[0].isBanned,
+			createdAt: post[0].createdAt,
+			likes: this.likes(post),
+		};
 	}
 
 	async findQuery(
@@ -38,29 +63,62 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 		skip: number,
 		pageSize: number,
 	): Promise<PostModel[] | null> {
-		return this.postModel
-			.aggregate([
-				{ $match: searchString },
-				{
-					$graphLookup: {
-						from: 'likes',
-						startWith: '$_id',
-						connectFromField: '_id',
-						connectToField: 'itemId',
-						as: 'likes',
-					},
-				},
-			])
-			.sort(sortBy)
-			.skip(skip)
-			.limit(pageSize);
+		/*return await this.dataSource.query(
+			`SELECT
+				 p."title",
+				 p."shortDescription",
+				 p."content",
+				 p."blogId",
+				 p."createdAt",
+				 l."likeStatus",
+				 l."addedAt" AS "likeAddedAt" 
+			 FROM "Posts" p
+			     LEFT JOIN "PostLikes" l
+			         ON p."id" = l."postId"
+					 LEFT JOIN "Blogs" b
+										 ON p."blogId" = b."id"
+			 WHERE p."isBanned"=$1 AND l."isBanned"=$1`,
+			[false],
+		);*/
+
+		const post = await this.dataSource.query(
+			`SELECT
+				 p."id",
+				 p."title",
+				 p."shortDescription",
+				 p."content",
+				 p."blogId",
+				 p."createdAt",
+				 p."isBanned",
+				 b."name",
+				 l."userId",
+				 l."likeStatus",
+				 l."addedAt" AS "likeAddedAt",
+				 u."login"
+			 FROM "Posts" p
+			     LEFT JOIN "PostLikes" l
+			         ON p."id" = l."postId"
+					 LEFT JOIN "Blogs" b
+					     ON p."blogId" = b."id"
+					 LEFT JOIN "Users" u
+					     ON l."userId" = u."id"
+			 WHERE p."isBanned"=$1`,
+			[false],
+		);
+
+		console.log(post);
+
+		return post;
 	}
 
 	async count(searchString): Promise<number> {
-		return this.postModel.countDocuments({ ...searchString, isBanned: false });
+		const count = await this.dataSource.query(
+			`SELECT COUNT(id) FROM "Posts" WHERE "isBanned"=false`,
+		);
+		return +count[0].count;
 	}
 
-	public countLikes(post: PostModel, currentuserId: string | null): LikesInfoExtended {
+	public countLikes(post: PostModel, currentUserId: string | null): LikesInfoExtended {
 		const likesCount = post.likes.filter(
 			(v: LikeDbDto) => v.likeStatus === LikeStatusEnum.Like && !v.isBanned,
 		).length;
@@ -82,7 +140,7 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 			}));
 
 		post.likes.forEach((it: LikeDbDto) => {
-			if (currentuserId && new ObjectId(it.userId).equals(currentuserId)) myStatus = it.likeStatus;
+			if (currentUserId && new ObjectId(it.userId).equals(currentUserId)) myStatus = it.likeStatus;
 		});
 
 		return {
@@ -91,5 +149,14 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 			myStatus,
 			newestLikes,
 		};
+	}
+
+	private likes(posts) {
+		return posts.map((v) => ({
+			userId: v.userId,
+			login: v.login,
+			likeStatus: v.likeStatus,
+			addedAt: v.likeAddedAt,
+		}));
 	}
 }

@@ -7,7 +7,7 @@ import { Inject } from '@nestjs/common';
 import { CommentInjectionToken } from '../../infrastructure/providers/comment.injection.token';
 
 export class FindOneCommentCommand {
-	constructor(public id: string, public currentuserId: string | null) {}
+	constructor(public id: string, public currentUserId: string | null) {}
 }
 
 @QueryHandler(FindOneCommentCommand)
@@ -21,7 +21,7 @@ export class FindOneCommentHandler implements IQueryHandler<FindOneCommentComman
 		const comment: CommentModel | null = await this.queryCommentsRepository.find(command.id);
 		if (!comment) throw new CommentNotFoundException(command.id);
 
-		const likesInfo = this.queryCommentsRepository.countLikes(comment, command.currentuserId);
+		const likesInfo = this.queryCommentsRepository.countLikes(comment, command.currentUserId);
 
 		return {
 			id: comment._id.toString(),

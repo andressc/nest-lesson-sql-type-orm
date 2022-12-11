@@ -10,7 +10,7 @@ import { BlogInjectionToken } from '../../infrastructure/providers/blog.injectio
 export class CreateBlogCommand implements ICommand {
 	constructor(
 		public data: CreateBlogDto,
-		public currentuserId: string,
+		public currentUserId: string,
 		public currentUserLogin: string,
 	) {}
 }
@@ -28,7 +28,7 @@ export class CreateBlogHandler implements ICommandHandler<CreateBlogCommand> {
 
 		const newBlog: BlogModel = await this.blogsRepository.create({
 			...command.data,
-			userId: command.currentuserId,
+			userId: command.currentUserId,
 			userLogin: command.currentUserLogin,
 			createdAt: createDate(),
 		});

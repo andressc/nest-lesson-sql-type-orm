@@ -15,7 +15,7 @@ export const commentCreator = (
 		userId,
 		userLogin,
 		postId,
-		bloguserId: new ObjectId(postId).toString(),
+		blogUserId: new ObjectId(postId).toString(),
 		postTitle: 'postTitle',
 		blogId: new ObjectId(postId).toString(),
 		blogName: 'blogName',
