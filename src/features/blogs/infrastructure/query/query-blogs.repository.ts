@@ -28,11 +28,17 @@ export class QueryBlogsRepository implements QueryBlogsRepositoryInterface {
 		skip: number,
 		pageSize: number,
 	): Promise<BlogModel[] | null> {
-		return this.dataSource.query(`SELECT * FROM "Blogs"`);
+		let order = `"${sortBy}" ${sortDirection}`;
+		if (sortBy === 'name') order = `"name" ${sortDirection}`;
+
+		return this.dataSource.query(
+			`SELECT * FROM "Blogs" ${searchString} ORDER BY ${order} LIMIT $1 OFFSET $2`,
+			[pageSize, skip],
+		);
 	}
 
 	async count(searchString): Promise<number> {
-		const count = await this.dataSource.query(`SELECT COUNT(id) FROM "Blogs"`);
+		const count = await this.dataSource.query(`SELECT COUNT(id) FROM "Blogs" ${searchString}`);
 		return +count[0].count;
 	}
 
@@ -47,5 +53,27 @@ export class QueryBlogsRepository implements QueryBlogsRepositoryInterface {
 
 	async countBan(searchString): Promise<number> {
 		return this.banModel.countDocuments(searchString);
+	}
+
+	public searchTerm(name: string | undefined, isBanned: boolean, currentUserId?: string): string {
+		let searchString: string;
+		let banned: string;
+		if (isBanned) banned = `"isBanned" = false`;
+
+		const searchNameTerm = name ? `'%${name}%'` : null;
+
+		if (searchNameTerm) {
+			searchString = `WHERE LOWER("name") LIKE LOWER(${searchNameTerm})${
+				banned && ' AND ' + banned
+			}`;
+			if (currentUserId) searchString += ` AND "userId" = ${currentUserId}`;
+		}
+
+		if (!searchNameTerm && currentUserId)
+			searchString = `WHERE "userId" = ${currentUserId}${banned && ' AND ' + banned}`;
+
+		if (!searchNameTerm && banned) searchString = `WHERE ${banned}`;
+		console.log(searchString);
+		return searchString;
 	}
 }

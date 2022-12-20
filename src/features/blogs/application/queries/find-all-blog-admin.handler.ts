@@ -21,14 +21,7 @@ export class FindAllBlogAdminHandler implements IQueryHandler<FindAllBlogAdminCo
 	) {}
 
 	async execute(command: FindAllBlogAdminCommand): Promise<PaginationDto<ResponseBlogAdminDto[]>> {
-		const searchString = command.query.searchNameTerm
-			? {
-					name: {
-						$regex: command.query.searchNameTerm,
-						$options: 'i',
-					},
-			  }
-			: {};
+		const searchString = this.queryBlogsRepository.searchTerm(command.query.searchNameTerm, false);
 
 		const totalCount: number = await this.queryBlogsRepository.count(searchString);
 		const paginationData: PaginationCalc = this.paginationService.pagination({
@@ -56,7 +49,7 @@ export class FindAllBlogAdminHandler implements IQueryHandler<FindAllBlogAdminCo
 				websiteUrl: v.websiteUrl,
 				createdAt: v.createdAt,
 				blogOwnerInfo: {
-					userId: v.userId,
+					userId: v.userId.toString(),
 					userLogin: v.userLogin,
 				},
 				banInfo: {

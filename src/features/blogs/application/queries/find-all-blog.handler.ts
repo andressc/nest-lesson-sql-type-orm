@@ -20,21 +20,11 @@ export class FindAllBlogHandler implements IQueryHandler<FindAllBlogCommand> {
 	) {}
 
 	async execute(command: FindAllBlogCommand): Promise<PaginationDto<ResponseBlogDto[]>> {
-		/*const blogCurrentUser = command.currentUserId
-			? { userId: command.currentUserId, isBanned: false }
-			: { isBanned: false };*/
-
-		/*const searchString = command.query.searchNameTerm
-			? {
-					name: {
-						$regex: command.query.searchNameTerm,
-						$options: 'i',
-					},
-					...blogCurrentUser,
-			  }
-			: blogCurrentUser;*/
-
-		const searchString = '';
+		const searchString = this.queryBlogsRepository.searchTerm(
+			command.query.searchNameTerm,
+			true,
+			command.currentUserId,
+		);
 
 		const totalCount: number = await this.queryBlogsRepository.count(searchString);
 		const paginationData: PaginationCalc = this.paginationService.pagination({

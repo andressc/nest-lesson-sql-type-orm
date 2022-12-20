@@ -28,12 +28,12 @@ export class FindOnePostHandler implements IQueryHandler<FindOnePostCommand> {
 		const extendedLikesInfo = this.queryPostsRepository.countLikes(post, command.currentUserId);
 
 		return {
-			id: post.id,
+			id: post.id.toString(),
 			title: post.title,
 			shortDescription: post.shortDescription,
 			content: post.content,
-			blogId: post.blogId,
-			blogName: post.blogId,
+			blogId: post.blogId.toString(),
+			blogName: post.blogName,
 			createdAt: post.createdAt,
 			extendedLikesInfo,
 		};

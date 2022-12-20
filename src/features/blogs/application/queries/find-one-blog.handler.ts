@@ -23,7 +23,7 @@ export class FindOneBlogHandler implements IQueryHandler<FindOneBlogCommand> {
 		if (blog.isBanned) throw new BlogNotFoundException(command.id);
 
 		return {
-			id: blog.id,
+			id: blog.id.toString(),
 			name: blog.name,
 			description: blog.description,
 			websiteUrl: blog.websiteUrl,

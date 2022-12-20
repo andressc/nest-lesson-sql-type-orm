@@ -30,9 +30,11 @@ export class FindAllPostHandler implements IQueryHandler<FindAllPostCommand> {
 	) {}
 
 	async execute(command: FindAllPostCommand): Promise<PaginationDto<ResponsePostDto[]>> {
-		const searchString = command.blogId
+		/*const searchString = command.blogId
 			? { blogId: command.blogId, isBanned: false }
-			: { isBanned: false };
+			: { isBanned: false };*/
+
+		const searchString = this.queryPostsRepository.searchTerm(command.blogId);
 
 		const blog: BlogModel | null = await this.queryBlogsRepository.find(command.blogId);
 		if (!blog && command.blogId) throw new BlogNotFoundException(command.blogId);
@@ -66,7 +68,7 @@ export class FindAllPostHandler implements IQueryHandler<FindAllPostCommand> {
 					title: v.title,
 					shortDescription: v.shortDescription,
 					content: v.content,
-					blogId: v.blogId,
+					blogId: v.blogId.toString(),
 					blogName: v.blogName,
 					createdAt: v.createdAt,
 					extendedLikesInfo: likesInfo,

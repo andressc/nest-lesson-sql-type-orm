@@ -20,11 +20,6 @@ export class FindAllUserHandler implements IQueryHandler<FindAllUserCommand> {
 	) {}
 
 	async execute(command: FindAllUserCommand): Promise<PaginationDto<ResponseUserDto[]>> {
-		/*const searchString = this.queryUsersRepository.searchTerm(
-			command.query.searchLoginTerm,
-			command.query.searchEmailTerm,
-		);*/
-
 		const searchString = this.queryUsersRepository.searchTerm(
 			command.query.searchLoginTerm,
 			command.query.searchEmailTerm,

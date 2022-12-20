@@ -14,4 +14,5 @@ export interface QueryBlogsRepositoryInterface
 	): Promise<BanModel[] | null>
 
 	countBan(searchString): Promise<number>
+	searchTerm(name: string | undefined, isBanned: boolean, currentUserId?: string): string
 }
