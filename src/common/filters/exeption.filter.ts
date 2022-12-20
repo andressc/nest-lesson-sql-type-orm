@@ -16,14 +16,19 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
 			const responseBody: any = exception.getResponse();
 
-			responseBody.message.forEach((m) =>
-				errorsResponse.errorsMessages.push({
-					message: m.message,
-					field: m.field,
-				}),
-			);
+			console.log(responseBody);
 
-			return response.status(status).json(errorsResponse);
+			if (Array.isArray(responseBody.message)) {
+				responseBody.message.forEach((m) =>
+					errorsResponse.errorsMessages.push({
+						message: m.message,
+						field: m.field,
+					}),
+				);
+				return response.status(status).json(errorsResponse);
+			}
+
+			return response.status(status).json(responseBody);
 		}
 
 		if (status === 404 || status === 403) {

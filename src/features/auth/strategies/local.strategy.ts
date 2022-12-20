@@ -17,6 +17,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		const user: UserModel | null = await this.commandBus.execute(
 			new ValidateUserAuthCommand(username, password),
 		);
+
 		//await this.authService.validateUser(username, password);
 		if (!user) throw new UnauthorizedException();
 
