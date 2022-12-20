@@ -106,7 +106,11 @@ export class QueryBlogsRepository implements QueryBlogsRepositoryInterface {
 		if (!searchNameTerm && currentUserId)
 			searchString = `WHERE "userId" = ${currentUserId}${banned && ' AND ' + banned}`;
 
-		if (!searchNameTerm && banned) searchString = `WHERE ${banned}`;
+		if (!searchNameTerm && banned) {
+			searchString = `WHERE ${banned}`;
+			if (currentUserId) searchString += ` AND "userId" = ${currentUserId}`;
+		}
+
 		return searchString;
 	}
 

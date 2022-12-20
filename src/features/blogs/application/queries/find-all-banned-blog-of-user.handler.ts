@@ -70,13 +70,13 @@ export class FindAllBannedBlogOfUserHandler
 			pageSize: paginationData.pageSize,
 			totalCount: totalCount,
 			items: ban.map((v: BanModel) => ({
-				id: v.userId,
-				login: v.login,
 				banInfo: {
-					isBanned: v.isBanned,
 					banDate: v.banDate,
 					banReason: v.banReason,
+					isBanned: v.isBanned,
 				},
+				id: v.userId,
+				login: v.login,
 			})),
 		};
 	}

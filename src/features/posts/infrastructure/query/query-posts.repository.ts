@@ -36,9 +36,9 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 			     LEFT JOIN "PostLikes" l
 			         ON p."id" = l."postId"
 					 LEFT JOIN "Blogs" b
-										 ON p."blogId" = b."id"
+							 ON p."blogId" = b."id"
 					 LEFT JOIN "Users" u
-										 ON l."userId" = u."id"
+							 ON l."userId" = u."id"
 			 WHERE p."id"=$1 AND p."isBanned"=$2`,
 			[id, false],
 		);
