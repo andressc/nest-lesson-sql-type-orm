@@ -7,12 +7,14 @@ import { Sort } from '../../../common/dto';
 export interface QueryBlogsRepositoryInterface
 	extends MainQueryRepositoryInterface<BlogModel> {
 	findBanModel(
-		searchString: Record<string, unknown>,
+		searchString: string,
 		sortBy: Sort,
+		sortDirection: string,
 		skip: number,
 		pageSize: number,
 	): Promise<BanModel[] | null>
 
 	countBan(searchString): Promise<number>
 	searchTerm(name: string | undefined, isBanned: boolean, currentUserId?: string): string
+	searchTermBan(login: string | undefined, blogId: string): string
 }

@@ -40,7 +40,7 @@ export class CreateCommentOfPostHandler implements ICommandHandler<CreateComment
 		const user: UserModel = await this.usersService.findUserByIdOrErrorThrow(command.authuserId);
 		const post: PostModel = await this.postsService.findPostOrErrorThrow(command.postId);
 
-		const banned: BanModel | null = await this.blogsRepository.findBanByblogIdAnduserId(
+		const banned: BanModel | null = await this.blogsRepository.findBanByBlogIdAndUserId(
 			post.blogId,
 			command.authuserId,
 		);

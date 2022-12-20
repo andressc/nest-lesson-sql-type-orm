@@ -1,4 +1,4 @@
-import { IsBoolean, IsMongoId, IsString, MinLength } from 'class-validator';
+import { IsBoolean, IsString, MinLength } from 'class-validator';
 
 export class BanUnbanBlogOfUserDto {
 	@IsBoolean()
@@ -7,7 +7,6 @@ export class BanUnbanBlogOfUserDto {
 	@MinLength(20)
 	banReason: string;
 
-	@IsMongoId()
 	@IsString()
 	blogId: string;
 }

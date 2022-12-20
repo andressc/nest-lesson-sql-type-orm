@@ -43,16 +43,50 @@ export class QueryBlogsRepository implements QueryBlogsRepositoryInterface {
 	}
 
 	async findBanModel(
-		searchString: Record<string, unknown>,
+		searchString: string,
 		sortBy: Sort,
+		sortDirection: string,
 		skip: number,
 		pageSize: number,
 	): Promise<BanModel[] | null> {
-		return this.banModel.find(searchString).sort(sortBy).skip(skip).limit(pageSize);
+		let order = `"${sortBy}" ${sortDirection}`;
+		if (sortBy === 'login') order = `"login" ${sortDirection}`;
+
+		return await this.dataSource.query(
+			`SELECT
+				 ban."userId",
+				 ban."blogId",
+				 ban."isBanned",
+				 ban."banReason",
+				 ban."banDate",
+				 ban."createdAt",
+				 b."name",
+				 u."login" AS login,
+				 u."id"
+			FROM "Ban" ban
+			    LEFT JOIN "Blogs" b
+			        ON ban."blogId" = b."id"
+			    LEFT JOIN "Users" u
+			        ON u."id" = ban."userId" 
+			 WHERE ban."isBanned"=$1 ${searchString} ORDER BY ${order} LIMIT $2 OFFSET $3`,
+			[true, pageSize, skip],
+		);
 	}
 
 	async countBan(searchString): Promise<number> {
-		return this.banModel.countDocuments(searchString);
+		const count = await this.dataSource.query(
+			`SELECT
+    		COUNT(ban."id")
+			 FROM "Ban" ban
+			    LEFT JOIN "Blogs" b
+			        ON ban."blogId" = b."id"
+			    LEFT JOIN "Users" u
+			        ON u."id" = ban."userId" 
+			 WHERE ban."isBanned"=$1 ${searchString}`,
+			[true],
+		);
+
+		return +count[0].count;
 	}
 
 	public searchTerm(name: string | undefined, isBanned: boolean, currentUserId?: string): string {
@@ -73,6 +107,16 @@ export class QueryBlogsRepository implements QueryBlogsRepositoryInterface {
 			searchString = `WHERE "userId" = ${currentUserId}${banned && ' AND ' + banned}`;
 
 		if (!searchNameTerm && banned) searchString = `WHERE ${banned}`;
+		return searchString;
+	}
+
+	public searchTermBan(login: string | undefined, blogId: string): string {
+		let searchString = ` AND "blogId"=${blogId}`;
+
+		const searchLoginTerm = login ? `'%${login}%'` : null;
+
+		if (searchLoginTerm) searchString += ` AND LOWER("login") LIKE LOWER(${searchLoginTerm})`;
+
 		return searchString;
 	}
 }

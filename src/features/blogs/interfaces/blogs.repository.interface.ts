@@ -10,8 +10,14 @@ export interface BlogsRepositoryInterface
 	update(updateData: UpdateBlogDto, blogId: string): Promise<void>
 	bindBlogWithUser(userId: string, userLogin: string, blogId: string): Promise<void>
 	banBlog(isBanned: boolean, banDate: string, blogId: string): Promise<void>
-	findBanByblogIdAnduserId(blogId: string, userId: string): Promise<BanModel | null>
+	findBanByBlogIdAndUserId(blogId: string, userId: string): Promise<BanModel | null>
 	createBanModel(data: BanUnbanBlogOfUserExtendsDto): Promise<BanModel>
 	saveBanModel(model: BanModel): Promise<BanModel>
 	deleteAllBan(): Promise<void>
+	banUserOfBlog(
+		isBanned: boolean,
+		banReason: string,
+		banDate: string,
+		bannedId: string,
+	): Promise<void>
 }

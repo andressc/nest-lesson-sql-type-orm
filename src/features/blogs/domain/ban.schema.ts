@@ -1,7 +1,18 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
 
-export type BanModel = Ban & Document;
+//export type BanModel = Ban & Document;
+
+export class BanModel {
+	id: string;
+	userId: string;
+	blogId: string;
+	login: string;
+	blogName: string;
+	isBanned: boolean;
+	banReason: string;
+	banDate: string;
+	createdAt: string;
+}
 
 @Schema()
 export class Ban {

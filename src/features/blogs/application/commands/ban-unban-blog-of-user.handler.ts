@@ -37,7 +37,6 @@ export class BanUnbanBlogOfUserHandler implements ICommandHandler<BanUnbanBlogOf
 		await this.validationService.validate(command.data, BanUnbanBlogOfUserDto);
 
 		let banDate = null;
-
 		const user: UserModel = await this.usersService.findUserByIdOrErrorThrow(command.userId);
 		if (user.id === command.currentUserId) throw new userIdBadRequestException();
 
@@ -46,25 +45,27 @@ export class BanUnbanBlogOfUserHandler implements ICommandHandler<BanUnbanBlogOf
 
 		if (command.data.isBanned) banDate = new Date().toISOString();
 
-		const banned: BanModel | null = await this.blogsRepository.findBanByblogIdAnduserId(
+		const banned: BanModel | null = await this.blogsRepository.findBanByBlogIdAndUserId(
 			command.data.blogId,
 			command.userId,
 		);
 
 		if (!banned) {
-			const newBanUser: BanModel = await this.blogsRepository.createBanModel({
+			await this.blogsRepository.createBanModel({
 				...command.data,
-				blogName: blog.name,
 				userId: user.id,
-				login: user.login,
 				banDate,
+				createdAt: new Date().toISOString(),
 			});
-			await this.blogsRepository.saveBanModel(newBanUser);
 		}
 
 		if (banned) {
-			banned.banUnbanUser(command.data.isBanned, command.data.banReason, banDate);
-			await this.blogsRepository.saveBanModel(banned);
+			await this.blogsRepository.banUserOfBlog(
+				command.data.isBanned,
+				command.data.banReason,
+				banDate,
+				banned.id,
+			);
 		}
 	}
 }

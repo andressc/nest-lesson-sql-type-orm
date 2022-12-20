@@ -41,6 +41,8 @@ export class BlogsRepository implements BlogsRepositoryInterface {
 
 	async find(id: string): Promise<BlogModel | null> {
 		const blog = await this.dataSource.query(`SELECT * FROM "Blogs" WHERE "id"=$1`, [id]);
+
+		if (blog.length === 0) return null;
 		return blog[0];
 	}
 
@@ -82,19 +84,46 @@ export class BlogsRepository implements BlogsRepositoryInterface {
 	}
 
 	//Ban blog from user
-	async findBanByblogIdAnduserId(blogId: string, userId: string): Promise<BanModel | null> {
-		return this.banModel.findOne({ blogId, userId });
+	async findBanByBlogIdAndUserId(blogId: string, userId: string): Promise<BanModel | null> {
+		const bannedUser = await this.dataSource.query(
+			`SELECT * FROM "Ban" WHERE "blogId"=$1 AND "userId"=$2`,
+			[blogId, userId],
+		);
+		if (bannedUser.length === 0) return null;
+		return bannedUser[0];
 	}
 
 	async createBanModel(data: BanUnbanBlogOfUserExtendsDto): Promise<BanModel> {
-		return new this.banModel(data);
+		const bannedUsers = await this.dataSource.query(
+			`INSERT INTO "Ban"
+    ("userId", "isBanned", "banReason", "banDate", "blogId", "createdAt")
+		VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`,
+			[data.userId, data.isBanned, data.banReason, data.banDate, data.blogId, data.createdAt],
+		);
+
+		return bannedUsers[0];
+	}
+
+	async banUserOfBlog(
+		isBanned: boolean,
+		banReason: string,
+		banDate: string,
+		bannedId: string,
+	): Promise<void> {
+		const reason = !isBanned ? null : banReason;
+		const date = !isBanned ? null : banDate;
+
+		await this.dataSource.query(
+			`UPDATE "Ban" SET "isBanned"=$1, "banReason"=$2, "banDate"=$3 WHERE "id"=$4`,
+			[isBanned, reason, date, bannedId],
+		);
 	}
 
 	async saveBanModel(model: BanModel): Promise<BanModel> {
-		return model.save();
+		return model;
 	}
 
 	async deleteAllBan(): Promise<void> {
-		await this.banModel.deleteMany();
+		await this.dataSource.query(`DELETE FROM "Ban"`);
 	}
 }

@@ -73,8 +73,8 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 		if (sortBy === 'blogName') order = `"blogName" ${sortDirection}`;
 
 		const resultQuery = await this.dataSource.query(
-			`SELECT
-				 p."id",
+			`SELECT 
+    		 p."id",
 				 p."title",
 				 p."shortDescription",
 				 p."content",
