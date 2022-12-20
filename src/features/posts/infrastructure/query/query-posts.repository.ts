@@ -48,10 +48,10 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 		return {
 			id: post[0].id,
 			title: post[0].title,
-			shortDescription: post[0].description,
+			shortDescription: post[0].shortDescription,
 			content: post[0].content,
 			blogId: post[0].blogId,
-			blogName: post[0].blogName,
+			blogName: post[0].name,
 			isBanned: post[0].isBanned,
 			createdAt: post[0].createdAt,
 			likes: this.likes(post),
@@ -182,7 +182,6 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 
 		if (blogId) searchString = `AND "blogId" = ${blogId}`;
 
-		console.log(searchString);
 		return searchString;
 	}
 }
