@@ -38,6 +38,7 @@ export class QueryBlogsRepository implements QueryBlogsRepositoryInterface {
 	}
 
 	async count(searchString): Promise<number> {
+		console.log(searchString);
 		const count = await this.dataSource.query(`SELECT COUNT(id) FROM "Blogs" ${searchString}`);
 		return +count[0].count;
 	}
@@ -98,13 +99,13 @@ export class QueryBlogsRepository implements QueryBlogsRepositoryInterface {
 
 		if (searchNameTerm) {
 			searchString = `WHERE LOWER("name") LIKE LOWER(${searchNameTerm})${
-				banned && ' AND ' + banned
+				banned ? ' AND ' + banned : ''
 			}`;
 			if (currentUserId) searchString += ` AND "userId" = ${currentUserId}`;
 		}
 
 		if (!searchNameTerm && currentUserId)
-			searchString = `WHERE "userId" = ${currentUserId}${banned && ' AND ' + banned}`;
+			searchString = `WHERE "userId" = ${currentUserId}${banned ? ' AND ' + banned : ''}`;
 
 		if (!searchNameTerm && banned) {
 			searchString = `WHERE ${banned}`;
