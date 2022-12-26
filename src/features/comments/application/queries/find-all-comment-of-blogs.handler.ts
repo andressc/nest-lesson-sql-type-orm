@@ -61,13 +61,13 @@ export class FindAllCommentOfBlogsHandler implements IQueryHandler<FindAllCommen
 					createdAt: v.createdAt,
 					likesInfo: likesInfo,
 					commentatorInfo: {
-						userId: v.userId,
+						userId: v.userId.toString(),
 						userLogin: v.userLogin,
 					},
 					postInfo: {
-						id: v.postId,
+						id: v.postId.toString(),
 						title: v.postTitle,
-						blogId: v.blogId,
+						blogId: v.blogId.toString(),
 						blogName: v.blogName,
 					},
 				};

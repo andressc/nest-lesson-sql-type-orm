@@ -26,7 +26,7 @@ export class FindOneCommentHandler implements IQueryHandler<FindOneCommentComman
 		return {
 			id: comment.id.toString(),
 			content: comment.content,
-			userId: comment.userId,
+			userId: comment.userId.toString(),
 			userLogin: comment.userLogin,
 			createdAt: comment.createdAt,
 			likesInfo,
