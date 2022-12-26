@@ -153,7 +153,7 @@ export class QueryCommentsRepository implements QueryCommentsRepositoryInterface
 		let myStatus = LikeStatusEnum.None;
 
 		comment.likes.forEach((it: LikeDbDto) => {
-			if (currentUserId && it.userId === currentUserId) myStatus = it.likeStatus;
+			if (it.likeStatus && currentUserId && it.userId === currentUserId) myStatus = it.likeStatus;
 		});
 
 		return {
