@@ -108,9 +108,9 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 					shortDescription: postRow.shortDescription,
 					content: postRow.content,
 					blogId: postRow.blogId,
+					blogName: postRow.name,
 					createdAt: postRow.createdAt,
 					isBanned: postRow.isBanned,
-					name: postRow.name,
 					likes: [],
 				};
 				result.push(postWithLikes);
@@ -124,6 +124,8 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 				login: postRow.login,
 			});
 		}
+
+		console.log(result);
 		return result;
 	}
 
