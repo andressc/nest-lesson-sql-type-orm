@@ -1,5 +1,4 @@
 import { CommandHandler, ICommand, ICommandHandler } from '@nestjs/cqrs';
-import { ObjectId } from 'mongodb';
 import { CommentsRepositoryInterface } from '../../interfaces/comments.repository.interface';
 import { Inject } from '@nestjs/common';
 import { CommentInjectionToken } from '../../infrastructure/providers/comment.injection.token';
@@ -16,6 +15,6 @@ export class BanUnbanCommentHandler implements ICommandHandler<BanUnbanCommentCo
 	) {}
 
 	async execute(command: BanUnbanCommentCommand): Promise<void> {
-		await this.commentsRepository.setBan(new ObjectId(command.userId), command.isBanned);
+		await this.commentsRepository.setBan(command.userId, command.isBanned);
 	}
 }

@@ -1,15 +1,12 @@
-import { IsEnum, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { LikeStatusEnum } from '../../../common/dto';
-import { ObjectId } from 'mongodb';
 
 export class CreateLikeDto {
-	@IsMongoId()
 	@IsString()
-	itemId: ObjectId;
+	itemId: string;
 
-	@IsMongoId()
 	@IsString()
-	userId: ObjectId;
+	userId: string;
 
 	@IsNotEmpty()
 	@IsString()

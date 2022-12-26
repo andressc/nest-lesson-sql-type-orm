@@ -5,4 +5,5 @@ import { LikesInfo } from '../../../common/dto';
 /* eslint-disable */
 export interface QueryCommentsRepositoryInterface
 	extends CountLikesRepositoryInterface<CommentModel, LikesInfo> {
+	searchTerm(postId: string | undefined): string
 }

@@ -10,6 +10,7 @@ import { stopMongoMemoryServer } from '../src/common/utils';
 import { BASIC_AUTH } from './constants';
 import { User } from '../src/features/users/domain/user.schema';
 import 'jest-extended';
+import { DataSource } from 'typeorm';
 
 describe('BlogController (e2e)', () => {
 	let dataApp: { app: INestApplication; module: TestingModule; connection: Connection };
@@ -73,6 +74,8 @@ describe('BlogController (e2e)', () => {
 	describe('add, get, delete new user', () => {
 		beforeAll(async () => {
 			await connection.dropDatabase();
+
+			await DataSource.query(`SELECT * FROM "Users" WHERE "email"=$1 OR login=$1`, [emailOrLogin]);
 		});
 
 		let userId;

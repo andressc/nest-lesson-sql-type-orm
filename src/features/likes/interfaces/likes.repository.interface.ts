@@ -1,12 +1,13 @@
 import { LikeModel } from '../domain/like.schema';
 import { CreateLikeExtendsDto } from '../dto/create-like-extends.dto';
-import { ObjectId } from 'mongodb';
 import { BanRepositoryInterface } from '../../shared/interfaces/ban.repository.interface';
+import { LikeStatusEnum } from '../../../common/dto';
 
 /* eslint-disable */
 export interface LikesRepositoryInterface
 	extends BanRepositoryInterface<LikeModel, CreateLikeExtendsDto> {
-	findLikeByitemIdAnduserId(itemId: ObjectId, userId: ObjectId): Promise<LikeModel>;
+	findLikeByItemIdAndUserId(postId: string, userId: string): Promise<LikeModel>;
+	update(likeStatus: LikeStatusEnum, postId: string, userId: string): Promise<void>
 }
 
 /*export abstract class LikesRepositoryInterface {

@@ -32,7 +32,9 @@ export class FindAllCommentOfPostHandler implements IQueryHandler<FindAllComment
 	async execute(
 		command: FindAllCommentOfPostCommand,
 	): Promise<PaginationDto<ResponseCommentDto[]>> {
-		const searchString = { postId: command.postId };
+		//const searchString = { postId: command.postId };
+
+		const searchString = this.queryCommentsRepository.searchTerm(command.postId);
 
 		const post: PostModel | null = await this.queryPostsRepository.find(command.postId);
 		if (!post) throw new PostNotFoundException(command.postId);
@@ -62,7 +64,7 @@ export class FindAllCommentOfPostHandler implements IQueryHandler<FindAllComment
 				likesInfo = this.queryCommentsRepository.countLikes(v, command.currentUserId);
 
 				return {
-					id: v._id.toString(),
+					id: v.id.toString(),
 					content: v.content,
 					userId: v.userId,
 					userLogin: v.userLogin,

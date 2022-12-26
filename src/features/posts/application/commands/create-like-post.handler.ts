@@ -3,6 +3,7 @@ import { PostsService } from '../posts.service';
 import { ValidationService } from '../../../../shared/validation/application/validation.service';
 import { CreateLikeCommand } from '../../../likes/application/command/create-like.handler';
 import { CreateRequestLikeDto } from '../../../likes/dto/create-request-like.dto';
+import { LikeTypeEnum } from '../../../../common/dto/like-type.enum';
 
 export class CreateLikePostCommand implements ICommand {
 	constructor(
@@ -27,7 +28,13 @@ export class CreateLikePostHandler implements ICommandHandler<CreateLikePostComm
 		await this.postsService.findPostOrErrorThrow(command.postId);
 
 		await this.commandBus.execute(
-			new CreateLikeCommand(command.postId, command.userId, command.userLogin, command.data),
+			new CreateLikeCommand(
+				command.postId,
+				command.userId,
+				command.userLogin,
+				command.data,
+				LikeTypeEnum.Post,
+			),
 		);
 	}
 }

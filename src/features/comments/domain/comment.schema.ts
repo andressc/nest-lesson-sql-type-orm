@@ -1,9 +1,23 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
 import { UpdateCommentDto } from '../dto';
 import { LikesDto } from '../../../common/dto';
 
-export type CommentModel = Comment & Document;
+//export type CommentModel = Comment & Document;
+
+export class CommentModel {
+	id: string;
+	content: string;
+	userId: string;
+	userLogin: string;
+	postId: string;
+	//blogUserId: string;
+	postTitle: string;
+	blogId: string;
+	blogName: string;
+	createdAt: string;
+	isBanned: boolean;
+	likes: LikesDto[];
+}
 
 @Schema()
 export class Comment {

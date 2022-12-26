@@ -7,6 +7,7 @@ import { CreateLikeCommand } from '../../../likes/application/command/create-lik
 import { CommentNotFoundException } from '../../../../common/exceptions';
 import { Inject } from '@nestjs/common';
 import { CommentInjectionToken } from '../../infrastructure/providers/comment.injection.token';
+import { LikeTypeEnum } from '../../../../common/dto/like-type.enum';
 
 export class CreateLikeCommentCommand implements ICommand {
 	constructor(
@@ -33,7 +34,13 @@ export class CreateLikeCommentHandler implements ICommandHandler<CreateLikeComme
 		if (!comment) throw new CommentNotFoundException(command.commentId);
 
 		await this.commandBus.execute(
-			new CreateLikeCommand(command.commentId, command.userId, command.userLogin, command.data),
+			new CreateLikeCommand(
+				command.commentId,
+				command.userId,
+				command.userLogin,
+				command.data,
+				LikeTypeEnum.Comment,
+			),
 		);
 	}
 }

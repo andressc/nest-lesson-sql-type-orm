@@ -4,6 +4,7 @@ import {
 	Get,
 	HttpCode,
 	Param,
+	ParseIntPipe,
 	Post,
 	Put,
 	Query,
@@ -34,11 +35,11 @@ export class PostsController {
 	@Post(':id/comments')
 	async createCommentOfPost(
 		@Body() data: CreateCommentOfPostDto,
-		@Param() param: ObjectIdDto,
+		@Param('id', new ParseIntPipe({ errorHttpStatusCode: 404 })) id: string,
 		@CurrentUserId() currentUserId,
 	) {
 		const commentId = await this.commandBus.execute(
-			new CreateCommentOfPostCommand(data, param.id, currentUserId),
+			new CreateCommentOfPostCommand(data, id, currentUserId),
 		);
 		return this.queryBus.execute(new FindOneCommentCommand(commentId, currentUserId));
 	}
@@ -56,37 +57,35 @@ export class PostsController {
 	@UseGuards(GuestGuard)
 	@Get(':id/comments')
 	findAllCommentsOfPost(
-		@Param() param: ObjectIdDto,
+		@Param('id', new ParseIntPipe({ errorHttpStatusCode: 404 })) id: string,
 		@Query() query: QueryCommentDto,
 		@CurrentuserIdNonAuthorized()
 		currentUserId: ObjectIdDto | null,
 	) {
-		return this.queryBus.execute(
-			new FindAllCommentOfPostCommand(query, param.id, currentUserId.id),
-		);
+		return this.queryBus.execute(new FindAllCommentOfPostCommand(query, id, currentUserId.id));
 	}
 
 	@Get(':id')
 	@UseGuards(GuestGuard)
 	findOnePost(
-		@Param() param: ObjectIdDto,
+		@Param('id', new ParseIntPipe({ errorHttpStatusCode: 404 })) id: string,
 		@CurrentuserIdNonAuthorized()
 		currentUserId: ObjectIdDto | null,
 	) {
-		return this.queryBus.execute(new FindOnePostCommand(param.id, currentUserId.id));
+		return this.queryBus.execute(new FindOnePostCommand(id, currentUserId.id));
 	}
 
 	@HttpCode(204)
 	@UseGuards(AccessTokenGuard)
 	@Put(':id/like-status')
 	async setLike(
-		@Param() param: ObjectIdDto,
+		@Param('id', new ParseIntPipe({ errorHttpStatusCode: 404 })) id: string,
 		@CurrentUserId() currentUserId,
 		@CurrentUserLogin() currentUserLogin,
 		@Body() data: CreateRequestLikeDto,
 	) {
 		await this.commandBus.execute(
-			new CreateLikePostCommand(param.id, currentUserId, currentUserLogin, data),
+			new CreateLikePostCommand(id, currentUserId, currentUserLogin, data),
 		);
 	}
 }

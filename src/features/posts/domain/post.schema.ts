@@ -11,7 +11,6 @@ export class PostModel {
 	content: string;
 	blogId: string;
 	blogName: string;
-	//blogUserId: string;
 	isBanned: boolean;
 	createdAt: string;
 	likes: LikesDto[];

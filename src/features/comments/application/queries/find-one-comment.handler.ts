@@ -24,7 +24,7 @@ export class FindOneCommentHandler implements IQueryHandler<FindOneCommentComman
 		const likesInfo = this.queryCommentsRepository.countLikes(comment, command.currentUserId);
 
 		return {
-			id: comment._id.toString(),
+			id: comment.id.toString(),
 			content: comment.content,
 			userId: comment.userId,
 			userLogin: comment.userLogin,

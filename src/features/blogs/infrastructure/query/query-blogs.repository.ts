@@ -38,7 +38,6 @@ export class QueryBlogsRepository implements QueryBlogsRepositoryInterface {
 	}
 
 	async count(searchString): Promise<number> {
-		console.log(searchString);
 		const count = await this.dataSource.query(`SELECT COUNT(id) FROM "Blogs" ${searchString}`);
 		return +count[0].count;
 	}

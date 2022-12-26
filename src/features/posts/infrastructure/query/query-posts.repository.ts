@@ -4,7 +4,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { LikesInfoExtended, LikeStatusEnum } from '../../../../common/dto';
 import { Post, PostModel } from '../../domain/post.schema';
 import { QueryPostsRepositoryInterface } from '../../interfaces/query.posts.repository.interface';
-import { ObjectId } from 'mongodb';
 import { LikeDbDto } from '../../../likes/dto/like-db.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -157,7 +156,7 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 			}));
 
 		post.likes.forEach((it: LikeDbDto) => {
-			if (currentUserId && new ObjectId(it.userId).equals(currentUserId)) myStatus = it.likeStatus;
+			if (currentUserId && it.userId === currentUserId) myStatus = it.likeStatus;
 		});
 
 		return {

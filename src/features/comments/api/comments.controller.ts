@@ -1,5 +1,14 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Put, UseGuards } from '@nestjs/common';
-import { ObjectIdDto } from '../../../common/dto';
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	Param,
+	ParseIntPipe,
+	Put,
+	UseGuards,
+} from '@nestjs/common';
 import { CreateRequestLikeDto, UpdateCommentDto } from '../dto';
 import { AccessTokenGuard, GuestGuard } from '../../../common/guards';
 import {
@@ -20,42 +29,45 @@ export class CommentsController {
 	@Get(':id')
 	@UseGuards(GuestGuard)
 	findOneComment(
-		@Param() param: ObjectIdDto,
+		@Param('id', new ParseIntPipe({ errorHttpStatusCode: 404 })) id: string,
 		@CurrentuserIdNonAuthorized()
-		currentUserId: ObjectIdDto | null,
+		currentUserId,
 	) {
-		return this.queryBus.execute(new FindOneCommentCommand(param.id, currentUserId.id));
+		return this.queryBus.execute(new FindOneCommentCommand(id, currentUserId.id));
 	}
 
 	@HttpCode(204)
 	@UseGuards(AccessTokenGuard)
 	@Put(':id')
 	async updateComment(
-		@Param() param: ObjectIdDto,
+		@Param('id', new ParseIntPipe({ errorHttpStatusCode: 404 })) id: string,
 		@Body() data: UpdateCommentDto,
 		@CurrentUserId() currentUserId,
 	) {
-		await this.commandBus.execute(new UpdateCommentCommand(param.id, data, currentUserId));
+		await this.commandBus.execute(new UpdateCommentCommand(id, data, currentUserId));
 	}
 
 	@HttpCode(204)
 	@UseGuards(AccessTokenGuard)
 	@Delete(':id')
-	async removeComment(@Param() param: ObjectIdDto, @CurrentUserId() currentUserId) {
-		await this.commandBus.execute(new RemoveCommentCommand(param.id, currentUserId));
+	async removeComment(
+		@Param('id', new ParseIntPipe({ errorHttpStatusCode: 404 })) id: string,
+		@CurrentUserId() currentUserId,
+	) {
+		await this.commandBus.execute(new RemoveCommentCommand(id, currentUserId));
 	}
 
 	@HttpCode(204)
 	@UseGuards(AccessTokenGuard)
 	@Put(':id/like-status')
 	async setLike(
-		@Param() param: ObjectIdDto,
+		@Param('id', new ParseIntPipe({ errorHttpStatusCode: 404 })) id: string,
 		@CurrentUserId() currentUserId,
 		@CurrentUserLogin() currentUserLogin,
 		@Body() data: CreateRequestLikeDto,
 	) {
 		await this.commandBus.execute(
-			new CreateLikeCommentCommand(param.id, currentUserId, currentUserLogin, data),
+			new CreateLikeCommentCommand(id, currentUserId, currentUserLogin, data),
 		);
 	}
 }

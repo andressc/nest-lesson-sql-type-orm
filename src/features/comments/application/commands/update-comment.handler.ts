@@ -33,7 +33,6 @@ export class UpdateCommentHandler implements ICommandHandler<UpdateCommentComman
 			command.authuserId,
 		);
 
-		comment.updateData(command.data);
-		await this.commentsRepository.save(comment);
+		await this.commentsRepository.update(command.data, comment.id);
 	}
 }

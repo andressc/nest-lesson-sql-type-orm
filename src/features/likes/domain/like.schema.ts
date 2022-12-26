@@ -1,9 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
 import { LikeStatusEnum } from '../../../common/dto';
 import { ObjectId } from 'mongodb';
 
-export type LikeModel = Like & Document;
+export class LikeModel {
+	id: string;
+	itemId: string;
+	userId: string;
+	login: string;
+	likeStatus: string;
+	isBanned: boolean;
+	addedAt: string;
+}
 
 @Schema()
 export class Like {

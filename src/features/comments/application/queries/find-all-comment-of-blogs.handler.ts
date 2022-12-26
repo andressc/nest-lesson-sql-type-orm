@@ -27,7 +27,9 @@ export class FindAllCommentOfBlogsHandler implements IQueryHandler<FindAllCommen
 	async execute(
 		command: FindAllCommentOfBlogsCommand,
 	): Promise<PaginationDto<ResponseCommentOfPostsDto[]>> {
-		const searchString = { blogUserId: command.currentUserId };
+		//const searchString = { blogUserId: command.currentUserId };
+
+		const searchString = '';
 
 		const totalCount: number = await this.queryCommentsRepository.count(searchString);
 		const paginationData: PaginationCalc = this.paginationService.pagination({
@@ -54,7 +56,7 @@ export class FindAllCommentOfBlogsHandler implements IQueryHandler<FindAllCommen
 				likesInfo = this.queryCommentsRepository.countLikes(v, command.currentUserId);
 
 				return {
-					id: v._id.toString(),
+					id: v.id.toString(),
 					content: v.content,
 					createdAt: v.createdAt,
 					likesInfo: likesInfo,
