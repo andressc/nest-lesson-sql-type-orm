@@ -10,6 +10,7 @@ import { BanUnbanCommentCommand } from '../../../comments/application/commands/b
 import { Inject } from '@nestjs/common';
 import { SessionInjectionToken } from '../../../session/infrastructure/providers/session.injection.token';
 import { UserInjectionToken } from '../../infrastructure/providers/user.injection.token';
+import { LikeTypeEnum } from '../../../../common/dto/like-type.enum';
 
 export class BanUnbanUserCommand implements ICommand {
 	constructor(public id: string, public data: BanUnbanUserDto) {}
@@ -38,7 +39,12 @@ export class BanUnbanUserHandler implements ICommandHandler<BanUnbanUserCommand>
 			user.id,
 		);
 
-		await this.commandBus.execute(new BanUnbanLikeCommand(user.id, command.data.isBanned));
+		await this.commandBus.execute(
+			new BanUnbanLikeCommand(user.id, command.data.isBanned, LikeTypeEnum.Comment),
+		);
+		await this.commandBus.execute(
+			new BanUnbanLikeCommand(user.id, command.data.isBanned, LikeTypeEnum.Post),
+		);
 		await this.commandBus.execute(new BanUnbanCommentCommand(user.id, command.data.isBanned));
 
 		if (command.data.isBanned) await this.sessionsRepository.removeAllUserSessions(user.id);

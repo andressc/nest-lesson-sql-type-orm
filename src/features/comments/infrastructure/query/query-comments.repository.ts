@@ -30,9 +30,9 @@ export class QueryCommentsRepository implements QueryCommentsRepositoryInterface
 				 l."likeStatus",
 				 l."addedAt" AS "likeAddedAt",
 				 u."login",
-				 (SELECT COUNT(l."id") FROM "CommentLikes" l WHERE c."id" = l."commentId" AND l."likeStatus" = 'Like') AS likes,
-				 (SELECT COUNT(l."id") FROM "CommentLikes" l WHERE c."id" = l."commentId" AND l."likeStatus" = 'Dislike') AS dislikes,
-				 (SELECT l."likeStatus" FROM "CommentLikes" l WHERE l."userId" = ${currentUserId} AND l."commentId" = c."id") AS status
+				 (SELECT COUNT(l."id") FROM "CommentLikes" l WHERE c."id" = l."commentId" AND l."isBanned"=false AND l."likeStatus" = 'Like') AS likes,
+				 (SELECT COUNT(l."id") FROM "CommentLikes" l WHERE c."id" = l."commentId" AND l."isBanned"=false AND l."likeStatus" = 'Dislike') AS dislikes,
+				 (SELECT l."likeStatus" FROM "CommentLikes" l WHERE l."userId" = ${currentUserId} AND l."isBanned"=false AND l."commentId" = c."id") AS status
 			 FROM "Comments" c
 			     LEFT JOIN "CommentLikes" l
 			         ON c."id" = l."commentId"
@@ -147,9 +147,9 @@ export class QueryCommentsRepository implements QueryCommentsRepositoryInterface
 				 b."name",
 				 p."title",
 				 u."login",
-				 (SELECT COUNT(l."id") FROM "CommentLikes" l WHERE c."id" = l."commentId" AND l."likeStatus" = 'Like') AS likes,
-				 (SELECT COUNT(l."id") FROM "CommentLikes" l WHERE c."id" = l."commentId" AND l."likeStatus" = 'Dislike') AS dislikes,
-				 (SELECT l."likeStatus" FROM "CommentLikes" l WHERE l."userId" = ${currentUserId} AND l."commentId" = c."id") AS status 
+				 (SELECT COUNT(l."id") FROM "CommentLikes" l WHERE c."id" = l."commentId" AND l."isBanned"=false AND l."likeStatus" = 'Like') AS likes,
+				 (SELECT COUNT(l."id") FROM "CommentLikes" l WHERE c."id" = l."commentId" AND l."isBanned"=false AND l."likeStatus" = 'Dislike') AS dislikes,
+				 (SELECT l."likeStatus" FROM "CommentLikes" l WHERE l."userId" = ${currentUserId} AND l."isBanned"=false AND l."commentId" = c."id") AS status 
 			 FROM "Comments" c
 			     LEFT JOIN "Blogs" b
 							 ON c."blogId" = b."id"
