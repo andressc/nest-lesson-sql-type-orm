@@ -35,6 +35,7 @@ export class FindAllBlogAdminHandler implements IQueryHandler<FindAllBlogAdminCo
 			paginationData.sortDirection,
 			paginationData.skip,
 			paginationData.pageSize,
+			null,
 		);
 
 		return {

@@ -52,6 +52,7 @@ export class FindAllPostHandler implements IQueryHandler<FindAllPostCommand> {
 			paginationData.sortDirection,
 			paginationData.skip,
 			paginationData.pageSize,
+			null,
 		);
 
 		let likesInfo;

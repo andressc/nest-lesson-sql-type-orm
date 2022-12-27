@@ -125,7 +125,6 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 			});
 		}
 
-		console.log(result);
 		return result;
 	}
 

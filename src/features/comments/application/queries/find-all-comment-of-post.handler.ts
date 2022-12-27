@@ -1,5 +1,5 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { PaginationCalc, PaginationDto } from '../../../../common/dto';
+import { LikeStatusEnum, PaginationCalc, PaginationDto } from '../../../../common/dto';
 import { PostNotFoundException } from '../../../../common/exceptions';
 import { QueryCommentDto, ResponseCommentDto } from '../../dto';
 import { PostModel } from '../../../posts/domain/post.schema';
@@ -51,9 +51,8 @@ export class FindAllCommentOfPostHandler implements IQueryHandler<FindAllComment
 			paginationData.sortDirection,
 			paginationData.skip,
 			paginationData.pageSize,
+			command.currentUserId,
 		);
-
-		let likesInfo;
 
 		return {
 			pagesCount: paginationData.pagesCount,
@@ -61,15 +60,17 @@ export class FindAllCommentOfPostHandler implements IQueryHandler<FindAllComment
 			pageSize: paginationData.pageSize,
 			totalCount: totalCount,
 			items: comments.map((v: CommentModel) => {
-				likesInfo = this.queryCommentsRepository.countLikes(v, command.currentUserId);
-
 				return {
 					id: v.id.toString(),
 					content: v.content,
 					userId: v.userId.toString(),
 					userLogin: v.userLogin,
 					createdAt: v.createdAt,
-					likesInfo,
+					likesInfo: {
+						likesCount: +v.likes,
+						dislikesCount: +v.dislikes,
+						myStatus: v.status ? LikeStatusEnum[v.status] : LikeStatusEnum.None,
+					},
 				};
 			}),
 		};

@@ -16,7 +16,10 @@ export class CommentModel {
 	blogName: string;
 	createdAt: string;
 	isBanned: boolean;
-	likes: LikesDto[];
+	//likes: LikesDto[];
+	likes: number;
+	dislikes: number;
+	status: string | null;
 }
 
 @Schema()

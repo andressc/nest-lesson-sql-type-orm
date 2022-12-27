@@ -1,9 +1,8 @@
 import { CommentModel } from '../domain/comment.schema';
-import { CountLikesRepositoryInterface } from '../../shared/interfaces/count.likes.repository.interface';
-import { LikesInfo } from '../../../common/dto';
+import { MainQueryRepositoryInterface } from '../../shared/interfaces/main.query.repository.interface';
 
 /* eslint-disable */
 export interface QueryCommentsRepositoryInterface
-	extends CountLikesRepositoryInterface<CommentModel, LikesInfo> {
+	extends MainQueryRepositoryInterface<CommentModel> {
 	searchTerm(postId: string | undefined): string
 }

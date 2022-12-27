@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { LikesInfo, LikeStatusEnum } from '../../../../common/dto';
 import { Comment, CommentModel } from '../../domain/comment.schema';
 import { QueryCommentsRepositoryInterface } from '../../interfaces/query.comments.repository.interface';
-import { LikeDbDto } from '../../../likes/dto/like-db.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
@@ -16,7 +14,7 @@ export class QueryCommentsRepository implements QueryCommentsRepositoryInterface
 		private readonly commentModel: Model<CommentModel>,
 	) {}
 
-	async find(id: string): Promise<CommentModel | null> {
+	async find(id: string, currentUserId: string): Promise<CommentModel | null> {
 		const comment = await this.dataSource.query(
 			`SELECT
 				 c."id",
@@ -31,7 +29,10 @@ export class QueryCommentsRepository implements QueryCommentsRepositoryInterface
 				 l."userId" as likeUserId,
 				 l."likeStatus",
 				 l."addedAt" AS "likeAddedAt",
-				 u."login"
+				 u."login",
+				 (SELECT COUNT(l."id") FROM "CommentLikes" l WHERE c."id" = l."commentId" AND l."likeStatus" = 'Like') AS likes,
+				 (SELECT COUNT(l."id") FROM "CommentLikes" l WHERE c."id" = l."commentId" AND l."likeStatus" = 'Dislike') AS dislikes,
+				 (SELECT l."likeStatus" FROM "CommentLikes" l WHERE l."userId" = ${currentUserId} AND l."commentId" = c."id") AS status
 			 FROM "Comments" c
 			     LEFT JOIN "CommentLikes" l
 			         ON c."id" = l."commentId"
@@ -47,8 +48,6 @@ export class QueryCommentsRepository implements QueryCommentsRepositoryInterface
 
 		if (comment.length === 0) return null;
 
-		console.log(comment);
-
 		return {
 			id: comment[0].id,
 			content: comment[0].content,
@@ -60,7 +59,10 @@ export class QueryCommentsRepository implements QueryCommentsRepositoryInterface
 			blogName: comment[0].name,
 			createdAt: comment[0].createdAt,
 			isBanned: comment[0].isBanned,
-			likes: this.likes(comment),
+			//likes: this.likes(comment),
+			likes: comment[0].likes,
+			dislikes: comment[0].dislikes,
+			status: comment[0].status,
 		};
 	}
 
@@ -70,10 +72,11 @@ export class QueryCommentsRepository implements QueryCommentsRepositoryInterface
 		sortDirection: string,
 		skip: number,
 		pageSize: number,
+		currentUserId: string | null,
 	): Promise<CommentModel[] | null> {
 		const order = `"${sortBy}" ${sortDirection}`;
 
-		const resultQuery = await this.dataSource.query(
+		/*const resultQuery = await this.dataSource.query(
 			`SELECT
 				 c."id",
 				 c."content",
@@ -99,9 +102,9 @@ export class QueryCommentsRepository implements QueryCommentsRepositoryInterface
 							 ON c."userId" = u."id"
 			 WHERE c."isBanned"=$1 ${searchString} ORDER BY ${order} LIMIT $2 OFFSET $3`,
 			[false, pageSize, skip],
-		);
+		);*/
 
-		const result = [];
+		/*const result = [];
 		const addedComments = {};
 
 		for (const commentRow of resultQuery) {
@@ -130,8 +133,33 @@ export class QueryCommentsRepository implements QueryCommentsRepositoryInterface
 				likeAddedAt: commentRow.likeAddedAt,
 				login: commentRow.login,
 			});
-		}
-		return result;
+		}*/
+
+		return await this.dataSource.query(
+			`SELECT
+				 c."id",
+				 c."content",
+				 c."userId",
+				 c."postId",
+				 c."blogId",
+				 c."createdAt",
+				 c."isBanned",
+				 b."name",
+				 p."title",
+				 u."login",
+				 (SELECT COUNT(l."id") FROM "CommentLikes" l WHERE c."id" = l."commentId" AND l."likeStatus" = 'Like') AS likes,
+				 (SELECT COUNT(l."id") FROM "CommentLikes" l WHERE c."id" = l."commentId" AND l."likeStatus" = 'Dislike') AS dislikes,
+				 (SELECT l."likeStatus" FROM "CommentLikes" l WHERE l."userId" = ${currentUserId} AND l."commentId" = c."id") AS status 
+			 FROM "Comments" c
+			     LEFT JOIN "Blogs" b
+							 ON c."blogId" = b."id"
+					 LEFT JOIN "Posts" p
+							 ON c."postId" = p."id"
+					 LEFT JOIN "Users" u
+							 ON c."userId" = u."id"
+			 WHERE c."isBanned"=$1 ${searchString} ORDER BY ${order} LIMIT $2 OFFSET $3`,
+			[false, pageSize, skip],
+		);
 	}
 
 	async count(searchString): Promise<number> {
@@ -141,7 +169,7 @@ export class QueryCommentsRepository implements QueryCommentsRepositoryInterface
 		return +count[0].count;
 	}
 
-	public countLikes(comment: CommentModel, currentUserId: string | null): LikesInfo {
+	/*public countLikes(comment: CommentModel, currentUserId: string | null): LikesInfo {
 		const likesCount = comment.likes.filter(
 			(v: LikeDbDto) => v.likeStatus === LikeStatusEnum.Like && !v.isBanned,
 		).length;
@@ -161,7 +189,7 @@ export class QueryCommentsRepository implements QueryCommentsRepositoryInterface
 			dislikesCount,
 			myStatus,
 		};
-	}
+	}*/
 
 	private likes(comments) {
 		return comments.map((v) => ({

@@ -37,6 +37,7 @@ export class FindAllUserHandler implements IQueryHandler<FindAllUserCommand> {
 			paginationData.sortDirection,
 			paginationData.skip,
 			paginationData.pageSize,
+			null,
 		);
 
 		return {

@@ -5,6 +5,7 @@ import { ResponseCommentDto } from '../../dto';
 import { QueryCommentsRepositoryInterface } from '../../interfaces/query.comments.repository.interface';
 import { Inject } from '@nestjs/common';
 import { CommentInjectionToken } from '../../infrastructure/providers/comment.injection.token';
+import { LikeStatusEnum } from '../../../../common/dto';
 
 export class FindOneCommentCommand {
 	constructor(public id: string, public currentUserId: string | null) {}
@@ -18,10 +19,13 @@ export class FindOneCommentHandler implements IQueryHandler<FindOneCommentComman
 	) {}
 
 	async execute(command: FindOneCommentCommand): Promise<ResponseCommentDto> {
-		const comment: CommentModel | null = await this.queryCommentsRepository.find(command.id);
+		const comment: CommentModel | null = await this.queryCommentsRepository.find(
+			command.id,
+			command.currentUserId,
+		);
 		if (!comment) throw new CommentNotFoundException(command.id);
 
-		const likesInfo = this.queryCommentsRepository.countLikes(comment, command.currentUserId);
+		//const likesInfo = this.queryCommentsRepository.countLikes(comment, command.currentUserId);
 
 		return {
 			id: comment.id.toString(),
@@ -29,7 +33,11 @@ export class FindOneCommentHandler implements IQueryHandler<FindOneCommentComman
 			userId: comment.userId.toString(),
 			userLogin: comment.userLogin,
 			createdAt: comment.createdAt,
-			likesInfo,
+			likesInfo: {
+				likesCount: +comment.likes,
+				dislikesCount: +comment.dislikes,
+				myStatus: comment.status ? LikeStatusEnum[comment.status] : LikeStatusEnum.None,
+			},
 		};
 	}
 }

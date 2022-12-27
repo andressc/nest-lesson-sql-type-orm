@@ -38,6 +38,7 @@ export class FindAllBlogHandler implements IQueryHandler<FindAllBlogCommand> {
 			paginationData.sortDirection,
 			paginationData.skip,
 			paginationData.pageSize,
+			null,
 		);
 
 		return {
