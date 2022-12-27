@@ -4,6 +4,9 @@ import { ValidationService } from '../../../../shared/validation/application/val
 import { CreateLikeCommand } from '../../../likes/application/command/create-like.handler';
 import { CreateRequestLikeDto } from '../../../likes/dto/create-request-like.dto';
 import { LikeTypeEnum } from '../../../../common/dto/like-type.enum';
+import { UsersService } from '../../../users/application/users.service';
+import { UserModel } from '../../../users/domain/user.schema';
+import { ForbiddenException } from '@nestjs/common';
 
 export class CreateLikePostCommand implements ICommand {
 	constructor(
@@ -17,6 +20,7 @@ export class CreateLikePostCommand implements ICommand {
 @CommandHandler(CreateLikePostCommand)
 export class CreateLikePostHandler implements ICommandHandler<CreateLikePostCommand> {
 	constructor(
+		private readonly usersService: UsersService,
 		private readonly postsService: PostsService,
 		private readonly validationService: ValidationService,
 		private readonly commandBus: CommandBus,
@@ -26,6 +30,9 @@ export class CreateLikePostHandler implements ICommandHandler<CreateLikePostComm
 		await this.validationService.validate(command.data, CreateRequestLikeDto);
 
 		await this.postsService.findPostOrErrorThrow(command.postId);
+
+		const user: UserModel = await this.usersService.findUserByIdOrErrorThrow(command.userId);
+		if (user.isBanned === true) throw new ForbiddenException();
 
 		await this.commandBus.execute(
 			new CreateLikeCommand(

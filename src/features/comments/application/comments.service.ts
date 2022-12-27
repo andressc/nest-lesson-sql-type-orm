@@ -11,10 +11,10 @@ export class CommentsService {
 		private readonly commentsRepository: CommentsRepositoryInterface,
 	) {}
 
-	public async findCommentOrErrorThrow(id: string, authuserId?: string): Promise<CommentModel> {
+	public async findCommentOrErrorThrow(id: string, authUserId?: string): Promise<CommentModel> {
 		const comment: CommentModel | null = await this.commentsRepository.find(id);
 		if (!comment) throw new CommentNotFoundException(id);
-		if (authuserId && comment.userId !== authuserId) throw new ForbiddenException();
+		if (authUserId && comment.userId !== authUserId) throw new ForbiddenException();
 		return comment;
 	}
 }
