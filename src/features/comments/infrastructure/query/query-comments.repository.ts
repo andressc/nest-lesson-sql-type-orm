@@ -52,7 +52,7 @@ export class QueryCommentsRepository implements QueryCommentsRepositoryInterface
 			id: comment[0].id,
 			content: comment[0].content,
 			userId: comment[0].userId,
-			userLogin: comment[0].login,
+			login: comment[0].login,
 			postId: comment[0].postId,
 			postTitle: comment[0].title,
 			blogId: comment[0].blogId,

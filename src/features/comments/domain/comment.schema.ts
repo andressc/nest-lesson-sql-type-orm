@@ -8,7 +8,7 @@ export class CommentModel {
 	id: string;
 	content: string;
 	userId: string;
-	userLogin: string;
+	login: string;
 	postId: string;
 	//blogUserId: string;
 	postTitle: string;

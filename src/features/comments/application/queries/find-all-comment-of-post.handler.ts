@@ -64,7 +64,7 @@ export class FindAllCommentOfPostHandler implements IQueryHandler<FindAllComment
 					id: v.id.toString(),
 					content: v.content,
 					userId: v.userId.toString(),
-					userLogin: v.userLogin,
+					userLogin: v.login,
 					createdAt: v.createdAt,
 					likesInfo: {
 						likesCount: +v.likes,
