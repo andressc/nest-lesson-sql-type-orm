@@ -1,5 +1,5 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { PaginationCalc, PaginationDto, QueryDto } from '../../../../common/dto';
+import { LikeStatusEnum, PaginationCalc, PaginationDto, QueryDto } from '../../../../common/dto';
 import { ResponsePostDto } from '../../dto';
 import { PostModel } from '../../domain/post.schema';
 import { PaginationService } from '../../../../shared/pagination/application/pagination.service';
@@ -52,18 +52,15 @@ export class FindAllPostHandler implements IQueryHandler<FindAllPostCommand> {
 			paginationData.sortDirection,
 			paginationData.skip,
 			paginationData.pageSize,
-			null,
+			command.currentUserId,
 		);
 
-		let likesInfo;
 		return {
 			pagesCount: paginationData.pagesCount,
 			page: paginationData.pageNumber,
 			pageSize: paginationData.pageSize,
 			totalCount: totalCount,
 			items: post.map((v: PostModel) => {
-				likesInfo = this.queryPostsRepository.countLikes(v, command.currentUserId);
-
 				return {
 					id: v.id.toString(),
 					title: v.title,
@@ -72,7 +69,12 @@ export class FindAllPostHandler implements IQueryHandler<FindAllPostCommand> {
 					blogId: v.blogId.toString(),
 					blogName: v.blogName,
 					createdAt: v.createdAt,
-					extendedLikesInfo: likesInfo,
+					extendedLikesInfo: {
+						likesCount: +v.likes,
+						dislikesCount: +v.dislikes,
+						myStatus: v.status ? LikeStatusEnum[v.status] : LikeStatusEnum.None,
+						newestLikes: v.like,
+					},
 				};
 			}),
 		};

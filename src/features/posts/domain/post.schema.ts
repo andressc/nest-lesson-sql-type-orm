@@ -13,7 +13,15 @@ export class PostModel {
 	blogName: string;
 	isBanned: boolean;
 	createdAt: string;
-	likes: LikesDto[];
+	//likes: LikesDto[];
+	likes: number;
+	dislikes: number;
+	status: string | null;
+	like: Array<{
+		userId: string;
+		login: string;
+		addedAt: string;
+	}>;
 }
 
 @Schema()

@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { LikesInfoExtended, LikeStatusEnum } from '../../../../common/dto';
 import { Post, PostModel } from '../../domain/post.schema';
 import { QueryPostsRepositoryInterface } from '../../interfaces/query.posts.repository.interface';
-import { LikeDbDto } from '../../../likes/dto/like-db.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
@@ -16,7 +14,7 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 		private readonly postModel: Model<PostModel>,
 	) {}
 
-	async find(id: string): Promise<PostModel | null> {
+	async find(id: string, currentUserId: string): Promise<PostModel | null> {
 		const post = await this.dataSource.query(
 			`SELECT
 				 p."id",
@@ -27,22 +25,37 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 				 p."createdAt",
 				 p."isBanned",
 				 b."name",
-				 l."userId",
-				 l."likeStatus",
-				 l."addedAt" AS "likeAddedAt",
-				 u."login"
+				 b."userId",
+				 u."login",
+				 (SELECT COUNT(l."id") FROM "PostLikes" l WHERE p."id" = l."postId" AND l."isBanned"=false AND l."likeStatus" = 'Like') AS likes,
+				 (SELECT COUNT(l."id") FROM "PostLikes" l WHERE p."id" = l."postId" AND l."isBanned"=false AND l."likeStatus" = 'Dislike') AS dislikes,
+				 (SELECT l."likeStatus" FROM "PostLikes" l WHERE l."userId" = ${currentUserId} AND l."isBanned"=false AND l."postId" = p."id") AS status,
+				 (SELECT array_agg(l."userId" || ' ' || l."addedAt" || ' ' || u."login" ORDER BY l."addedAt" DESC) 
+				  FROM "PostLikes" l, "Users" u 
+				  WHERE l."likeStatus" = 'Like' AND l."isBanned"=false AND l."postId" = p."id" AND l."userId"=u."id") AS newlike
 			 FROM "Posts" p
-			     LEFT JOIN "PostLikes" l
-			         ON p."id" = l."postId"
 					 LEFT JOIN "Blogs" b
 							 ON p."blogId" = b."id"
 					 LEFT JOIN "Users" u
-							 ON l."userId" = u."id"
-			 WHERE p."id"=$1 AND p."isBanned"=$2`,
+							 ON b."userId" = u."id"
+			 WHERE p."id"=$1 AND p."isBanned"=$2 AND u."isBanned"=false`,
 			[id, false],
 		);
 
 		if (post.length === 0) return null;
+
+		const newestLikes = [];
+
+		for (let i = 0; i < 3; i++) {
+			if (post[0].newlike && post[0].newlike[i]) {
+				const splitUser = post[0].newlike[i].split(' ');
+				newestLikes.push({
+					userId: splitUser[0].toString(),
+					login: splitUser[2],
+					addedAt: splitUser[1],
+				});
+			}
+		}
 
 		return {
 			id: post[0].id,
@@ -53,7 +66,11 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 			blogName: post[0].name,
 			isBanned: post[0].isBanned,
 			createdAt: post[0].createdAt,
-			likes: this.likes(post),
+			//likes: this.likes(post),
+			likes: post[0].likes,
+			dislikes: post[0].dislikes,
+			status: post[0].status,
+			like: newestLikes,
 		};
 	}
 
@@ -63,6 +80,7 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 		sortDirection: string,
 		skip: number,
 		pageSize: number,
+		currentUserId: string,
 	): Promise<PostModel[] | null> {
 		let order = `"${sortBy}" ${sortDirection}`;
 		if (sortBy === 'title') order = `"title" ${sortDirection}`;
@@ -71,7 +89,7 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 		if (sortBy === 'blogId') order = `"blogId" ${sortDirection}`;
 		if (sortBy === 'blogName') order = `"blogName" ${sortDirection}`;
 
-		const resultQuery = await this.dataSource.query(
+		const result = await this.dataSource.query(
 			`SELECT 
     		 p."id",
 				 p."title",
@@ -81,22 +99,60 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 				 p."createdAt",
 				 p."isBanned",
 				 b."name",
-				 l."userId",
-				 l."likeStatus",
-				 l."addedAt" AS "likeAddedAt",
-				 u."login"
+				 b."userId",
+				 u."login",
+				 (SELECT COUNT(l."id") FROM "PostLikes" l WHERE p."id" = l."postId" AND l."isBanned"=false AND l."likeStatus" = 'Like') AS likes,
+				 (SELECT COUNT(l."id") FROM "PostLikes" l WHERE p."id" = l."postId" AND l."isBanned"=false AND l."likeStatus" = 'Dislike') AS dislikes,
+				 (SELECT l."likeStatus" FROM "PostLikes" l WHERE l."userId" = ${currentUserId} AND l."isBanned"=false AND l."postId" = p."id") AS status,
+				 (SELECT array_agg(l."userId" || ' ' || l."addedAt" || ' ' || u."login" ORDER BY l."addedAt" DESC) 
+				  FROM "PostLikes" l, "Users" u 
+				  WHERE l."likeStatus" = 'Like' AND l."isBanned"=false AND l."postId" = p."id" AND l."userId"=u."id") AS newlike
 			 FROM "Posts" p
-			     LEFT JOIN "PostLikes" l
-			         ON p."id" = l."postId"
 					 LEFT JOIN "Blogs" b
 					     ON p."blogId" = b."id"
 					 LEFT JOIN "Users" u
-					     ON l."userId" = u."id"
-			 WHERE p."isBanned"=$1 ${searchString} ORDER BY ${order} LIMIT $2 OFFSET $3`,
+					     ON b."userId" = u."id"
+			 WHERE p."isBanned"=$1 AND u."isBanned"=false ${searchString} ORDER BY ${order} LIMIT $2 OFFSET $3`,
 			[false, pageSize, skip],
 		);
 
-		const result = [];
+		//console.log(result);
+
+		const posts = [];
+
+		for (const postRow of result) {
+			const newestLikes = [];
+
+			for (let i = 0; i < 3; i++) {
+				if (postRow.newlike && postRow.newlike[i]) {
+					const splitUser = postRow.newlike[i].split(' ');
+					newestLikes.push({
+						userId: splitUser[0].toString(),
+						login: splitUser[2],
+						addedAt: splitUser[1],
+					});
+				}
+			}
+
+			posts.push({
+				id: postRow.id,
+				title: postRow.title,
+				shortDescription: postRow.shortDescription,
+				content: postRow.content,
+				blogId: postRow.blogId,
+				blogName: postRow.name,
+				createdAt: postRow.createdAt,
+				isBanned: postRow.isBanned,
+				likes: postRow.likes,
+				dislikes: postRow.dislikes,
+				status: postRow.status,
+				like: newestLikes,
+			});
+		}
+
+		return posts;
+
+		/*const result = [];
 		const addedPosts = {};
 
 		for (const postRow of resultQuery) {
@@ -125,7 +181,7 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 			});
 		}
 
-		return result;
+		return result;*/
 	}
 
 	async count(searchString): Promise<number> {
@@ -135,7 +191,7 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 		return +count[0].count;
 	}
 
-	public countLikes(post: PostModel, currentUserId: string | null): LikesInfoExtended {
+	/*public countLikes(post: PostModel, currentUserId: string | null): LikesInfoExtended {
 		const likesCount = post.likes.filter(
 			(v: LikeDbDto) => v.likeStatus === LikeStatusEnum.Like && !v.isBanned,
 		).length;
@@ -166,7 +222,7 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 			myStatus,
 			newestLikes,
 		};
-	}
+	}*/
 
 	private likes(posts) {
 		return posts.map((v) => ({
