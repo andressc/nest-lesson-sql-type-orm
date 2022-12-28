@@ -36,7 +36,10 @@ export class FindAllCommentOfPostHandler implements IQueryHandler<FindAllComment
 
 		const searchString = this.queryCommentsRepository.searchTerm(command.postId);
 
-		const post: PostModel | null = await this.queryPostsRepository.find(command.postId);
+		const post: PostModel | null = await this.queryPostsRepository.find(
+			command.postId,
+			command.currentUserId,
+		);
 		if (!post) throw new PostNotFoundException(command.postId);
 
 		const totalCount: number = await this.queryCommentsRepository.count(searchString);
