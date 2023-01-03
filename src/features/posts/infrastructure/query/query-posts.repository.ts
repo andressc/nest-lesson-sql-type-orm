@@ -82,12 +82,14 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 		pageSize: number,
 		currentUserId: string,
 	): Promise<PostModel[] | null> {
-		let order = `"${sortBy}" ${sortDirection}`;
-		if (sortBy === 'title') order = `"title" ${sortDirection}`;
-		if (sortBy === 'shortDescription') order = `"shortDescription" ${sortDirection}`;
-		if (sortBy === 'content') order = `"content" ${sortDirection}`;
-		if (sortBy === 'blogId') order = `"blogId" ${sortDirection}`;
-		if (sortBy === 'blogName') order = `"blogName" ${sortDirection}`;
+		//let order = `"${sortBy}" ${sortDirection}`;
+		let order;
+		if (sortBy === 'title') order = `ORDER BY "title" ${sortDirection}`;
+		if (sortBy === 'shortDescription') order = `ORDER BY "shortDescription" ${sortDirection}`;
+		if (sortBy === 'content') order = `ORDER BY "content" ${sortDirection}`;
+		if (sortBy === 'blogId') order = `ORDER BY "blogId" ${sortDirection}`;
+		if (sortBy === 'blogName') order = `ORDER BY "blogName" ${sortDirection}`;
+		if (sortBy === 'createdAt') order = `ORDER BY "createdAt" ${sortDirection}`;
 
 		const result = await this.dataSource.query(
 			`SELECT 
@@ -112,7 +114,9 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 					     ON p."blogId" = b."id"
 					 LEFT JOIN "Users" u
 					     ON b."userId" = u."id"
-			 WHERE p."isBanned"=$1 AND u."isBanned"=false ${searchString} ORDER BY ${order} LIMIT $2 OFFSET $3`,
+			 WHERE p."isBanned"=$1 AND u."isBanned"=false ${searchString} ${
+				order ? order : ''
+			} LIMIT $2 OFFSET $3`,
 			[false, pageSize, skip],
 		);
 
