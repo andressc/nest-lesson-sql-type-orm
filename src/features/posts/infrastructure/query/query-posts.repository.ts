@@ -88,7 +88,7 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 		if (sortBy === 'shortDescription') order = `ORDER BY "shortDescription" ${sortDirection}`;
 		if (sortBy === 'content') order = `ORDER BY "content" ${sortDirection}`;
 		if (sortBy === 'blogId') order = `ORDER BY "blogId" ${sortDirection}`;
-		if (sortBy === 'blogName') order = `ORDER BY "blogName" ${sortDirection}`;
+		if (sortBy === 'blogName') order = `ORDER BY "name" ${sortDirection}`;
 		if (sortBy === 'createdAt') order = `ORDER BY "createdAt" ${sortDirection}`;
 
 		const result = await this.dataSource.query(
