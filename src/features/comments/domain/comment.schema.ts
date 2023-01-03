@@ -11,9 +11,9 @@ export class CommentModel {
 	login: string;
 	postId: string;
 	//blogUserId: string;
-	postTitle: string;
+	title: string;
 	blogId: string;
-	blogName: string;
+	name: string;
 	createdAt: string;
 	isBanned: boolean;
 	//likes: LikesDto[];
