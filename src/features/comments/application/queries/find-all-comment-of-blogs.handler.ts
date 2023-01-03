@@ -52,7 +52,6 @@ export class FindAllCommentOfBlogsHandler implements IQueryHandler<FindAllCommen
 			pageSize: paginationData.pageSize,
 			totalCount: totalCount,
 			items: comments.map((v: CommentModel) => {
-				console.log(v);
 				return {
 					id: v.id.toString(),
 					content: v.content,
