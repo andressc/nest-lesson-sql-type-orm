@@ -42,17 +42,28 @@ export class QueryUsersRepository implements QueryUsersRepositoryInterface {
 		return +count[0].count;
 	}
 
-	public searchTerm(login: string | undefined, email: string | undefined): string {
+	public searchTerm(
+		login: string | undefined,
+		email: string | undefined,
+		banStatus: string | undefined,
+	): string {
 		let searchString;
 
 		const searchLoginTerm = login ? `'%${login}%'` : null;
 		const searchEmailTerm = email ? `'%${email}%'` : null;
+		let searchBanStatus;
 
 		if (searchLoginTerm) searchString = `WHERE LOWER("login") LIKE LOWER(${searchLoginTerm})`;
 		if (searchEmailTerm) searchString = `WHERE LOWER("email") LIKE LOWER(${searchEmailTerm})`;
 
 		if (searchLoginTerm && searchEmailTerm)
 			searchString = `WHERE LOWER("login") LIKE LOWER(${searchLoginTerm}) OR LOWER("email") LIKE ${searchEmailTerm}`;
+
+		if (banStatus === 'banned') searchBanStatus = `"isBanned"=true`;
+		if (banStatus === 'notBanned') searchBanStatus = `"isBanned"=false`;
+		if (banStatus === 'all') searchBanStatus = '';
+		if (searchString && searchBanStatus) searchString += ` AND ${searchBanStatus}`;
+		if (!searchString && searchBanStatus) searchString = ` WHERE ${searchBanStatus}`;
 
 		return searchString;
 	}

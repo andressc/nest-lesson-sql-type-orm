@@ -23,6 +23,7 @@ export class FindAllUserHandler implements IQueryHandler<FindAllUserCommand> {
 		const searchString = this.queryUsersRepository.searchTerm(
 			command.query.searchLoginTerm,
 			command.query.searchEmailTerm,
+			command.query.banStatus,
 		);
 
 		const totalCount: number = await this.queryUsersRepository.count(searchString);
