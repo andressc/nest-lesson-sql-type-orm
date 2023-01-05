@@ -7,8 +7,7 @@ import { DataSource } from 'typeorm';
 
 @Injectable()
 export class QueryUsersRepository implements QueryUsersRepositoryInterface {
-	constructor(
-		@InjectDataSource() protected dataSource: DataSource) {}
+	constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
 	async find(id: string): Promise<UserModel | null> {
 		const user = await this.dataSource.query(`SELECT * FROM "Users" WHERE "id"=$1`, [id]);

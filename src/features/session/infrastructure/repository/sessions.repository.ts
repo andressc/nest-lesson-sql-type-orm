@@ -7,8 +7,7 @@ import { DataSource } from 'typeorm';
 
 @Injectable()
 export class SessionsRepository implements SessionsRepositoryInterface {
-	constructor(
-		@InjectDataSource() protected dataSource: DataSource) {}
+	constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
 	async create(data: CreateSessionDto): Promise<SessionModel> {
 		const session = await this.dataSource.query(

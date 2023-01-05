@@ -9,8 +9,7 @@ import { generateHash } from '../../../../common/helpers';
 
 @Injectable()
 export class UsersRepository implements UsersRepositoryInterface {
-	constructor(
-		@InjectDataSource() protected dataSource: DataSource) {}
+	constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
 	async create(data: CreateUserExtendsDto): Promise<UserModel> {
 		const user = await this.dataSource.query(

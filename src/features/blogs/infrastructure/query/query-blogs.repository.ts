@@ -8,8 +8,7 @@ import { DataSource } from 'typeorm';
 
 @Injectable()
 export class QueryBlogsRepository implements QueryBlogsRepositoryInterface {
-	constructor(
-		@InjectDataSource() protected dataSource: DataSource) {}
+	constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
 	async find(id: string): Promise<BlogModel | null> {
 		const blog = await this.dataSource.query(`SELECT * FROM "Blogs" WHERE "id"=$1`, [id]);

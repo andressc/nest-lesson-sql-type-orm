@@ -8,8 +8,7 @@ import { LikeStatusEnum } from '../../../../common/dto';
 
 @Injectable()
 export class CommentLikesRepository implements LikesRepositoryInterface {
-	constructor(
-		@InjectDataSource() protected dataSource: DataSource) {}
+	constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
 	async create(data: CreateLikeExtendsDto): Promise<LikeModel> {
 		const like = await this.dataSource.query(

@@ -6,8 +6,7 @@ import { DataSource } from 'typeorm';
 
 @Injectable()
 export class QueryCommentsRepository implements QueryCommentsRepositoryInterface {
-	constructor(
-		@InjectDataSource() protected dataSource: DataSource) {}
+	constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
 	async find(id: string, currentUserId: string): Promise<CommentModel | null> {
 		const comment = await this.dataSource.query(

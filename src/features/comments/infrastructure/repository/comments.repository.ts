@@ -7,8 +7,7 @@ import { DataSource } from 'typeorm';
 
 @Injectable()
 export class CommentsRepository implements CommentsRepositoryInterface {
-	constructor(
-		@InjectDataSource() protected dataSource: DataSource) {}
+	constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
 	async create(data: CreateCommentExtendsDto): Promise<CommentModel> {
 		const comment = await this.dataSource.query(

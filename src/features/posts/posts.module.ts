@@ -28,13 +28,7 @@ export const CommandHandlers = [
 export const QueryHandlers = [FindOnePostHandler, FindAllPostHandler];
 export const Repositories = [QueryPostsRepositoryProvider, PostsRepositoryProvider];
 export const Services = [PostsService];
-export const Modules = [
-	CqrsModule,
-	BlogsModule,
-	UsersModule,
-	LikesModule,
-	PaginationModule,
-];
+export const Modules = [CqrsModule, BlogsModule, UsersModule, LikesModule, PaginationModule];
 
 @Module({
 	imports: Modules,

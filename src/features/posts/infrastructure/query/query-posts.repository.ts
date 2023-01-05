@@ -6,8 +6,7 @@ import { DataSource } from 'typeorm';
 
 @Injectable()
 export class QueryPostsRepository implements QueryPostsRepositoryInterface {
-	constructor(
-		@InjectDataSource() protected dataSource: DataSource) {}
+	constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
 	async find(id: string, currentUserId: string): Promise<PostModel | null> {
 		const post = await this.dataSource.query(

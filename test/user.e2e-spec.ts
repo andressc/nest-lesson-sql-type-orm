@@ -13,7 +13,6 @@ describe('UserController (e2e)', () => {
 	let dataApp: { app: INestApplication; module: TestingModule; connection: Connection };
 	let connection: Connection;
 	let app: INestApplication;
-	let module: TestingModule;
 
 	const randomId = getRandomId();
 
@@ -57,7 +56,7 @@ describe('UserController (e2e)', () => {
 
 		connection = dataApp.connection;
 		app = dataApp.app.getHttpServer();
-		module = dataApp.module;
+		//module = dataApp.module;
 	});
 
 	afterAll(async () => {

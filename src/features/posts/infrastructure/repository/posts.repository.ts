@@ -8,8 +8,7 @@ import { UpdatePostOfBlogDto } from '../../dto/update-post-of-blog.dto';
 
 @Injectable()
 export class PostsRepository implements PostsRepositoryInterface {
-	constructor(
-		@InjectDataSource() protected dataSource: DataSource) {}
+	constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
 	async create(data: CreatePostExtendsDto): Promise<PostModel> {
 		const post = await this.dataSource.query(

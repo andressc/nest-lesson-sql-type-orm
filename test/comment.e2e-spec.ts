@@ -690,7 +690,7 @@ describe('CommentController (e2e)', () => {
 
 		//!!!!!!! исправить
 		it('get all comments after banned should return 404', async () => {
-			const response = await request(app).get(`/posts/${postData.id}/comments`).expect(404);
+			await request(app).get(`/posts/${postData.id}/comments`).expect(404);
 			//expect(response.body).toEqual(emptyData);
 		});
 	});
