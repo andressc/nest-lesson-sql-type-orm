@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
 import { LikesRepositoryInterface } from '../../interfaces/likes.repository.interface';
-import { Like, LikeModel } from '../../domain/like.schema';
+import { LikeModel } from '../../domain/like.schema';
 import { CreateLikeExtendsDto } from '../../dto/create-like-extends.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -11,10 +9,7 @@ import { LikeStatusEnum } from '../../../../common/dto';
 @Injectable()
 export class PostLikesRepository implements LikesRepositoryInterface {
 	constructor(
-		@InjectDataSource() protected dataSource: DataSource,
-		@InjectModel(Like.name)
-		private readonly likeModel: Model<LikeModel>,
-	) {}
+		@InjectDataSource() protected dataSource: DataSource) {}
 
 	async create(data: CreateLikeExtendsDto): Promise<LikeModel> {
 		const like = await this.dataSource.query(
@@ -39,11 +34,6 @@ export class PostLikesRepository implements LikesRepositoryInterface {
 
 		if (like.length === 0) return null;
 		return like[0];
-	}
-
-	async save(model: LikeModel): Promise<LikeModel> {
-		//return model.save();
-		return model;
 	}
 
 	async delete(model: LikeModel): Promise<void> {

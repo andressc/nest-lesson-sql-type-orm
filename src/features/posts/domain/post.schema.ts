@@ -1,9 +1,3 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { LikesDto } from '../../../common/dto';
-import { UpdatePostOfBlogDto } from '../dto/update-post-of-blog.dto';
-
-//export type PostModel = Post & Document;
-
 export class PostModel {
 	id: string;
 	title: string;
@@ -24,7 +18,7 @@ export class PostModel {
 	}>;
 }
 
-@Schema()
+/*@Schema()
 export class Post {
 	@Prop({ required: true })
 	title: string;
@@ -62,4 +56,4 @@ export class Post {
 
 export const PostSchema = SchemaFactory.createForClass(Post);
 
-PostSchema.methods.updateData = Post.prototype.updateData;
+PostSchema.methods.updateData = Post.prototype.updateData;*/

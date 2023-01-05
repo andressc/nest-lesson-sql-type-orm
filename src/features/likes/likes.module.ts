@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { CqrsModule } from '@nestjs/cqrs';
-import { Like, LikeSchema } from './domain/like.schema';
 import { CreateLikeHandler } from './application/command/create-like.handler';
 import { BanUnbanLikeHandler } from './application/command/ban-unban-like.handler';
 import { PostLikesRepositoryProvider } from './infrastructure/providers/post-likes-repository.provider';
@@ -11,10 +9,7 @@ export const CommandHandlers = [CreateLikeHandler, BanUnbanLikeHandler];
 export const QueryHandlers = [];
 export const Repositories = [PostLikesRepositoryProvider, CommentLikesRepositoryProvider];
 export const Services = [];
-export const Modules = [
-	MongooseModule.forFeature([{ name: Like.name, schema: LikeSchema }]),
-	CqrsModule,
-];
+export const Modules = [CqrsModule];
 
 @Module({
 	imports: Modules,

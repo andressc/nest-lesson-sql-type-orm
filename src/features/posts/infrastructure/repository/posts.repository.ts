@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-import { Post, PostModel } from '../../domain/post.schema';
+import { PostModel } from '../../domain/post.schema';
 import { CreatePostExtendsDto } from '../../dto';
 import { PostsRepositoryInterface } from '../../interfaces/posts.repository.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -11,10 +9,7 @@ import { UpdatePostOfBlogDto } from '../../dto/update-post-of-blog.dto';
 @Injectable()
 export class PostsRepository implements PostsRepositoryInterface {
 	constructor(
-		@InjectDataSource() protected dataSource: DataSource,
-		@InjectModel(Post.name)
-		private readonly postModel: Model<PostModel>,
-	) {}
+		@InjectDataSource() protected dataSource: DataSource) {}
 
 	async create(data: CreatePostExtendsDto): Promise<PostModel> {
 		const post = await this.dataSource.query(
@@ -37,11 +32,6 @@ export class PostsRepository implements PostsRepositoryInterface {
 			`UPDATE "Posts" SET "title"=$1, "shortDescription"=$2, "content"=$3 WHERE "id"=$4`,
 			[updateData.title, updateData.shortDescription, updateData.content, postId],
 		);
-	}
-
-	async save(model: PostModel): Promise<PostModel> {
-		//return model.save();
-		return model;
 	}
 
 	async delete(model: PostModel): Promise<void> {

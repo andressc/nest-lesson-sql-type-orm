@@ -1,7 +1,3 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-
-//export type SessionModel = Session & Document;
-
 export class SessionModel {
 	id: string;
 	ip: string;
@@ -13,7 +9,7 @@ export class SessionModel {
 	userId: string;
 }
 
-@Schema()
+/*@Schema()
 export class Session {
 	@Prop({ required: true })
 	ip: string;
@@ -48,4 +44,4 @@ export class Session {
 
 export const SessionSchema = SchemaFactory.createForClass(Session);
 
-SessionSchema.methods.updateSession = Session.prototype.updateSession;
+SessionSchema.methods.updateSession = Session.prototype.updateSession;*/

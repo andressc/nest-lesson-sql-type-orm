@@ -22,6 +22,5 @@ export class NewPasswordAuthHandler implements ICommandHandler<NewPasswordAuthCo
 		if (!user) throw new UserNotFoundException(command.userId);
 
 		await this.usersRepository.updatePassword(command.data.newPassword, user.id);
-		await this.usersRepository.save(user);
 	}
 }

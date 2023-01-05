@@ -1,7 +1,3 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { UpdateCommentDto } from '../dto';
-import { LikesDto } from '../../../common/dto';
-
 //export type CommentModel = Comment & Document;
 
 export class CommentModel {
@@ -22,7 +18,7 @@ export class CommentModel {
 	status: string | null;
 }
 
-@Schema()
+/*@Schema()
 export class Comment {
 	@Prop({ required: true })
 	content: string;
@@ -64,4 +60,4 @@ export class Comment {
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);
 
-CommentSchema.methods.updateData = Comment.prototype.updateData;
+CommentSchema.methods.updateData = Comment.prototype.updateData;*/

@@ -60,7 +60,6 @@ export class CreateCommentOfPostHandler implements ICommandHandler<CreateComment
 			createdAt: createDate(),
 		});
 
-		const result = await this.commentsRepository.save(newComment);
-		return result.id.toString();
+		return newComment.id.toString();
 	}
 }

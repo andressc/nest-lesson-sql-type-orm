@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-import { Post, PostModel } from '../../domain/post.schema';
+import { PostModel } from '../../domain/post.schema';
 import { QueryPostsRepositoryInterface } from '../../interfaces/query.posts.repository.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -9,10 +7,7 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 	constructor(
-		@InjectDataSource() protected dataSource: DataSource,
-		@InjectModel(Post.name)
-		private readonly postModel: Model<PostModel>,
-	) {}
+		@InjectDataSource() protected dataSource: DataSource) {}
 
 	async find(id: string, currentUserId: string): Promise<PostModel | null> {
 		const post = await this.dataSource.query(

@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentModel } from '../../domain/comment.schema';
+import { CommentModel } from '../../domain/comment.schema';
 import { CreateCommentExtendsDto, UpdateCommentDto } from '../../dto';
 import { CommentsRepositoryInterface } from '../../interfaces/comments.repository.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -10,10 +8,7 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class CommentsRepository implements CommentsRepositoryInterface {
 	constructor(
-		@InjectDataSource() protected dataSource: DataSource,
-		@InjectModel(Comment.name)
-		private readonly commentModel: Model<CommentModel>,
-	) {}
+		@InjectDataSource() protected dataSource: DataSource) {}
 
 	async create(data: CreateCommentExtendsDto): Promise<CommentModel> {
 		const comment = await this.dataSource.query(
@@ -36,11 +31,6 @@ export class CommentsRepository implements CommentsRepositoryInterface {
 			data.content,
 			commentId,
 		]);
-	}
-
-	async save(model: CommentModel): Promise<CommentModel> {
-		//return model.save();
-		return model;
 	}
 
 	async delete(model: CommentModel): Promise<void> {

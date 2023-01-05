@@ -40,7 +40,6 @@ export class CreatePostOfBlogHandler implements ICommandHandler<CreatePostOfBlog
 			createdAt: createDate(),
 		});
 
-		const result = await this.postsRepository.save(newPost);
-		return result.id.toString();
+		return newPost.id.toString();
 	}
 }

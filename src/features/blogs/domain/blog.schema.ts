@@ -1,6 +1,3 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { UpdateBlogDto } from '../dto';
-
 //export type BlogModel = Blog & Document;
 
 export class BlogModel {
@@ -15,7 +12,7 @@ export class BlogModel {
 	banDate: string;
 }
 
-@Schema()
+/*@Schema()
 export class Blog {
 	@Prop({ required: true })
 	name: string;
@@ -62,4 +59,4 @@ export const BlogSchema = SchemaFactory.createForClass(Blog);
 
 BlogSchema.methods.updateData = Blog.prototype.updateData;
 BlogSchema.methods.bindBlogWithUser = Blog.prototype.bindBlogWithUser;
-BlogSchema.methods.ban = Blog.prototype.ban;
+BlogSchema.methods.ban = Blog.prototype.ban;*/

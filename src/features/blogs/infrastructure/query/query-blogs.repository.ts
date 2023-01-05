@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogModel } from '../../domain/blog.schema';
+import { BlogModel } from '../../domain/blog.schema';
 import { QueryBlogsRepositoryInterface } from '../../interfaces/query.blogs.repository.interface';
-import { Ban, BanModel } from '../../domain/ban.schema';
+import { BanModel } from '../../domain/ban.schema';
 import { Sort } from '../../../../common/dto';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -11,10 +9,7 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class QueryBlogsRepository implements QueryBlogsRepositoryInterface {
 	constructor(
-		@InjectDataSource() protected dataSource: DataSource,
-		@InjectModel(Blog.name) private readonly blogModel: Model<BlogModel>,
-		@InjectModel(Ban.name) private readonly banModel: Model<BanModel>,
-	) {}
+		@InjectDataSource() protected dataSource: DataSource) {}
 
 	async find(id: string): Promise<BlogModel | null> {
 		const blog = await this.dataSource.query(`SELECT * FROM "Blogs" WHERE "id"=$1`, [id]);

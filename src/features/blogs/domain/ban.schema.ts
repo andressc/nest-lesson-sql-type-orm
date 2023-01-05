@@ -1,5 +1,3 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-
 //export type BanModel = Ban & Document;
 
 export class BanModel {
@@ -14,7 +12,7 @@ export class BanModel {
 	createdAt: string;
 }
 
-@Schema()
+/*@Schema()
 export class Ban {
 	@Prop({ required: true })
 	userId: string;
@@ -46,4 +44,4 @@ export class Ban {
 
 export const BanSchema = SchemaFactory.createForClass(Ban);
 
-BanSchema.methods.banUnbanUser = Ban.prototype.banUnbanUser;
+BanSchema.methods.banUnbanUser = Ban.prototype.banUnbanUser;*/

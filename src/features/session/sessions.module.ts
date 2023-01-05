@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { SessionsController } from './api/sessions.controller';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Session, SessionSchema } from './domain/session.schema';
 import { FindAllSessionHandler } from './application/queries/find-all-session.handler';
 import { RemoveAllUserSessionHandler } from './application/commands/remove-all-user-session.handler';
 import { RemoveUserSessionHandler } from './application/commands/remove-user-session.handler';
@@ -15,15 +13,7 @@ export const Repositories = [QuerySessionsRepositoryProvider, SessionsRepository
 export const Services = [];
 
 @Module({
-	imports: [
-		MongooseModule.forFeature([
-			{
-				name: Session.name,
-				schema: SessionSchema,
-			},
-		]),
-		CqrsModule,
-	],
+	imports: [CqrsModule],
 
 	controllers: [SessionsController],
 	providers: [...Services, ...Repositories, ...CommandHandlers, ...QueryHandlers],

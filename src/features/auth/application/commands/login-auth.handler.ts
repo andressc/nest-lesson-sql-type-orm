@@ -4,7 +4,6 @@ import { PayloadTokenDto, ResponseTokensDto } from '../../dto';
 import { payloadDateCreator } from '../../../../common/helpers';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../auth.service';
-import { SessionModel } from '../../../session/domain/session.schema';
 import { SessionsRepositoryInterface } from '../../../session/interfaces/sessions.repository.interface';
 import { Inject } from '@nestjs/common';
 import { SessionInjectionToken } from '../../../session/infrastructure/providers/session.injection.token';
@@ -27,7 +26,7 @@ export class LoginAuthHandler implements ICommandHandler<LoginAuthCommand> {
 		const tokens: ResponseTokensDto = await this.authService.createTokens(command.userId, deviceId);
 		const payload: PayloadTokenDto = this.jwtService.decode(tokens.refreshToken) as PayloadTokenDto;
 
-		const newSession: SessionModel = await this.sessionsRepository.create({
+		await this.sessionsRepository.create({
 			lastActiveDate: payloadDateCreator(payload.iat),
 			expirationDate: payloadDateCreator(payload.exp),
 			deviceId,
@@ -35,8 +34,6 @@ export class LoginAuthHandler implements ICommandHandler<LoginAuthCommand> {
 			title: command.userAgent,
 			userId: command.userId,
 		});
-
-		await this.sessionsRepository.save(newSession);
 
 		return tokens;
 	}

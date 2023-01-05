@@ -49,6 +49,6 @@ export class BanUnbanUserHandler implements ICommandHandler<BanUnbanUserCommand>
 
 		if (command.data.isBanned) await this.sessionsRepository.removeAllUserSessions(user.id);
 
-		await this.usersRepository.save(user);
+		//await this.usersRepository.save(user);
 	}
 }

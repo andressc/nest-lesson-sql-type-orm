@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-import { User, UserModel } from '../../domain/user.schema';
+import { UserModel } from '../../domain/user.schema';
 import { QueryUsersRepositoryInterface } from '../../interfaces/query.users.repository.interface';
 import { Sort } from '../../../../common/dto';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -10,10 +8,7 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class QueryUsersRepository implements QueryUsersRepositoryInterface {
 	constructor(
-		@InjectDataSource() protected dataSource: DataSource,
-		@InjectModel(User.name)
-		private readonly userModel: Model<UserModel>,
-	) {}
+		@InjectDataSource() protected dataSource: DataSource) {}
 
 	async find(id: string): Promise<UserModel | null> {
 		const user = await this.dataSource.query(`SELECT * FROM "Users" WHERE "id"=$1`, [id]);

@@ -1,4 +1,3 @@
-import { MongooseModule } from '@nestjs/mongoose';
 import { CqrsModule } from '@nestjs/cqrs';
 import { Module } from '@nestjs/common';
 import { CreateCommentOfPostHandler } from './application/commands/create-comment-of-post.handler';
@@ -10,7 +9,6 @@ import { CommentsController } from './api/comments.controller';
 import { CommentsService } from './application/comments.service';
 import { UsersModule } from '../users/users.module';
 import { PostsModule } from '../posts/posts.module';
-import { Comment, CommentSchema } from './domain/comment.schema';
 import { LikesModule } from '../likes/likes.module';
 import { BanUnbanCommentHandler } from './application/commands/ban-unban-comment.handler';
 import { CreateLikeCommentHandler } from './application/commands/create-like-comment.handler';
@@ -35,7 +33,6 @@ export const QueryHandlers = [
 export const Repositories = [QueryCommentsRepositoryProvider, CommentsRepositoryProvider];
 export const Services = [CommentsService];
 export const Modules = [
-	MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
 	CqrsModule,
 	UsersModule,
 	PostsModule,

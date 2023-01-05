@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentModel } from '../../domain/comment.schema';
+import { CommentModel } from '../../domain/comment.schema';
 import { QueryCommentsRepositoryInterface } from '../../interfaces/query.comments.repository.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -9,10 +7,7 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class QueryCommentsRepository implements QueryCommentsRepositoryInterface {
 	constructor(
-		@InjectDataSource() protected dataSource: DataSource,
-		@InjectModel(Comment.name)
-		private readonly commentModel: Model<CommentModel>,
-	) {}
+		@InjectDataSource() protected dataSource: DataSource) {}
 
 	async find(id: string, currentUserId: string): Promise<CommentModel | null> {
 		const comment = await this.dataSource.query(

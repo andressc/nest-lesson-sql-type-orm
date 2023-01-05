@@ -15,7 +15,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 						password: 'sa',
 						database: 'Lesson',
 						autoLoadEntities: false,
-						synchronize: true,
+						synchronize: false,
 					};
 				}
 

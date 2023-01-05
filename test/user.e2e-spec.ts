@@ -94,8 +94,6 @@ describe('UserController (e2e)', () => {
 				.send(userDataLogin)
 				.expect(201);
 
-			console.log(user.body)
-
 			expect(user.body).toEqual(userData);
 
 			userId = user.body.id;

@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
 import { SessionsRepositoryInterface } from '../../interfaces/sessions.repository.interface';
-import { Session, SessionModel } from '../../domain/session.schema';
+import { SessionModel } from '../../domain/session.schema';
 import { CreateSessionDto } from '../../dto/create-session.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -10,10 +8,7 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class SessionsRepository implements SessionsRepositoryInterface {
 	constructor(
-		@InjectDataSource() protected dataSource: DataSource,
-		@InjectModel(Session.name)
-		private readonly sessionModel: Model<SessionModel>,
-	) {}
+		@InjectDataSource() protected dataSource: DataSource) {}
 
 	async create(data: CreateSessionDto): Promise<SessionModel> {
 		const session = await this.dataSource.query(
@@ -28,11 +23,6 @@ export class SessionsRepository implements SessionsRepositoryInterface {
 	async find(id: string): Promise<SessionModel | null> {
 		const session = await this.dataSource.query(`SELECT * FROM "Sessions" WHERE "id"=$1`, [id]);
 		return session[0];
-	}
-
-	async save(model: SessionModel): Promise<SessionModel> {
-		//return model.save();
-		return model;
 	}
 
 	async delete(model: SessionModel): Promise<void> {

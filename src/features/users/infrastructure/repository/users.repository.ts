@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserExtendsDto } from '../../dto';
-import { User, UserModel } from '../../domain/user.schema';
+import { UserModel } from '../../domain/user.schema';
 import { UsersRepositoryInterface } from '../../interfaces/users.repository.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -12,10 +10,7 @@ import { generateHash } from '../../../../common/helpers';
 @Injectable()
 export class UsersRepository implements UsersRepositoryInterface {
 	constructor(
-		@InjectDataSource() protected dataSource: DataSource,
-		@InjectModel(User.name)
-		private readonly userModel: Model<UserModel>,
-	) {}
+		@InjectDataSource() protected dataSource: DataSource) {}
 
 	async create(data: CreateUserExtendsDto): Promise<UserModel> {
 		const user = await this.dataSource.query(
@@ -43,12 +38,6 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *;`,
 	async find(id: string): Promise<UserModel | null> {
 		const user = await this.dataSource.query(`SELECT * FROM "Users" WHERE "id"=$1`, [id]);
 		return user[0];
-	}
-
-	//??
-	async save(model: UserModel): Promise<UserModel> {
-		//return model.save();
-		return model;
 	}
 
 	async delete(model: UserModel): Promise<void> {

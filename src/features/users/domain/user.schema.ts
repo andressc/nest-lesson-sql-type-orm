@@ -1,9 +1,3 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import * as bcrypt from 'bcrypt';
-import { generateHash } from '../../../common/helpers';
-
-//export type UserModel = User & Document;
-
 export class UserModel {
 	id: string;
 	login: string;
@@ -19,7 +13,7 @@ export class UserModel {
 	createdAt: string;
 }
 
-@Schema()
+/*@Schema()
 export class User {
 	@Prop({ required: true })
 	login: string;
@@ -80,4 +74,4 @@ export const UserSchema = SchemaFactory.createForClass(User);
 UserSchema.methods.updateIsConfirmed = User.prototype.updateIsConfirmed;
 UserSchema.methods.updateConfirmationCode = User.prototype.updateConfirmationCode;
 UserSchema.methods.updatePassword = User.prototype.updatePassword;
-UserSchema.methods.banUnbanUser = User.prototype.banUnbanUser;
+UserSchema.methods.banUnbanUser = User.prototype.banUnbanUser;*/

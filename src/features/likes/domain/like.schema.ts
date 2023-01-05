@@ -1,7 +1,3 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { LikeStatusEnum } from '../../../common/dto';
-import { ObjectId } from 'mongodb';
-
 export class LikeModel {
 	id: string;
 	itemId: string;
@@ -12,7 +8,7 @@ export class LikeModel {
 	addedAt: string;
 }
 
-@Schema()
+/*@Schema()
 export class Like {
 	@Prop({ required: true })
 	itemId: ObjectId;
@@ -39,4 +35,4 @@ export class Like {
 
 export const LikeSchema = SchemaFactory.createForClass(Like);
 
-LikeSchema.methods.updateLikeStatus = Like.prototype.updateLikeStatus;
+LikeSchema.methods.updateLikeStatus = Like.prototype.updateLikeStatus;*/

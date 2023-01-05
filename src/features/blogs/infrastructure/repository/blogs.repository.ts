@@ -1,23 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogModel } from '../../domain/blog.schema';
+import { BlogModel } from '../../domain/blog.schema';
 import { CreateBlogExtendsDto, UpdateBlogDto } from '../../dto';
 import { BlogsRepositoryInterface } from '../../interfaces/blogs.repository.interface';
-import { Ban, BanModel } from '../../domain/ban.schema';
+import { BanModel } from '../../domain/ban.schema';
 import { BanUnbanBlogOfUserExtendsDto } from '../../dto/ban-unban-blog-of-user-extends.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class BlogsRepository implements BlogsRepositoryInterface {
-	constructor(
-		@InjectDataSource() protected dataSource: DataSource,
-		@InjectModel(Blog.name)
-		private readonly blogModel: Model<BlogModel>,
-		@InjectModel(Ban.name)
-		private readonly banModel: Model<BanModel>,
-	) {}
+	constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
 	async create(data: CreateBlogExtendsDto): Promise<BlogModel> {
 		const blog = await this.dataSource.query(
@@ -44,12 +36,6 @@ export class BlogsRepository implements BlogsRepositoryInterface {
 
 		if (blog.length === 0) return null;
 		return blog[0];
-	}
-
-	//????
-	async save(model: BlogModel): Promise<BlogModel> {
-		//return model.save();
-		return model;
 	}
 
 	async bindBlogWithUser(userId: string, userLogin: string, blogId: string): Promise<void> {
