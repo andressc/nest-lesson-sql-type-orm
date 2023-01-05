@@ -3,11 +3,11 @@ import { INestApplication } from '@nestjs/common';
 import { mainTest } from '../src/main-test';
 import request from 'supertest';
 import { ObjectId } from 'mongodb';
-import { Connection } from 'mongoose';
-import { stopMongoMemoryServer } from '../src/common/utils';
-import { BASIC_AUTH } from './constants';
+import { BASIC_AUTH } from './helpers/constants';
+import { Connection } from 'typeorm';
+import { clearDb } from './helpers/clearDb';
 
-describe('PostController (e2 e)', () => {
+describe('SessionController (e2e)', () => {
 	let dataApp: { app: INestApplication; module: TestingModule; connection: Connection };
 
 	let connection: Connection;
@@ -44,13 +44,14 @@ describe('PostController (e2 e)', () => {
 	});
 
 	afterAll(async () => {
-		await stopMongoMemoryServer();
+		//await connection.destroy();
 		await dataApp.app.close();
+		jest.resetModules();
 	});
 
 	describe('sessions', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		let refreshToken;
@@ -209,7 +210,7 @@ describe('PostController (e2 e)', () => {
 
 	describe('If the JWT refreshToken inside cookie is missing, expired or incorrect', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		it('terminate all other (exclude current) sessions', async () => {

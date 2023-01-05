@@ -4,8 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from './app.module';
 import { useContainer } from 'class-validator';
 import cookieParser from 'cookie-parser';
-import { getConnectionToken } from '@nestjs/mongoose';
 import { globalValidationPipe } from './common/pipes';
+import { getConnectionToken } from '@nestjs/typeorm';
 
 let app: INestApplication;
 

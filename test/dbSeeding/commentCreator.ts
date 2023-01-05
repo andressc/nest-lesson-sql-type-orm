@@ -1,27 +1,24 @@
-import { ObjectId } from 'mongodb';
 import add from 'date-fns/add';
+import { getRandomId } from '../helpers/getRandomId';
 
 export const commentCreator = (
 	content: string,
-	userId: string,
+	userId: number,
 	userLogin: string,
-	postId: string,
+	postId: number,
 	hours: number,
-	id?: string,
+	id?: number,
 ) => {
-	return {
-		_id: !id ? new ObjectId().toString() : id,
-		content,
-		userId,
-		userLogin,
-		postId,
-		blogUserId: new ObjectId(postId).toString(),
-		postTitle: 'postTitle',
-		blogId: new ObjectId(postId).toString(),
-		blogName: 'blogName',
-
-		createdAt: add(new Date(), {
-			hours: hours,
-		}),
-	};
+	return `INSERT INTO "Comments"
+    ("id", "content", "userId", "postId", "blogId", "isBanned", "createdAt")
+  VALUES 
+    (${!id ? getRandomId() : id},
+     '${content}',
+     '${userId}', 
+     '${postId}',
+     '${getRandomId()}',
+     false,
+     '${add(new Date(), {
+				hours: hours,
+			}).toISOString()}')`;
 };

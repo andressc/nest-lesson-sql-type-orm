@@ -19,7 +19,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "test:e2e one file": "jest user.e2e-spec.ts --config ./test/jest-e2e.json",
+    "test:e2e one file": "jest testing.e2e-spec.ts user.e2e-spec.ts session.e2e-spec.ts --config ./test/jest-e2e.json",
     "prettier": "prettier --config .prettierrc --write 'src/**/*.ts'"
   },
   "dependencies": {

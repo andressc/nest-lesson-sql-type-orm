@@ -1,7 +1,5 @@
 import { TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { Connection, Model } from 'mongoose';
-import { getModelToken } from '@nestjs/mongoose';
 import { mainTest } from '../src/main-test';
 import request from 'supertest';
 import { blogCreator } from './dbSeeding/blogCreator';
@@ -9,33 +7,21 @@ import { commentCreator } from './dbSeeding/commentCreator';
 import { postCreator } from './dbSeeding/postCreator';
 import { userCreator } from './dbSeeding/userCreator';
 import { sessionCreator } from './dbSeeding/sessionCreator';
-import { stopMongoMemoryServer } from '../src/common/utils';
-import { Blog } from '../src/features/blogs/domain/blog.schema';
-import { Post } from '../src/features/posts/domain/post.schema';
-import { Session } from 'inspector';
-import { User } from '../src/features/users/domain/user.schema';
-import { Comment } from '../src/features/comments/domain/comment.schema';
-import { Ban } from '../src/features/blogs/domain/ban.schema';
 import { banCreator } from './dbSeeding/banCreator';
-import { ObjectId } from 'mongodb';
+import { Connection } from 'typeorm';
+import { clearDb } from './helpers/clearDb';
+import { getRandomId } from './helpers/getRandomId';
 
-describe('PostController (e2e)', () => {
+describe('TestingController (e2e)', () => {
 	let dataApp: { app: INestApplication; module: TestingModule; connection: Connection };
-	let BlogModel: Model<Blog>;
-	let PostModel: Model<Post>;
-	let CommentModel: Model<Comment>;
-	let SessionModel: Model<Session>;
-	let UserModel: Model<User>;
-	let BanModel: Model<Ban>;
 
 	let connection: Connection;
 	let app: INestApplication;
-	let module: TestingModule;
 
 	const postData = {
 		shortDescription: 'shortDescription',
 		content: 'content',
-		blogId: 'blogId',
+		blogId: getRandomId(),
 		blogName: 'blogName',
 		blogUserId: 'blogUserId',
 	};
@@ -45,32 +31,27 @@ describe('PostController (e2e)', () => {
 
 		connection = dataApp.connection;
 		app = dataApp.app.getHttpServer();
-		module = dataApp.module;
-
-		BlogModel = module.get<Model<Blog>>(getModelToken(Blog.name));
-		PostModel = module.get<Model<Post>>(getModelToken(Post.name));
-		CommentModel = module.get<Model<Comment>>(getModelToken(Comment.name));
-		SessionModel = module.get<Model<Session>>(getModelToken(Session.name));
-		UserModel = module.get<Model<User>>(getModelToken(User.name));
-		BanModel = module.get<Model<Ban>>(getModelToken(Ban.name));
+		//module = dataApp.module;
 	});
 
 	afterAll(async () => {
-		await stopMongoMemoryServer();
+		//await connection.destroy();
 		await dataApp.app.close();
+		jest.resetModules();
 	});
 
 	describe('delete all data', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
-			await PostModel.create(postCreator('title', postData, 1));
-			await BlogModel.create(blogCreator('name', 1, 'youtubeUrl'));
-			await UserModel.create(userCreator('login', 'email', 1));
-			await CommentModel.create(
-				commentCreator('content', 'userId', 'userLogin', new ObjectId().toString(), 1),
+			await clearDb(connection);
+
+			await connection.query(postCreator('title', postData, 1));
+			await connection.query(blogCreator('name', 1, 'youtubeUrl'));
+			await connection.query(userCreator('login', 'email', 1));
+			await connection.query(
+				commentCreator('content', getRandomId(), 'userLogin', getRandomId(), 1),
 			);
-			await SessionModel.create(sessionCreator());
-			await BanModel.create(banCreator());
+			await connection.query(sessionCreator());
+			await connection.query(banCreator());
 		});
 
 		it('delete all', async () => {
@@ -78,19 +59,21 @@ describe('PostController (e2e)', () => {
 		});
 
 		it('find after deleting', async () => {
-			const postCount = await PostModel.countDocuments({});
-			const blogCount = await BlogModel.countDocuments({});
-			const userCount = await UserModel.countDocuments({});
-			const commentCount = await CommentModel.countDocuments({});
-			const sessionIpCount = await SessionModel.countDocuments({});
-			const banCount = await BanModel.countDocuments({});
+			const postCount = await connection.query(`SELECT COUNT("id") AS "count" FROM "Posts"`);
+			const blogCount = await connection.query(`SELECT COUNT("id") AS "count" FROM "Blogs"`);
+			const userCount = await connection.query(`SELECT COUNT("id") AS "count" FROM "Users"`);
+			const commentCount = await connection.query(`SELECT COUNT("id") AS "count" FROM "Comments"`);
+			const sessionIpCount = await connection.query(
+				`SELECT COUNT("id") AS "count" FROM "Sessions"`,
+			);
+			const banCount = await connection.query(`SELECT COUNT("id") AS "count" FROM "Ban"`);
 
-			expect(postCount).toBe(0);
-			expect(blogCount).toBe(0);
-			expect(userCount).toBe(0);
-			expect(commentCount).toBe(0);
-			expect(sessionIpCount).toBe(0);
-			expect(banCount).toBe(0);
+			expect(postCount[0].count).toBe('0');
+			expect(blogCount[0].count).toBe('0');
+			expect(userCount[0].count).toBe('0');
+			expect(commentCount[0].count).toBe('0');
+			expect(sessionIpCount[0].count).toBe('0');
+			expect(banCount[0].count).toBe('0');
 		});
 	});
 });

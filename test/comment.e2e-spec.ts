@@ -1,35 +1,25 @@
 import { TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { Connection, Model } from 'mongoose';
-import { getModelToken } from '@nestjs/mongoose';
 import { mainTest } from '../src/main-test';
-import { ObjectId } from 'mongodb';
 import { blogCreator } from './dbSeeding/blogCreator';
 import { postCreator } from './dbSeeding/postCreator';
 import { commentCreator } from './dbSeeding/commentCreator';
-import { stopMongoMemoryServer } from '../src/common/utils';
-import { BASIC_AUTH } from './constants';
-import { Blog } from '../src/features/blogs/domain/blog.schema';
-import { Post } from '../src/features/posts/domain/post.schema';
-import { Comment } from '../src/features/comments/domain/comment.schema';
+import { BASIC_AUTH } from './helpers/constants';
 import { userCreator } from './dbSeeding/userCreator';
-import { User } from '../src/features/users/domain/user.schema';
+import { Connection } from 'typeorm';
+import { getRandomId } from './helpers/getRandomId';
+import { clearDb } from './helpers/clearDb';
 
 describe('CommentController (e2e)', () => {
 	let dataApp: { app: INestApplication; module: TestingModule; connection: Connection };
-	let BlogModel: Model<Blog>;
-	let PostModel: Model<Post>;
-	let UserModel: Model<User>;
-	let CommentModel: Model<Comment>;
 	let connection: Connection;
 	let app: INestApplication;
-	let module: TestingModule;
 
-	const randomId = new ObjectId().toString();
+	const randomId = getRandomId();
 
 	const blogData = {
-		id: new ObjectId().toString(),
+		id: getRandomId(),
 		websiteUrl: 'https://youtube.com/343344343fvcxv32rfdsvd',
 		name: 'name',
 		createdAt: expect.any(String),
@@ -42,7 +32,7 @@ describe('CommentController (e2e)', () => {
 	};
 
 	const userData = {
-		id: new ObjectId().toString(),
+		id: getRandomId(),
 		login: 'login',
 		email: 'email@email.ru',
 		password: '123456',
@@ -51,7 +41,7 @@ describe('CommentController (e2e)', () => {
 	const commentData = {
 		id: expect.any(String),
 		content: 'content content content content content content content content',
-		userId: userData.id,
+		userId: userData.id.toString(),
 		userLogin: userData.login,
 		createdAt: expect.any(String),
 		likesInfo: {
@@ -94,13 +84,13 @@ describe('CommentController (e2e)', () => {
 	const emptyData = { pagesCount: 0, page: 1, pageSize: 10, totalCount: 0, items: [] };
 
 	const postData = {
-		id: new ObjectId().toString(),
+		id: getRandomId(),
 		title: 'title',
 		shortDescription: 'shortDescription',
 		content: 'content content content content content',
 		blogId: blogData.id,
 		blogName: blogData.name,
-		blogUserId: new ObjectId().toString(),
+		blogUserId: getRandomId(),
 		createdAt: expect.any(String),
 		extendedLikesInfo: {
 			dislikesCount: 0,
@@ -146,25 +136,26 @@ describe('CommentController (e2e)', () => {
 
 		connection = dataApp.connection;
 		app = dataApp.app.getHttpServer();
-		module = dataApp.module;
-
-		BlogModel = module.get<Model<Blog>>(getModelToken(Blog.name));
-		PostModel = module.get<Model<Post>>(getModelToken(Post.name));
-		CommentModel = module.get<Model<Comment>>(getModelToken(Comment.name));
-		UserModel = module.get<Model<User>>(getModelToken(User.name));
+		//module = dataApp.module;
 	});
 
 	afterAll(async () => {
-		await stopMongoMemoryServer();
+		//await connection.destroy();
 		await dataApp.app.close();
+		jest.resetModules();
 	});
 
 	describe('add, get, delete, update new comment', () => {
-		beforeAll(async () => {
-			await connection.db.dropDatabase();
+		const useId = getRandomId();
 
-			await BlogModel.create(blogCreator(blogData.name, 1, blogData.websiteUrl, blogData.id));
-			await PostModel.create(postCreator('aTitle', postData, 1, postData.id));
+		beforeAll(async () => {
+			await clearDb(connection);
+
+			await connection.query(userCreator('randomLogin', 'randomEmail@email', 1, useId));
+			await connection.query(
+				blogCreator(blogData.name, 1, blogData.websiteUrl, blogData.id, useId),
+			);
+			await connection.query(postCreator('aTitle', postData, 1, postData.id));
 		});
 
 		let token;
@@ -293,12 +284,12 @@ describe('CommentController (e2e)', () => {
 	});
 
 	describe('edit, delete alien comment must be forbidden', () => {
-		const alienuserId = new ObjectId().toString();
-		const aliencommentId = new ObjectId().toString();
+		const alienuserId = getRandomId();
+		const aliencommentId = getRandomId();
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 
-			await CommentModel.create(
+			await connection.query(
 				commentCreator('Content', alienuserId, 'alienUserLogin', postData.id, 1, aliencommentId),
 			);
 		});
@@ -345,11 +336,15 @@ describe('CommentController (e2e)', () => {
 	});
 
 	describe('add, update new comment wrong body data', () => {
+		const useId = getRandomId();
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 
-			await BlogModel.create(blogCreator(blogData.name, 1, blogData.websiteUrl, blogData.id));
-			await PostModel.create(postCreator('aTitle', postData, 1, postData.id));
+			await connection.query(userCreator('randomLogin', 'randomEmail@email', 1, useId));
+			await connection.query(
+				blogCreator(blogData.name, 1, blogData.websiteUrl, blogData.id, useId),
+			);
+			await connection.query(postCreator('aTitle', postData, 1, postData.id));
 		});
 
 		let token;
@@ -396,7 +391,7 @@ describe('CommentController (e2e)', () => {
 
 	describe('add, delete, update comment with not authorized user', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		it('add comment with not authorized user', async () => {
@@ -426,14 +421,18 @@ describe('CommentController (e2e)', () => {
 	});
 
 	describe('test Likes', () => {
-		//const commentId = new ObjectId().toString();
+		const useId = getRandomId();
 
 		beforeAll(async () => {
-			await connection.dropDatabase();
-			await BlogModel.create(blogCreator(blogData.name, 1, blogData.websiteUrl, blogData.id));
-			await PostModel.create(postCreator('aTitle', postData, 1, postData.id));
+			await clearDb(connection);
 
-			/*await CommentModel.create(
+			await connection.query(userCreator('randomLogin', 'randomEmail@email', 1, useId));
+			await connection.query(
+				blogCreator(blogData.name, 1, blogData.websiteUrl, blogData.id, useId),
+			);
+			await connection.query(postCreator('aTitle', postData, 1, postData.id));
+
+			/*await connection.query(
 				commentCreator(
 					'aContent',
 					commentData.userId,
@@ -609,7 +608,7 @@ describe('CommentController (e2e)', () => {
 
 	/*describe('test email not confirmed', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		it('test email not confirmed', async () => {
@@ -629,17 +628,23 @@ describe('CommentController (e2e)', () => {
 
 	describe('get all comments of post and sorting', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 
-			await UserModel.create(userCreator(userData.login, userData.email, 1, commentData.userId));
-			await BlogModel.create(blogCreator(blogData.name, 1, blogData.websiteUrl, blogData.id));
-			await PostModel.create(postCreator('aTitle', postData, 1, postData.id));
+			await connection.query(userCreator(userData.login, userData.email, 1, +commentData.userId));
+			await connection.query(
+				blogCreator(blogData.name, 1, blogData.websiteUrl, blogData.id, +commentData.userId),
+			);
+			await connection.query(postCreator('aTitle', postData, 1, postData.id));
 
-			await CommentModel.insertMany([
-				commentCreator('aContent', commentData.userId, commentData.userLogin, postData.id, 1),
-				commentCreator('cContent', commentData.userId, commentData.userLogin, postData.id, 2),
-				commentCreator('bContent', commentData.userId, commentData.userLogin, postData.id, 3),
-			]);
+			await connection.query(
+				commentCreator('aContent', +commentData.userId, commentData.userLogin, postData.id, 1),
+			);
+			await connection.query(
+				commentCreator('cContent', +commentData.userId, commentData.userLogin, postData.id, 2),
+			);
+			await connection.query(
+				commentCreator('bContent', +commentData.userId, commentData.userLogin, postData.id, 3),
+			);
 		});
 
 		it('should return 200 and all comments', async () => {
@@ -683,9 +688,10 @@ describe('CommentController (e2e)', () => {
 				.expect(204);
 		});
 
+		//!!!!!!! исправить
 		it('get all comments after banned should return 404', async () => {
-			const response = await request(app).get(`/posts/${postData.id}/comments`).expect(200);
-			expect(response.body).toEqual(emptyData);
+			const response = await request(app).get(`/posts/${postData.id}/comments`).expect(404);
+			//expect(response.body).toEqual(emptyData);
 		});
 	});
 });

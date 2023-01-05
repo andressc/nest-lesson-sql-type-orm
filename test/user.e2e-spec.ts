@@ -1,25 +1,21 @@
 import { TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { Connection, Model } from 'mongoose';
-import { getModelToken } from '@nestjs/mongoose';
 import { mainTest } from '../src/main-test';
-import { ObjectId } from 'mongodb';
 import { userCreator } from './dbSeeding/userCreator';
-import { stopMongoMemoryServer } from '../src/common/utils';
-import { BASIC_AUTH } from './constants';
-import { User } from '../src/features/users/domain/user.schema';
+import { BASIC_AUTH } from './helpers/constants';
 import 'jest-extended';
-import { DataSource } from 'typeorm';
+import { Connection } from 'typeorm';
+import { getRandomId } from './helpers/getRandomId';
+import { clearDb } from './helpers/clearDb';
 
-describe('BlogController (e2e)', () => {
+describe('UserController (e2e)', () => {
 	let dataApp: { app: INestApplication; module: TestingModule; connection: Connection };
-	let UserModel: Model<User>;
 	let connection: Connection;
 	let app: INestApplication;
 	let module: TestingModule;
 
-	const randomId = new ObjectId().toString();
+	const randomId = getRandomId();
 
 	const userDataLogin = {
 		login: 'login',
@@ -62,20 +58,16 @@ describe('BlogController (e2e)', () => {
 		connection = dataApp.connection;
 		app = dataApp.app.getHttpServer();
 		module = dataApp.module;
-
-		UserModel = module.get<Model<User>>(getModelToken(User.name));
 	});
 
 	afterAll(async () => {
-		await stopMongoMemoryServer();
+		//await connection.destroy();
 		await dataApp.app.close();
 	});
 
 	describe('add, get, delete new user', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
-
-			await DataSource.query(`SELECT * FROM "Users" WHERE "email"=$1 OR login=$1`, [emailOrLogin]);
+			await clearDb(connection);
 		});
 
 		let userId;
@@ -101,6 +93,8 @@ describe('BlogController (e2e)', () => {
 				.set('authorization', BASIC_AUTH)
 				.send(userDataLogin)
 				.expect(201);
+
+			console.log(user.body)
 
 			expect(user.body).toEqual(userData);
 
@@ -150,7 +144,7 @@ describe('BlogController (e2e)', () => {
 
 	describe('add new user incorrect data', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		it('add new user wrong body data', async () => {
@@ -224,7 +218,7 @@ describe('BlogController (e2e)', () => {
 
 	describe('add, delete, get user with not authorized basic', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		it('get users with not authorized basic', async () => {
@@ -249,13 +243,11 @@ describe('BlogController (e2e)', () => {
 
 	describe('get all users sorting', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 
-			await UserModel.insertMany([
-				userCreator('aLogin', userData.email, 1),
-				userCreator('cLogin', userData.email, 2),
-				userCreator('bLogin', userData.email, 3),
-			]);
+			await connection.query(userCreator('aLogin', userData.email, 1));
+			await connection.query(userCreator('cLogin', userData.email, 2));
+			await connection.query(userCreator('bLogin', userData.email, 3));
 		});
 
 		it('should return 200 and all users', async () => {
@@ -298,13 +290,11 @@ describe('BlogController (e2e)', () => {
 
 	describe('search users', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 
-			await UserModel.insertMany([
-				userCreator('aLogin', 'aemail@email.ru', 1),
-				userCreator('cLogin', 'bemail@email.ru', 2),
-				userCreator('bLogin', 'cemail@email.ru', 3),
-			]);
+			await connection.query(userCreator('aLogin', 'aemail@email.ru', 1));
+			await connection.query(userCreator('cLogin', 'bemail@email.ru', 2));
+			await connection.query(userCreator('bLogin', 'cemail@email.ru', 3));
 		});
 
 		it('search users from login first step', async () => {

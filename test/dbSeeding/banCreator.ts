@@ -1,11 +1,10 @@
-import { ObjectId } from 'mongodb';
+import { getRandomId } from '../helpers/getRandomId';
 
 export const banCreator = () => {
-	return {
-		_id: new ObjectId().toString(),
-		userId: 'userId',
-		login: 'login',
-		blogId: 'blogId',
-		blogName: 'blogName',
-	};
+	return `INSERT INTO "Ban"
+    ("id", "userId", "blogId")
+  VALUES 
+    (${getRandomId()},
+     ${getRandomId()},
+		 ${getRandomId()})`;
 };

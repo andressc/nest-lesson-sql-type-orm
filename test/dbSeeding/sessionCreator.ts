@@ -1,13 +1,14 @@
-import { ObjectId } from 'mongodb';
+import { getRandomId } from '../helpers/getRandomId';
 
 export const sessionCreator = () => {
-	return {
-		_id: new ObjectId().toString(),
-		ip: 'ip',
-		title: 'title',
-		lastActiveDate: 'lastActiveDate',
-		expirationDate: 'expirationDate',
-		deviceId: 'deviceId',
-		userId: 'deviceId',
-	};
+	return `INSERT INTO "Sessions"
+    ("id", "ip", "title", "lastActiveDate", "expirationDate", "deviceId", "userId")
+  VALUES 
+    (${getRandomId()},
+     'ip',
+		 'title',
+		 'lastActiveDate',
+		 'expirationDate',
+		 'deviceId',
+     ${getRandomId()})`;
 };

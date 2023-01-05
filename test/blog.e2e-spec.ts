@@ -1,26 +1,20 @@
 import { TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { Connection, Model } from 'mongoose';
-import { getModelToken } from '@nestjs/mongoose';
 import { mainTest } from '../src/main-test';
-import { ObjectId } from 'mongodb';
 import { blogCreator } from './dbSeeding/blogCreator';
-import { stopMongoMemoryServer } from '../src/common/utils';
-import { BASIC_AUTH } from './constants';
-import { Blog } from '../src/features/blogs/domain/blog.schema';
+import { BASIC_AUTH } from './helpers/constants';
 import { userCreator } from './dbSeeding/userCreator';
-import { User } from '../src/features/users/domain/user.schema';
+import { getRandomId } from './helpers/getRandomId';
+import { Connection } from 'typeorm';
+import { clearDb } from './helpers/clearDb';
 
 describe('BlogController (e2e)', () => {
 	let dataApp: { app: INestApplication; module: TestingModule; connection: Connection };
-	let BlogModel: Model<Blog>;
-	let UserModel: Model<User>;
 	let connection: Connection;
 	let app: INestApplication;
-	let module: TestingModule;
 
-	const randomId = new ObjectId().toString();
+	const randomId = getRandomId();
 
 	const blogData = {
 		id: expect.any(String),
@@ -53,7 +47,7 @@ describe('BlogController (e2e)', () => {
 		},
 	};
 
-	const userDataId = new ObjectId().toString();
+	const userDataId = getRandomId();
 	const userDataLogin = {
 		login: 'login',
 		email: 'email@email.ru',
@@ -88,22 +82,20 @@ describe('BlogController (e2e)', () => {
 
 		connection = dataApp.connection;
 		app = dataApp.app.getHttpServer();
-		module = dataApp.module;
-
-		BlogModel = module.get<Model<Blog>>(getModelToken(Blog.name));
-		UserModel = module.get<Model<User>>(getModelToken(User.name));
+		//module = dataApp.module;
 	});
 
 	afterAll(async () => {
-		await stopMongoMemoryServer();
+		//await connection.destroy();
 		await dataApp.app.close();
+		jest.resetModules();
 	});
 
 	describe('ban user of blog (BLOGGER ENDPOINT)', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 
-			await UserModel.create(
+			await connection.query(
 				userCreator(userDataLogin2.login, userDataLogin2.email, 1, userDataId),
 			);
 		});
@@ -277,7 +269,7 @@ describe('BlogController (e2e)', () => {
 
 	describe('ban blog (SUPER ADMIN ENDPOINT)', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		let blogId;
@@ -472,7 +464,7 @@ describe('BlogController (e2e)', () => {
 
 	describe('get blog for superAdmin (SUPER ADMIN ENDPOINT)', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		it('should return 200 and all blogs null (SUPER ADMIN ENDPOINT)', async () => {
@@ -493,7 +485,7 @@ describe('BlogController (e2e)', () => {
 
 	describe('get blog (PUBLIC ENDPOINT)', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		it('should return 200 and all blogs null (PUBLIC ENDPOINT)', async () => {
@@ -511,9 +503,9 @@ describe('BlogController (e2e)', () => {
 
 	describe('add, get, delete new blog', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 
-			await BlogModel.create(blogCreator(blogData.name, 1, blogData.websiteUrl));
+			await connection.query(blogCreator(blogData.name, 1, blogData.websiteUrl));
 		});
 
 		let blogId;
@@ -628,7 +620,7 @@ describe('BlogController (e2e)', () => {
 
 	describe('update blog', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		let blogId;
@@ -707,7 +699,7 @@ describe('BlogController (e2e)', () => {
 
 	describe('add, update new blog with incorrect body data', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		let token;
@@ -760,7 +752,7 @@ describe('BlogController (e2e)', () => {
 
 	describe('add, delete, update, ban blog with not authorized user', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		it('should return 401 get all blogs with not authorized user (BLOGGER ENDPOINT)', async () => {
@@ -815,10 +807,11 @@ describe('BlogController (e2e)', () => {
 	});
 
 	describe('delete, update blog with alien user', () => {
-		const blogId = new ObjectId().toString();
+		const blogId = getRandomId();
 		beforeAll(async () => {
-			await connection.dropDatabase();
-			await BlogModel.create(blogCreator(blogData.name, 1, blogData.websiteUrl, blogId));
+			await clearDb(connection);
+
+			await connection.query(blogCreator(blogData.name, 1, blogData.websiteUrl, blogId));
 		});
 		let token;
 
@@ -865,13 +858,11 @@ describe('BlogController (e2e)', () => {
 
 	describe('get all blogs and sorting (PUBLIC ENDPOINT)', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 
-			await BlogModel.insertMany([
-				blogCreator('aName', 1, blogData.websiteUrl),
-				blogCreator('cName', 2, blogData.websiteUrl),
-				blogCreator('bName', 3, blogData.websiteUrl),
-			]);
+			await connection.query(blogCreator('aName', 1, blogData.websiteUrl));
+			await connection.query(blogCreator('cName', 2, blogData.websiteUrl));
+			await connection.query(blogCreator('bName', 3, blogData.websiteUrl));
 		});
 
 		it('should return 200 and all blogs (PUBLIC ENDPOINT)', async () => {
@@ -910,14 +901,18 @@ describe('BlogController (e2e)', () => {
 
 	describe('get all blogs and sorting (BLOGGER ENDPOINT)', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 
-			await UserModel.create(userCreator(userDataLogin.login, userDataLogin.email, 1, userDataId));
-			await BlogModel.insertMany([
-				blogCreator('aName', 1, blogData.websiteUrl, new ObjectId().toString(), userDataId),
-				blogCreator('cName', 2, blogData.websiteUrl, new ObjectId().toString(), userDataId),
-				blogCreator('bName', 3, blogData.websiteUrl, new ObjectId().toString(), userDataId),
-			]);
+			await connection.query(userCreator(userDataLogin.login, userDataLogin.email, 1, userDataId));
+			await connection.query(
+				blogCreator('aName', 1, blogData.websiteUrl, getRandomId(), userDataId),
+			);
+			await connection.query(
+				blogCreator('cName', 2, blogData.websiteUrl, getRandomId(), userDataId),
+			);
+			await connection.query(
+				blogCreator('bName', 3, blogData.websiteUrl, getRandomId(), userDataId),
+			);
 		});
 
 		let token;
@@ -975,14 +970,18 @@ describe('BlogController (e2e)', () => {
 
 	describe('get all blogs and sorting (SUPER ADMIN ENDPOINT)', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 
-			await UserModel.create(userCreator(userDataLogin.login, userDataLogin.email, 1, userDataId));
-			await BlogModel.insertMany([
-				blogCreator('aName', 1, blogData.websiteUrl, new ObjectId().toString(), userDataId),
-				blogCreator('cName', 2, blogData.websiteUrl, new ObjectId().toString(), userDataId),
-				blogCreator('bName', 3, blogData.websiteUrl, new ObjectId().toString(), userDataId),
-			]);
+			await connection.query(userCreator(userDataLogin.login, userDataLogin.email, 1, userDataId));
+			await connection.query(
+				blogCreator('aName', 1, blogData.websiteUrl, getRandomId(), userDataId),
+			);
+			await connection.query(
+				blogCreator('cName', 2, blogData.websiteUrl, getRandomId(), userDataId),
+			);
+			await connection.query(
+				blogCreator('bName', 3, blogData.websiteUrl, getRandomId(), userDataId),
+			);
 		});
 
 		it('should return 200 and all blogs (SUPER ADMIN ENDPOINT)', async () => {
@@ -1025,14 +1024,12 @@ describe('BlogController (e2e)', () => {
 
 	/*describe('get all banned users from blog and sorting (BLOGGER ENDPOINT)', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 
-			await UserModel.create(userCreator(userDataLogin.login, userDataLogin.email, 1, userDataId));
-			await BlogModel.insertMany([
-				blogCreator('aName', 1, blogData.websiteUrl, new ObjectId().toString(), userDataId),
-				blogCreator('cName', 2, blogData.websiteUrl, new ObjectId().toString(), userDataId),
-				blogCreator('bName', 3, blogData.websiteUrl, new ObjectId().toString(), userDataId),
-			]);
+			await connection.query(userCreator(userDataLogin.login, userDataLogin.email, 1, userDataId));
+			await connection.query(blogCreator('aName', 1, blogData.websiteUrl, getRandomId(), userDataId));
+			await connection.query(blogCreator('cName', 2, blogData.websiteUrl, getRandomId(), userDataId));
+			await connection.query(blogCreator('bName', 3, blogData.websiteUrl, getRandomId(), userDataId));
 		});
 
 		it('should return 200 and all blogs (SUPER ADMIN ENDPOINT)', async () => {

@@ -1,39 +1,31 @@
 import { TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { Connection, Model } from 'mongoose';
-import { getModelToken } from '@nestjs/mongoose';
 import { mainTest } from '../src/main-test';
-import { ObjectId } from 'mongodb';
 import { blogCreator } from './dbSeeding/blogCreator';
-import { stopMongoMemoryServer } from '../src/common/utils';
-import { Blog } from '../src/features/blogs/domain/blog.schema';
-import { Post } from '../src/features/posts/domain/post.schema';
 import { userCreator } from './dbSeeding/userCreator';
-import { User } from '../src/features/users/domain/user.schema';
 import { postCreator } from './dbSeeding/postCreator';
-import { BASIC_AUTH } from './constants';
+import { BASIC_AUTH } from './helpers/constants';
+import { Connection } from 'typeorm';
+import { getRandomId } from './helpers/getRandomId';
+import { clearDb } from './helpers/clearDb';
 
 describe('PostController (e2e)', () => {
 	let dataApp: { app: INestApplication; module: TestingModule; connection: Connection };
-	let BlogModel: Model<Blog>;
-	let PostModel: Model<Post>;
-	let UserModel: Model<User>;
 	let connection: Connection;
 	let app: INestApplication;
-	let module: TestingModule;
 
-	const randomId = new ObjectId().toString();
+	const randomId = getRandomId();
 
 	const blogData = {
-		id: new ObjectId().toString(),
+		id: getRandomId(),
 		youtubeUrl: 'https://youtube.com/343344343fvcxv32rfdsvd',
 		name: 'name',
 		createdAt: expect.any(String),
 	};
 
-	const userDataId = new ObjectId().toString();
-	const userDataIdAlien = new ObjectId().toString();
+	const userDataId = getRandomId();
+	const userDataIdAlien = getRandomId();
 	const userDataLogin = {
 		login: 'login',
 		email: 'email@email.ru',
@@ -87,13 +79,13 @@ describe('PostController (e2e)', () => {
 		newestLikes: [],
 	};
 
-	const postDataId = new ObjectId().toString();
+	const postDataId = getRandomId();
 	const postData = {
 		id: expect.any(String),
 		title: 'title',
 		shortDescription: 'shortDescription',
 		content: 'content content content content content',
-		blogId: blogData.id,
+		blogId: blogData.id.toString(),
 		blogName: blogData.name,
 		createdAt: expect.any(String),
 		extendedLikesInfo: {
@@ -152,24 +144,21 @@ describe('PostController (e2e)', () => {
 
 		connection = dataApp.connection;
 		app = dataApp.app.getHttpServer();
-		module = dataApp.module;
-
-		BlogModel = module.get<Model<Blog>>(getModelToken(Blog.name));
-		PostModel = module.get<Model<Post>>(getModelToken(Post.name));
-		UserModel = module.get<Model<User>>(getModelToken(User.name));
+		//module = dataApp.module;
 	});
 
 	afterAll(async () => {
-		await stopMongoMemoryServer();
+		//await connection.destroy();
 		await dataApp.app.close();
+		jest.resetModules();
 	});
 
 	describe('add, get, delete new post', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 
-			await UserModel.create(userCreator(userDataLogin.login, userDataLogin.email, 1, userDataId));
-			await BlogModel.create(
+			await connection.query(userCreator(userDataLogin.login, userDataLogin.email, 1, userDataId));
+			await connection.query(
 				blogCreator(blogData.name, 1, blogData.youtubeUrl, blogData.id, userDataId),
 			);
 		});
@@ -263,17 +252,16 @@ describe('PostController (e2e)', () => {
 	});
 
 	describe('update post', () => {
-		const blogIdNew = new ObjectId().toString();
+		const blogIdNew = getRandomId();
 
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 
-			await UserModel.create(userCreator(userDataLogin.login, userDataLogin.email, 1, userDataId));
-
-			await BlogModel.insertMany([
+			await connection.query(userCreator(userDataLogin.login, userDataLogin.email, 1, userDataId));
+			await connection.query(
 				blogCreator(blogData.name, 1, blogData.youtubeUrl, blogData.id, userDataId),
-				blogCreator('newName', 1, blogData.youtubeUrl, blogIdNew, userDataId),
-			]);
+			);
+			await connection.query(blogCreator('newName', 1, blogData.youtubeUrl, blogIdNew, userDataId));
 		});
 
 		let postId;
@@ -347,9 +335,10 @@ describe('PostController (e2e)', () => {
 
 	describe('add, update new post with incorrect body data', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
-			await UserModel.create(userCreator(userDataLogin.login, userDataLogin.email, 1, userDataId));
-			await BlogModel.create(
+			await clearDb(connection);
+
+			await connection.query(userCreator(userDataLogin.login, userDataLogin.email, 1, userDataId));
+			await connection.query(
 				blogCreator(blogData.name, 1, blogData.youtubeUrl, blogData.id, userDataId),
 			);
 		});
@@ -390,7 +379,7 @@ describe('PostController (e2e)', () => {
 
 	describe('add, delete, update blog with not authorized user', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		it('add post with not authorized user (BLOGGER ENDPOINT)', async () => {
@@ -419,14 +408,13 @@ describe('PostController (e2e)', () => {
 
 	describe('add, delete, update blog with alien user', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 
-			await UserModel.create(userCreator(userDataLogin.login, userDataLogin.email, 1, userDataId));
-
-			await BlogModel.create(
+			await connection.query(userCreator(userDataLogin.login, userDataLogin.email, 1, userDataId));
+			await connection.query(
 				blogCreator('newName', 1, blogData.youtubeUrl, blogData.id, userDataIdAlien),
 			);
-			await PostModel.create(postCreator('aTitle', postData, 1, postDataId));
+			await connection.query(postCreator('aTitle', postData, 1, postDataId));
 		});
 
 		let token;
@@ -473,12 +461,17 @@ describe('PostController (e2e)', () => {
 	});
 
 	describe('test Likes', () => {
-		const postId = new ObjectId().toString();
+		const postId = getRandomId();
+		const useId = getRandomId();
 
 		beforeAll(async () => {
-			await connection.dropDatabase();
-			await BlogModel.create(blogCreator(blogData.name, 1, blogData.youtubeUrl, blogData.id));
-			await PostModel.create(postCreator('aTitle', postData, 1, postId));
+			await clearDb(connection);
+
+			await connection.query(userCreator('randomLogin', 'randomEmail@email', 1, useId));
+			await connection.query(
+				blogCreator(blogData.name, 1, blogData.youtubeUrl, blogData.id, useId),
+			);
+			await connection.query(postCreator('aTitle', postData, 1, postId));
 		});
 
 		let token;
@@ -698,16 +691,18 @@ describe('PostController (e2e)', () => {
 	});
 
 	describe('get all posts and sorting', () => {
+		const useId = getRandomId();
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 
-			await BlogModel.create(blogCreator(blogData.name, 1, blogData.youtubeUrl, blogData.id));
+			await connection.query(userCreator('randomLogin', 'randomEmail@email', 1, useId));
+			await connection.query(
+				blogCreator(blogData.name, 1, blogData.youtubeUrl, blogData.id, useId),
+			);
 
-			await PostModel.insertMany([
-				postCreator('aTitle', postData, 1),
-				postCreator('cTitle', postData, 2),
-				postCreator('bTitle', postData, 3),
-			]);
+			await connection.query(postCreator('aTitle', postData, 1));
+			await connection.query(postCreator('cTitle', postData, 2));
+			await connection.query(postCreator('bTitle', postData, 3));
 		});
 
 		it('should return 200 and all posts', async () => {
@@ -745,22 +740,30 @@ describe('PostController (e2e)', () => {
 	});
 
 	describe('should return all posts for blog and sorting', () => {
-		const blogIdNew = new ObjectId().toString();
+		const blogIdNew = getRandomId();
+		const useId = getRandomId();
 
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
+			await connection.query(userCreator('randomLogin', 'randomEmail@email', 1, useId));
 
-			await BlogModel.insertMany([
-				blogCreator(blogData.name, 1, blogData.youtubeUrl, blogData.id),
-				blogCreator('newName', 1, blogData.youtubeUrl, blogIdNew),
-			]);
+			await connection.query(
+				blogCreator(blogData.name, 1, blogData.youtubeUrl, blogData.id, useId),
+			);
+			await connection.query(blogCreator('newName', 1, blogData.youtubeUrl, blogIdNew, useId));
 
-			await PostModel.insertMany([
+			await connection.query(
 				postCreator('aTitle', { ...postData, blogId: blogData.id, blogName: blogData.name }, 1),
+			);
+			await connection.query(
 				postCreator('cTitle', { ...postData, blogId: blogData.id, blogName: blogData.name }, 2),
+			);
+			await connection.query(
 				postCreator('bTitle', { ...postData, blogId: blogData.id, blogName: blogData.name }, 3),
+			);
+			await connection.query(
 				postCreator('dTitle', { ...postData, blogId: blogIdNew, blogName: 'newName' }, 4),
-			]);
+			);
 		});
 
 		it('should return all posts for blog', async () => {

@@ -1,17 +1,17 @@
-import { ObjectId } from 'mongodb';
 import add from 'date-fns/add';
+import { getRandomId } from '../helpers/getRandomId';
 
-export const postCreator = (title: string, postData, hours: number, id?: string) => {
-	return {
-		_id: !id ? new ObjectId().toString() : id,
-		title,
-		shortDescription: postData.shortDescription,
-		content: postData.content,
-		blogId: postData.blogId,
-		blogName: postData.blogName,
-		blogUserId: postData.blogUserId ? postData.blogUserId : new ObjectId().toString(),
-		createdAt: add(new Date(), {
-			hours: hours,
-		}),
-	};
+export const postCreator = (title: string, postData, hours: number, id?: number) => {
+	return `INSERT INTO "Posts"
+    ("id", "title", "shortDescription", "content", "blogId", "isBanned", "createdAt")
+  VALUES 
+    (${!id ? getRandomId() : id},
+     '${title}',
+     '${postData.shortDescription}', 
+     '${postData.content}',
+     '${postData.blogId}',
+     false,
+     '${add(new Date(), {
+				hours: hours,
+			}).toISOString()}')`;
 };

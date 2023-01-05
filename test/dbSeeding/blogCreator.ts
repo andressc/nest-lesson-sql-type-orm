@@ -1,22 +1,24 @@
-import { ObjectId } from 'mongodb';
 import add from 'date-fns/add';
+import { getRandomId } from '../helpers/getRandomId';
 
 export const blogCreator = (
 	name: string,
 	hours: number,
 	websiteUrl: string,
-	id?: string,
-	userId?: string,
+	id?: number,
+	userId?: number,
 ) => {
-	return {
-		_id: !id ? new ObjectId() : id,
-		name,
-		description: 'description',
-		websiteUrl,
-		userId: !userId ? new ObjectId().toString() : userId,
-		userLogin: 'userLogin',
-		createdAt: add(new Date(), {
-			hours: hours,
-		}),
-	};
+	return `INSERT INTO "Blogs"
+    ("id", "name", "description", "websiteUrl", "userId", "userLogin", "isBanned", "createdAt")
+  VALUES 
+    (${!id ? getRandomId() : id},
+				'${name}',
+		    'description', 
+        '${websiteUrl}',
+				'${!userId ? getRandomId() : userId}',
+		    'userLogin',
+        false,
+        '${add(new Date(), {
+					hours: hours,
+				}).toISOString()}')`;
 };

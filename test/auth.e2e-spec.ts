@@ -2,11 +2,11 @@ import { TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { mainTest } from '../src/main-test';
-import { Connection } from 'mongoose';
-import { stopMongoMemoryServer } from '../src/common/utils';
-import { BASIC_AUTH } from './constants';
+import { BASIC_AUTH } from './helpers/constants';
+import { Connection } from 'typeorm';
+import { clearDb } from './helpers/clearDb';
 
-describe('BlogController (e2 e)', () => {
+describe('AuthController (e2e)', () => {
 	let dataApp: { app: INestApplication; module: TestingModule; connection: Connection };
 	let connection: Connection;
 	let app: INestApplication;
@@ -48,13 +48,14 @@ describe('BlogController (e2 e)', () => {
 	});
 
 	afterAll(async () => {
-		await stopMongoMemoryServer();
+		//await connection.destroy();
 		await dataApp.app.close();
+		jest.resetModules();
 	});
 
 	describe('login', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		it('create new user', async () => {
@@ -98,7 +99,7 @@ describe('BlogController (e2 e)', () => {
 
 	describe('registration', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		it('registration new user', async () => {
@@ -156,7 +157,7 @@ describe('BlogController (e2 e)', () => {
 
 	describe('refresh-token', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		let newRefreshToken;
@@ -205,7 +206,7 @@ describe('BlogController (e2 e)', () => {
 
 	describe('get me', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		let token;
@@ -248,7 +249,7 @@ describe('BlogController (e2 e)', () => {
 
 	/*describe('registration confirmation', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		let newRefreshToken;
@@ -271,7 +272,7 @@ describe('BlogController (e2 e)', () => {
 
 	/*describe('registration email resending', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		let newRefreshToken;
@@ -294,7 +295,7 @@ describe('BlogController (e2 e)', () => {
 
 	/*describe('logout', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		let newRefreshToken;
@@ -310,7 +311,7 @@ describe('BlogController (e2 e)', () => {
 
 	/*describe('new password', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		let newRefreshToken;
@@ -333,7 +334,7 @@ describe('BlogController (e2 e)', () => {
 
 	/*describe('password recovery', () => {
 		beforeAll(async () => {
-			await connection.dropDatabase();
+			await clearDb(connection);
 		});
 
 		let newRefreshToken;

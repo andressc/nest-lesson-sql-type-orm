@@ -57,14 +57,13 @@ export class QueryUsersRepository implements QueryUsersRepositoryInterface {
 		if (searchEmailTerm) searchString = `WHERE LOWER("email") LIKE LOWER(${searchEmailTerm})`;
 
 		if (searchLoginTerm && searchEmailTerm)
-			searchString = `WHERE LOWER("login") LIKE LOWER(${searchLoginTerm}) OR LOWER("email") LIKE ${searchEmailTerm}`;
+			searchString = `WHERE LOWER("login") LIKE LOWER(${searchLoginTerm}) OR LOWER("email") LIKE LOWER(${searchEmailTerm})`;
 
 		if (banStatus === 'banned') searchBanStatus = `"isBanned"=true`;
 		if (banStatus === 'notBanned') searchBanStatus = `"isBanned"=false`;
 		if (banStatus === 'all') searchBanStatus = '';
 		if (searchString && searchBanStatus) searchString += ` AND ${searchBanStatus}`;
 		if (!searchString && searchBanStatus) searchString = ` WHERE ${searchBanStatus}`;
-
 		return searchString;
 	}
 }

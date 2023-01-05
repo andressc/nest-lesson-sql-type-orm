@@ -120,8 +120,6 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 			[false, pageSize, skip],
 		);
 
-		//console.log(result);
-
 		const posts = [];
 
 		for (const postRow of result) {
