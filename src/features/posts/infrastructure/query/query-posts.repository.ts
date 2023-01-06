@@ -238,15 +238,6 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 		return +count[0].count;
 	}
 
-	/*private static likes(posts) {
-		return posts.map((v) => ({
-			userId: v.userId,
-			login: v.login,
-			likeStatus: v.likeStatus,
-			addedAt: v.likeAddedAt,
-		}));
-	}*/
-
 	private static searchTerm(blogId: string | undefined): string {
 		let searchString = '';
 

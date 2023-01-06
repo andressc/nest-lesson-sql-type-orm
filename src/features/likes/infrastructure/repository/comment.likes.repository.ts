@@ -40,7 +40,7 @@ export class CommentLikesRepository implements LikesRepositoryInterface {
 	}
 
 	async deleteAll(): Promise<void> {
-		await this.dataSource.query(`DELETE FROM "CommentLikes"`);
+		await this.dataSource.query(`TRUNCATE "CommentLikes" RESTART IDENTITY`);
 	}
 
 	async findLikeByItemIdAndUserId(commentId: string, userId: string): Promise<LikeModel> {

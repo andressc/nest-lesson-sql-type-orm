@@ -94,15 +94,6 @@ export const Modules = [CqrsModule, UsersModule, LikesModule, PaginationModule];
 	],
 	providers: [...Services, ...Repositories, ...CommandHandlers],
 
-	exports: [
-		QueryCommentsRepositoryProvider,
-		CommentsRepositoryProvider,
-		PostsService,
-		QueryPostsRepositoryProvider,
-		PostsRepositoryProvider,
-		BlogsService,
-		QueryBlogsRepositoryProvider,
-		BlogsRepositoryProvider,
-	],
+	exports: [CommentsRepositoryProvider, PostsRepositoryProvider, BlogsRepositoryProvider],
 })
 export class BlogsPostsCommentsModule {}

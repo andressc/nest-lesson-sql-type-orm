@@ -66,7 +66,7 @@ export class BlogsRepository implements BlogsRepositoryInterface {
 	}
 
 	async deleteAll(): Promise<void> {
-		await this.dataSource.query(`DELETE FROM "Blogs"`);
+		await this.dataSource.query(`TRUNCATE "Blogs" RESTART IDENTITY`);
 	}
 
 	//Ban blog from user
@@ -110,6 +110,6 @@ export class BlogsRepository implements BlogsRepositoryInterface {
 	}
 
 	async deleteAllBan(): Promise<void> {
-		await this.dataSource.query(`DELETE FROM "Ban"`);
+		await this.dataSource.query(`TRUNCATE "Ban" RESTART IDENTITY`);
 	}
 }

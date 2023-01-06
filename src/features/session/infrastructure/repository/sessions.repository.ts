@@ -29,7 +29,7 @@ export class SessionsRepository implements SessionsRepositoryInterface {
 	}
 
 	async deleteAll(): Promise<void> {
-		await this.dataSource.query(`DELETE FROM "Sessions"`);
+		await this.dataSource.query(`TRUNCATE "Sessions" RESTART IDENTITY`);
 	}
 
 	async findSession(

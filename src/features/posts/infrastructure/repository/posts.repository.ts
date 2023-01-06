@@ -38,7 +38,7 @@ export class PostsRepository implements PostsRepositoryInterface {
 	}
 
 	async deleteAll(): Promise<void> {
-		await this.dataSource.query(`DELETE FROM "Posts"`);
+		await this.dataSource.query(`TRUNCATE "Posts" RESTART IDENTITY`);
 	}
 
 	async setBan(blogId: string, isBanned: boolean): Promise<void> {

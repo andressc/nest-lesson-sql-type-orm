@@ -185,7 +185,6 @@ export class QueryCommentsRepository implements QueryCommentsRepositoryInterface
 			name: comment[0].name,
 			createdAt: comment[0].createdAt,
 			isBanned: comment[0].isBanned,
-			//likes: this.likes(comment),
 			likes: comment[0].likes,
 			dislikes: comment[0].dislikes,
 			status: comment[0].status,
@@ -235,15 +234,6 @@ export class QueryCommentsRepository implements QueryCommentsRepositoryInterface
 		);
 		return +count[0].count;
 	}
-
-	/*private likes(comments) {
-		return comments.map((v) => ({
-			userId: v.userId,
-			login: v.login,
-			likeStatus: v.likeStatus,
-			addedAt: v.likeAddedAt,
-		}));
-	}*/
 
 	private static searchTerm(postId: string | undefined): string {
 		let searchString = '';

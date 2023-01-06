@@ -44,7 +44,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *;`,
 	}
 
 	async deleteAll(): Promise<void> {
-		await this.dataSource.query(`DELETE FROM "Users"`);
+		await this.dataSource.query(`TRUNCATE "Users" RESTART IDENTITY`);
 	}
 
 	async updateIsConfirmed(IsConfirmed: boolean, userId: string): Promise<void> {

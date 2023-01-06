@@ -40,7 +40,7 @@ export class PostLikesRepository implements LikesRepositoryInterface {
 	}
 
 	async deleteAll(): Promise<void> {
-		await this.dataSource.query(`DELETE FROM "PostLikes"`);
+		await this.dataSource.query(`TRUNCATE "PostLikes" RESTART IDENTITY`);
 	}
 
 	async findLikeByItemIdAndUserId(postId: string, userId: string): Promise<LikeModel> {

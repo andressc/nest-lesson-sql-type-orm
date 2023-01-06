@@ -37,7 +37,7 @@ export class CommentsRepository implements CommentsRepositoryInterface {
 	}
 
 	async deleteAll(): Promise<void> {
-		await this.dataSource.query(`DELETE FROM "Comments"`);
+		await this.dataSource.query(`TRUNCATE "Comments" RESTART IDENTITY`);
 	}
 
 	async setBan(userId: string, isBanned: boolean): Promise<void> {
