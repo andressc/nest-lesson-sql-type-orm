@@ -3,6 +3,7 @@ import {
 	Controller,
 	Get,
 	HttpCode,
+	Inject,
 	Param,
 	ParseIntPipe,
 	Post,
@@ -19,17 +20,23 @@ import {
 	CurrentuserIdNonAuthorized,
 	CurrentUserLogin,
 } from '../../../common/decorators/Param';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { CommandBus } from '@nestjs/cqrs';
 import { CreateCommentOfPostCommand } from '../../comments/application/commands/create-comment-of-post.handler';
-import { FindOnePostCommand } from '../application/queries/find-one-post.handler';
-import { FindAllPostCommand } from '../application/queries/find-all-post.handler';
-import { FindOneCommentCommand } from '../../comments/application/queries/find-one-comment.handler';
-import { FindAllCommentOfPostCommand } from '../../comments/application/queries/find-all-comment-of-post.handler';
 import { CreateLikePostCommand } from '../application/commands/create-like-post.handler';
+import { PostInjectionToken } from '../infrastructure/providers/post.injection.token';
+import { QueryPostsRepositoryInterface } from '../interfaces/query.posts.repository.interface';
+import { CommentInjectionToken } from '../../comments/infrastructure/providers/comment.injection.token';
+import { QueryCommentsRepositoryInterface } from '../../comments/interfaces/query.comments.repository.interface';
 
 @Controller('posts')
 export class PostsController {
-	constructor(private readonly commandBus: CommandBus, private readonly queryBus: QueryBus) {}
+	constructor(
+		private readonly commandBus: CommandBus,
+		@Inject(PostInjectionToken.QUERY_POST_REPOSITORY)
+		private readonly queryPostsRepository: QueryPostsRepositoryInterface,
+		@Inject(CommentInjectionToken.QUERY_COMMENT_REPOSITORY)
+		private readonly queryCommentsRepository: QueryCommentsRepositoryInterface,
+	) {}
 
 	@UseGuards(AccessTokenGuard)
 	@Post(':id/comments')
@@ -41,7 +48,7 @@ export class PostsController {
 		const commentId = await this.commandBus.execute(
 			new CreateCommentOfPostCommand(data, id, currentUserId),
 		);
-		return this.queryBus.execute(new FindOneCommentCommand(commentId, currentUserId));
+		return this.queryCommentsRepository.findCommentById(commentId, currentUserId);
 	}
 
 	@UseGuards(GuestGuard)
@@ -51,7 +58,7 @@ export class PostsController {
 		@CurrentuserIdNonAuthorized()
 		currentUserId: ObjectIdDto | null,
 	) {
-		return this.queryBus.execute(new FindAllPostCommand(query, currentUserId.id));
+		return this.queryPostsRepository.findAllPosts(query, currentUserId.id);
 	}
 
 	@UseGuards(GuestGuard)
@@ -62,7 +69,7 @@ export class PostsController {
 		@CurrentuserIdNonAuthorized()
 		currentUserId: ObjectIdDto | null,
 	) {
-		return this.queryBus.execute(new FindAllCommentOfPostCommand(query, id, currentUserId.id));
+		return this.queryCommentsRepository.findAllCommentsOfPost(query, id, currentUserId.id);
 	}
 
 	@Get(':id')
@@ -72,7 +79,7 @@ export class PostsController {
 		@CurrentuserIdNonAuthorized()
 		currentUserId: ObjectIdDto | null,
 	) {
-		return this.queryBus.execute(new FindOnePostCommand(id, currentUserId.id));
+		return this.queryPostsRepository.findPostById(id, currentUserId.id);
 	}
 
 	@HttpCode(204)

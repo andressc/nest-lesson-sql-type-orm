@@ -3,9 +3,9 @@ import { Module } from '@nestjs/common';
 import { ThrottlerLimitModule } from './shared/throttler/throttler.module';
 import { ValidationModule } from './shared/validation/validation.module';
 import { AuthModule } from './features/auth/auth.module';
-import { CommentsModule } from './features/comments/comments.module';
 import { TestingModule } from './features/testing/testing.module';
-import { DatabaseSqlModule } from './shared/database_sql/database.sql.module';
+import { DatabaseSqlModule } from './shared/database/database.sql.module';
+import { BlogsPostsCommentsModule } from './features/blogs.posts.comments.module';
 
 @Module({
 	imports: [
@@ -13,7 +13,7 @@ import { DatabaseSqlModule } from './shared/database_sql/database.sql.module';
 			isGlobal: true,
 			envFilePath: ['.env.local', '.env'],
 		}),
-		CommentsModule,
+		BlogsPostsCommentsModule,
 		TestingModule,
 		AuthModule,
 		ThrottlerLimitModule,

@@ -3,6 +3,7 @@ import {
 	Controller,
 	Get,
 	HttpCode,
+	Inject,
 	Param,
 	ParseIntPipe,
 	Put,
@@ -12,20 +13,25 @@ import {
 
 import { BasicAuthGuard } from '../../../common/guards';
 import { QueryBlogDto } from '../dto';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { FindAllBlogAdminCommand } from '../application/queries/find-all-blog-admin.handler';
+import { CommandBus } from '@nestjs/cqrs';
 import { BindBlogWithUserCommand } from '../application/commands/bind-blog-with-user.handler';
 import { BanBlogDto } from '../dto/ban-blog.dto';
 import { BanBlogCommand } from '../application/commands/ban-blog.handler';
+import { BlogInjectionToken } from '../infrastructure/providers/blog.injection.token';
+import { QueryBlogsRepositoryInterface } from '../interfaces/query.blogs.repository.interface';
 
 @Controller('sa/blogs')
 @UseGuards(BasicAuthGuard)
 export class AdminBlogsController {
-	constructor(private readonly commandBus: CommandBus, private readonly queryBus: QueryBus) {}
+	constructor(
+		private readonly commandBus: CommandBus,
+		@Inject(BlogInjectionToken.QUERY_BLOG_REPOSITORY)
+		private readonly queryBlogsRepository: QueryBlogsRepositoryInterface,
+	) {}
 
 	@Get()
 	findAllBlogs(@Query() query: QueryBlogDto) {
-		return this.queryBus.execute(new FindAllBlogAdminCommand(query));
+		return this.queryBlogsRepository.findAllBlogsByAdmin(query);
 	}
 
 	@HttpCode(204)

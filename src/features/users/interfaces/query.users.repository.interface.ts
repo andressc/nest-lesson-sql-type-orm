@@ -1,8 +1,8 @@
-import { UserModel } from '../domain/user.schema';
-import { MainQueryRepositoryInterface } from '../../shared/interfaces/main.query.repository.interface';
+import { QueryUserDto, ResponseUserDto, ResponseUserMeDto } from '../dto';
+import { PaginationDto } from '../../../common/dto';
 
-/* eslint-disable */
-export interface QueryUsersRepositoryInterface
-	extends MainQueryRepositoryInterface<UserModel> {
-	searchTerm(login: string | undefined, email: string | undefined, banStatus: string | undefined): string;
+export interface QueryUsersRepositoryInterface {
+	findAllUsers(query: QueryUserDto): Promise<PaginationDto<ResponseUserDto[]>>;
+	findMe(id: string): Promise<ResponseUserMeDto>;
+	findUserById(id: string): Promise<ResponseUserDto>;
 }

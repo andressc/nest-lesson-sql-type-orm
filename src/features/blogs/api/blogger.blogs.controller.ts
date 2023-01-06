@@ -4,6 +4,7 @@ import {
 	Delete,
 	Get,
 	HttpCode,
+	Inject,
 	Param,
 	ParseIntPipe,
 	Post,
@@ -16,32 +17,42 @@ import { AccessTokenGuard } from '../../../common/guards';
 import { CreateBlogDto, QueryBlogDto, UpdateBlogDto } from '../dto';
 import { CreatePostOfBlogDto } from '../../posts/dto';
 import { CurrentUserId, CurrentUserLogin } from '../../../common/decorators/Param';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { FindOneBlogCommand } from '../application/queries/find-one-blog.handler';
-import { FindAllBlogCommand } from '../application/queries/find-all-blog.handler';
+import { CommandBus } from '@nestjs/cqrs';
 import { CreatePostOfBlogCommand } from '../../posts/application/commands/create-post-of-blog.handler';
-import { FindOnePostCommand } from '../../posts/application/queries/find-one-post.handler';
 import { UpdateBlogCommand } from '../application/commands/update-blog.handler';
 import { CreateBlogCommand } from '../application/commands/create-blog.handler';
 import { RemoveBlogCommand } from '../application/commands/remove-blog.handler';
 import { UpdatePostOfBlogDto } from '../../posts/dto/update-post-of-blog.dto';
 import { UpdatePostCommand } from '../../posts/application/commands/update-post.handler';
 import { RemovePostCommand } from '../../posts/application/commands/remove-post.handler';
-import { FindAllCommentOfBlogsCommand } from '../../comments/application/queries/find-all-comment-of-blogs.handler';
+import { BlogInjectionToken } from '../infrastructure/providers/blog.injection.token';
+import { QueryBlogsRepositoryInterface } from '../interfaces/query.blogs.repository.interface';
+import { PostInjectionToken } from '../../posts/infrastructure/providers/post.injection.token';
+import { QueryPostsRepositoryInterface } from '../../posts/interfaces/query.posts.repository.interface';
+import { CommentInjectionToken } from '../../comments/infrastructure/providers/comment.injection.token';
+import { QueryCommentsRepositoryInterface } from '../../comments/interfaces/query.comments.repository.interface';
 
 @Controller('blogger/blogs')
 @UseGuards(AccessTokenGuard)
 export class BloggerBlogsController {
-	constructor(private readonly commandBus: CommandBus, private readonly queryBus: QueryBus) {}
+	constructor(
+		private readonly commandBus: CommandBus,
+		@Inject(BlogInjectionToken.QUERY_BLOG_REPOSITORY)
+		private readonly queryBlogsRepository: QueryBlogsRepositoryInterface,
+		@Inject(PostInjectionToken.QUERY_POST_REPOSITORY)
+		private readonly queryPostsRepository: QueryPostsRepositoryInterface,
+		@Inject(CommentInjectionToken.QUERY_COMMENT_REPOSITORY)
+		private readonly queryCommentsRepository: QueryCommentsRepositoryInterface,
+	) {}
 
 	@Get()
 	findAllBlogs(@Query() query: QueryBlogDto, @CurrentUserId() currentUserId) {
-		return this.queryBus.execute(new FindAllBlogCommand(query, currentUserId));
+		return this.queryBlogsRepository.findAllBlogs(query, currentUserId);
 	}
 
 	@Get('comments')
 	findAllCommentsOfPosts(@Query() query: QueryDto, @CurrentUserId() currentUserId) {
-		return this.queryBus.execute(new FindAllCommentOfBlogsCommand(query, currentUserId));
+		return this.queryCommentsRepository.findAllCommentsOfBlogs(query, currentUserId);
 	}
 
 	@Post()
@@ -53,7 +64,7 @@ export class BloggerBlogsController {
 		const blogId = await this.commandBus.execute(
 			new CreateBlogCommand(data, currentUserId, currentUserLogin),
 		);
-		return this.queryBus.execute(new FindOneBlogCommand(blogId));
+		return this.queryBlogsRepository.findBlogById(blogId);
 	}
 
 	@Post(':id/posts')
@@ -65,7 +76,7 @@ export class BloggerBlogsController {
 		const postId = await this.commandBus.execute(
 			new CreatePostOfBlogCommand(data, id, currentUserId),
 		);
-		return this.queryBus.execute(new FindOnePostCommand(postId, currentUserId));
+		return this.queryPostsRepository.findPostById(postId, currentUserId);
 	}
 
 	@HttpCode(204)

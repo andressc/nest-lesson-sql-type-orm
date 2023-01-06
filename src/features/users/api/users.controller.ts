@@ -4,6 +4,7 @@ import {
 	Delete,
 	Get,
 	HttpCode,
+	Inject,
 	Param,
 	ParseIntPipe,
 	Post,
@@ -14,33 +15,37 @@ import {
 
 import { CreateUserDto, QueryUserDto } from '../dto';
 import { BasicAuthGuard } from '../../../common/guards';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { CommandBus } from '@nestjs/cqrs';
 import { RemoveUserCommand } from '../application/commands/remove-user.handler';
 import { CreateUserCommand } from '../application/commands/create-user.handler';
-import { FindOneUserCommand } from '../application/queries/find-one-user.handler';
-import { FindAllUserCommand } from '../application/queries/find-all-user.handler';
 import { BanUnbanUserCommand } from '../application/commands/ban-unban-user.handler';
 import { BanUnbanUserDto } from '../dto/ban-unban-user.dto';
+import { UserInjectionToken } from '../infrastructure/providers/user.injection.token';
+import { QueryUsersRepositoryInterface } from '../interfaces/query.users.repository.interface';
 
 @Controller('sa/users')
 @UseGuards(BasicAuthGuard)
 export class UsersController {
-	constructor(private readonly commandBus: CommandBus, private readonly queryBus: QueryBus) {}
+	constructor(
+		private readonly commandBus: CommandBus,
+		@Inject(UserInjectionToken.QUERY_USER_REPOSITORY)
+		private readonly queryUsersRepository: QueryUsersRepositoryInterface,
+	) {}
 
 	@Post()
 	async createUser(@Body() data: CreateUserDto) {
 		const userId: string = await this.commandBus.execute(new CreateUserCommand(data, true));
-		return this.queryBus.execute(new FindOneUserCommand(userId));
+		return this.queryUsersRepository.findUserById(userId);
 	}
 
 	@Get()
 	findAllUsers(@Query() query: QueryUserDto) {
-		return this.queryBus.execute(new FindAllUserCommand(query));
+		return this.queryUsersRepository.findAllUsers(query);
 	}
 
 	@Get(':id')
 	findUserById(@Param('id', new ParseIntPipe({ errorHttpStatusCode: 404 })) id: string) {
-		return this.queryBus.execute(new FindOneUserCommand(id));
+		return this.queryUsersRepository.findUserById(id);
 	}
 
 	@HttpCode(204)

@@ -1,5 +1,5 @@
-import { SessionModel } from '../domain/session.schema';
+import { ResponseSessionDto } from '../dto/response-session.dto';
 
 export interface QuerySessionsRepositoryInterface {
-	findAllSessionsByUserId(currentUserId: string): Promise<SessionModel[]>;
+	findAllSessionsByUserId(currentUserId: string): Promise<ResponseSessionDto[]>;
 }

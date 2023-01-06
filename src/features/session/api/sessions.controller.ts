@@ -1,16 +1,21 @@
-import { Controller, Delete, Get, HttpCode, Param, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, HttpCode, Inject, Param, UseGuards } from '@nestjs/common';
 import { RefreshTokenGuard } from '../../../common/guards';
 import { RefreshTokenDataDto } from '../../auth/dto';
 import { StringIdDto } from '../../../common/dto';
 import { RefreshTokenData } from '../../../common/decorators/Param';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { CommandBus } from '@nestjs/cqrs';
 import { RemoveAllUserSessionCommand } from '../application/commands/remove-all-user-session.handler';
 import { RemoveUserSessionCommand } from '../application/commands/remove-user-session.handler';
-import { FindAllSessionCommand } from '../application/queries/find-all-session.handler';
+import { SessionInjectionToken } from '../infrastructure/providers/session.injection.token';
+import { QuerySessionsRepositoryInterface } from '../interfaces/query.sessions.repository.interface';
 
 @Controller('security')
 export class SessionsController {
-	constructor(private readonly commandBus: CommandBus, private readonly queryBus: QueryBus) {}
+	constructor(
+		private readonly commandBus: CommandBus,
+		@Inject(SessionInjectionToken.QUERY_SESSION_REPOSITORY)
+		private readonly querySessionRepository: QuerySessionsRepositoryInterface,
+	) {}
 
 	@UseGuards(RefreshTokenGuard)
 	@Get('/devices')
@@ -18,7 +23,7 @@ export class SessionsController {
 		@RefreshTokenData()
 		refreshTokenData: RefreshTokenDataDto,
 	) {
-		return this.queryBus.execute(new FindAllSessionCommand(refreshTokenData.userId));
+		return this.querySessionRepository.findAllSessionsByUserId(refreshTokenData.userId);
 	}
 
 	@HttpCode(204)

@@ -4,7 +4,6 @@ import request from 'supertest';
 import { mainTest } from '../src/main-test';
 import { userCreator } from './dbSeeding/userCreator';
 import { BASIC_AUTH } from './helpers/constants';
-import 'jest-extended';
 import { Connection } from 'typeorm';
 import { getRandomId } from './helpers/getRandomId';
 import { clearDb } from './helpers/clearDb';

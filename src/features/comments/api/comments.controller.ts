@@ -4,6 +4,7 @@ import {
 	Delete,
 	Get,
 	HttpCode,
+	Inject,
 	Param,
 	ParseIntPipe,
 	Put,
@@ -16,15 +17,20 @@ import {
 	CurrentuserIdNonAuthorized,
 	CurrentUserLogin,
 } from '../../../common/decorators/Param';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { CommandBus } from '@nestjs/cqrs';
 import { UpdateCommentCommand } from '../application/commands/update-comment.handler';
 import { RemoveCommentCommand } from '../application/commands/remove-comment.handler';
-import { FindOneCommentCommand } from '../application/queries/find-one-comment.handler';
 import { CreateLikeCommentCommand } from '../application/commands/create-like-comment.handler';
+import { CommentInjectionToken } from '../infrastructure/providers/comment.injection.token';
+import { QueryCommentsRepositoryInterface } from '../interfaces/query.comments.repository.interface';
 
 @Controller('comments')
 export class CommentsController {
-	constructor(private readonly commandBus: CommandBus, private readonly queryBus: QueryBus) {}
+	constructor(
+		private readonly commandBus: CommandBus,
+		@Inject(CommentInjectionToken.QUERY_COMMENT_REPOSITORY)
+		private readonly queryCommentsRepository: QueryCommentsRepositoryInterface,
+	) {}
 
 	@Get(':id')
 	@UseGuards(GuestGuard)
@@ -33,7 +39,7 @@ export class CommentsController {
 		@CurrentuserIdNonAuthorized()
 		currentUserId,
 	) {
-		return this.queryBus.execute(new FindOneCommentCommand(id, currentUserId.id));
+		return this.queryCommentsRepository.findCommentById(id, currentUserId.id);
 	}
 
 	@HttpCode(204)

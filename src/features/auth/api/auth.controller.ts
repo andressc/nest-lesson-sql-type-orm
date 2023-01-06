@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Inject, Post, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from '../application/auth.service';
 
 import { Response } from 'express';
@@ -25,9 +25,8 @@ import {
 } from '../../../common/guards';
 import { PasswordRecoveryTokenGuard } from '../../../common/guards';
 import { AuthConfig } from '../../../configuration';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { CommandBus } from '@nestjs/cqrs';
 import { RemoveUserSessionCommand } from '../../session/application/commands/remove-user-session.handler';
-import { FindMeUserCommand } from '../../users/application/queries/find-me-user.handler';
 import { LoginAuthCommand } from '../application/commands/login-auth.handler';
 import { RefreshTokenAuthCommand } from '../application/commands/refresh-token-auth.handler';
 import { RegistrationAuthCommand } from '../application/commands/registration-auth.handler';
@@ -35,6 +34,8 @@ import { RegistrationConfirmationAuthCommand } from '../application/commands/reg
 import { RegistrationEmailResendingAuthCommand } from '../application/commands/registration-email-resending-auth.handler';
 import { PasswordRecoveryAuthCommand } from '../application/commands/password-recovery-auth.handler';
 import { NewPasswordAuthCommand } from '../application/commands/new-password-auth.handler';
+import { UserInjectionToken } from '../../users/infrastructure/providers/user.injection.token';
+import { QueryUsersRepositoryInterface } from '../../users/interfaces/query.users.repository.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -42,7 +43,8 @@ export class AuthController {
 		private readonly authService: AuthService,
 		private readonly authConfig: AuthConfig,
 		private readonly commandBus: CommandBus,
-		private readonly queryBus: QueryBus,
+		@Inject(UserInjectionToken.QUERY_USER_REPOSITORY)
+		private readonly queryUsersRepository: QueryUsersRepositoryInterface,
 	) {}
 
 	@HttpCode(200)
@@ -69,7 +71,7 @@ export class AuthController {
 	@UseGuards(AccessTokenGuard)
 	@Get('me')
 	async getProfile(@CurrentUserId() currentUserId: string) {
-		return this.queryBus.execute(new FindMeUserCommand(currentUserId));
+		return this.queryUsersRepository.findMe(currentUserId);
 	}
 
 	@HttpCode(200)

@@ -1,14 +1,98 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PostModel } from '../../domain/post.schema';
 import { QueryPostsRepositoryInterface } from '../../interfaces/query.posts.repository.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { LikeStatusEnum, PaginationCalc, PaginationDto, QueryDto } from '../../../../common/dto';
+import { ResponsePostDto } from '../../dto';
+import { BlogModel } from '../../../blogs/domain/blog.schema';
+import { BlogNotFoundException, PostNotFoundException } from '../../../../common/exceptions';
+import { PaginationService } from '../../../../shared/pagination/application/pagination.service';
+import { BlogInjectionToken } from '../../../blogs/infrastructure/providers/blog.injection.token';
+import { BlogsRepositoryInterface } from '../../../blogs/interfaces/blogs.repository.interface';
 
 @Injectable()
 export class QueryPostsRepository implements QueryPostsRepositoryInterface {
-	constructor(@InjectDataSource() protected dataSource: DataSource) {}
+	constructor(
+		@InjectDataSource() protected dataSource: DataSource,
+		@Inject(BlogInjectionToken.QUERY_BLOG_REPOSITORY)
+		private readonly blogsRepository: BlogsRepositoryInterface,
+		private readonly paginationService: PaginationService,
+	) {}
 
-	async find(id: string, currentUserId: string): Promise<PostModel | null> {
+	async findAllPosts(
+		query: QueryDto,
+		currentUserId: string | null,
+		blogId?: string,
+	): Promise<PaginationDto<ResponsePostDto[]>> {
+		const searchString = QueryPostsRepository.searchTerm(blogId);
+		const blog: BlogModel | null = await this.blogsRepository.find(blogId);
+
+		if (!blog && blogId) throw new BlogNotFoundException(blogId);
+
+		const totalCount: number = await this.count(searchString);
+
+		const paginationData: PaginationCalc = this.paginationService.pagination({
+			...query,
+			totalCount,
+		});
+
+		const post: PostModel[] = await this.findQuery(
+			searchString,
+			paginationData.sortBy,
+			paginationData.sortDirection,
+			paginationData.skip,
+			paginationData.pageSize,
+			currentUserId,
+		);
+
+		return {
+			pagesCount: paginationData.pagesCount,
+			page: paginationData.pageNumber,
+			pageSize: paginationData.pageSize,
+			totalCount: totalCount,
+			items: post.map((v: PostModel) => {
+				return {
+					id: v.id.toString(),
+					title: v.title,
+					shortDescription: v.shortDescription,
+					content: v.content,
+					blogId: v.blogId.toString(),
+					blogName: v.blogName,
+					createdAt: v.createdAt,
+					extendedLikesInfo: {
+						likesCount: +v.likes,
+						dislikesCount: +v.dislikes,
+						myStatus: v.status ? LikeStatusEnum[v.status] : LikeStatusEnum.None,
+						newestLikes: v.like,
+					},
+				};
+			}),
+		};
+	}
+
+	async findPostById(id: string, currentUserId: string | null): Promise<ResponsePostDto | null> {
+		const post: PostModel | null = await this.find(id, currentUserId);
+		if (!post) throw new PostNotFoundException(id);
+
+		return {
+			id: post.id.toString(),
+			title: post.title,
+			shortDescription: post.shortDescription,
+			content: post.content,
+			blogId: post.blogId.toString(),
+			blogName: post.blogName,
+			createdAt: post.createdAt,
+			extendedLikesInfo: {
+				likesCount: +post.likes,
+				dislikesCount: +post.dislikes,
+				myStatus: post.status ? LikeStatusEnum[post.status] : LikeStatusEnum.None,
+				newestLikes: post.like,
+			},
+		};
+	}
+
+	private async find(id: string, currentUserId: string): Promise<PostModel | null> {
 		const post = await this.dataSource.query(
 			`SELECT
 				 p."id",
@@ -60,7 +144,6 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 			blogName: post[0].name,
 			isBanned: post[0].isBanned,
 			createdAt: post[0].createdAt,
-			//likes: this.likes(post),
 			likes: post[0].likes,
 			dislikes: post[0].dislikes,
 			status: post[0].status,
@@ -68,15 +151,14 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 		};
 	}
 
-	async findQuery(
-		searchString: Record<string, unknown>,
+	private async findQuery(
+		searchString: string,
 		sortBy: any,
 		sortDirection: string,
 		skip: number,
 		pageSize: number,
 		currentUserId: string,
 	): Promise<PostModel[] | null> {
-		//let order = `"${sortBy}" ${sortDirection}`;
 		let order;
 		if (sortBy === 'title') order = `ORDER BY "title" ${sortDirection}`;
 		if (sortBy === 'shortDescription') order = `ORDER BY "shortDescription" ${sortDirection}`;
@@ -147,89 +229,25 @@ export class QueryPostsRepository implements QueryPostsRepositoryInterface {
 		}
 
 		return posts;
-
-		/*const result = [];
-		const addedPosts = {};
-
-		for (const postRow of resultQuery) {
-			let postWithLikes = addedPosts[postRow.id];
-			if (!postWithLikes) {
-				postWithLikes = {
-					id: postRow.id,
-					title: postRow.title,
-					shortDescription: postRow.shortDescription,
-					content: postRow.content,
-					blogId: postRow.blogId,
-					blogName: postRow.name,
-					createdAt: postRow.createdAt,
-					isBanned: postRow.isBanned,
-					likes: [],
-				};
-				result.push(postWithLikes);
-				addedPosts[postRow.id] = postWithLikes;
-			}
-
-			postWithLikes.likes.push({
-				userId: postRow.userId,
-				likeStatus: postRow.likeStatus,
-				likeAddedAt: postRow.likeAddedAt,
-				login: postRow.login,
-			});
-		}
-
-		return result;*/
 	}
 
-	async count(searchString): Promise<number> {
+	private async count(searchString): Promise<number> {
 		const count = await this.dataSource.query(
 			`SELECT COUNT(id) FROM "Posts" WHERE "isBanned"=false ${searchString}`,
 		);
 		return +count[0].count;
 	}
 
-	/*public countLikes(post: PostModel, currentUserId: string | null): LikesInfoExtended {
-		const likesCount = post.likes.filter(
-			(v: LikeDbDto) => v.likeStatus === LikeStatusEnum.Like && !v.isBanned,
-		).length;
-
-		const dislikesCount = post.likes.filter(
-			(v: LikeDbDto) => v.likeStatus === LikeStatusEnum.Dislike && !v.isBanned,
-		).length;
-
-		let myStatus = LikeStatusEnum.None;
-
-		const newestLikes = [...post.likes]
-			.filter((v: LikeDbDto) => v.likeStatus === LikeStatusEnum.Like && !v.isBanned)
-			.sort((a: LikeDbDto, b: LikeDbDto) => (a.addedAt > b.addedAt ? -1 : 1))
-			.slice(0, 3)
-			.map((v: LikeDbDto) => ({
-				addedAt: v.addedAt,
-				userId: v.userId.toString(),
-				login: v.login,
-			}));
-
-		post.likes.forEach((it: LikeDbDto) => {
-			if (currentUserId && it.userId === currentUserId) myStatus = it.likeStatus;
-		});
-
-		return {
-			likesCount,
-			dislikesCount,
-			myStatus,
-			newestLikes,
-		};
-	}*/
-
-	private likes(posts) {
+	/*private static likes(posts) {
 		return posts.map((v) => ({
 			userId: v.userId,
 			login: v.login,
 			likeStatus: v.likeStatus,
 			addedAt: v.likeAddedAt,
 		}));
-	}
+	}*/
 
-	public searchTerm(blogId: string | undefined): string {
+	private static searchTerm(blogId: string | undefined): string {
 		let searchString = '';
 
 		if (blogId) searchString = `AND "blogId" = ${blogId}`;
