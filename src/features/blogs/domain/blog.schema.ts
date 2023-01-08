@@ -1,4 +1,5 @@
-//export type BlogModel = Blog & Document;
+import { User } from 'src/features/users/domain/user.schema';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 export class BlogModel {
 	id: string;
@@ -12,51 +13,32 @@ export class BlogModel {
 	banDate: string;
 }
 
-/*@Schema()
+@Entity()
 export class Blog {
-	@Prop({ required: true })
+	@PrimaryGeneratedColumn()
+	id: number;
+
+	@Column()
 	name: string;
 
-	@Prop({ required: true })
+	@Column()
 	websiteUrl: string;
 
-	@Prop({ required: true })
+	@Column()
 	createdAt: string;
 
-	@Prop({ required: true })
+	@Column()
 	description: string;
 
-	@Prop({ required: true })
-	userId: string;
+	@ManyToOne(() => User, (u) => u.blogs)
+	userId: User;
 
-	@Prop({ required: true })
+	@Column()
 	userLogin: string;
 
-	@Prop({ default: false })
+	@Column()
 	isBanned: boolean;
 
-	@Prop({ default: null })
+	@Column()
 	banDate: string;
-
-	updateData(data: UpdateBlogDto): void {
-		this.name = data.name;
-		this.description = data.description;
-		this.websiteUrl = data.websiteUrl;
-	}
-
-	ban(isBanned: boolean, banDate: string | null): void {
-		this.isBanned = isBanned;
-		this.banDate = banDate;
-	}
-
-	bindBlogWithUser(userId: string, userLogin: string): void {
-		//this.userId = userId;
-		this.userLogin = userLogin;
-	}
 }
-
-export const BlogSchema = SchemaFactory.createForClass(Blog);
-
-BlogSchema.methods.updateData = Blog.prototype.updateData;
-BlogSchema.methods.bindBlogWithUser = Blog.prototype.bindBlogWithUser;
-BlogSchema.methods.ban = Blog.prototype.ban;*/

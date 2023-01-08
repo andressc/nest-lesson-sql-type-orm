@@ -1,3 +1,6 @@
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Blog } from '../../blogs/domain/blog.schema';
+
 export class UserModel {
 	id: string;
 	login: string;
@@ -13,65 +16,44 @@ export class UserModel {
 	createdAt: string;
 }
 
-/*@Schema()
+@Entity()
 export class User {
-	@Prop({ required: true })
+	@PrimaryGeneratedColumn()
+	id: number;
+
+	@Column()
 	login: string;
 
-	@Prop({ required: true })
+	@Column()
 	email: string;
 
-	@Prop({ required: true })
+	@Column()
 	password: string;
 
-	@Prop({ required: true })
+	@Column()
 	salt: string;
 
-	@Prop({ required: true })
+	@Column()
 	confirmationCode: string;
 
-	@Prop({ required: true })
+	@Column()
 	expirationDate: Date;
 
-	@Prop({ required: true })
+	@Column()
 	isConfirmed: boolean;
 
-	@Prop({ default: false })
+	@Column()
 	isBanned: boolean;
 
-	@Prop({ default: null })
+	@Column()
 	banReason: string;
 
-	@Prop({ default: null })
+	@Column()
 	banDate: string;
 
-	@Prop({ required: true })
+	@Column()
 	createdAt: string;
 
-	banUnbanUser(isBanned, banReason, banDate): void {
-		this.isBanned = isBanned;
-		this.banReason = !isBanned ? null : banReason;
-		this.banDate = !isBanned ? null : banDate;
-	}
-
-	updateIsConfirmed(isConfirmed: boolean): void {
-		this.isConfirmed = isConfirmed;
-	}
-
-	updateConfirmationCode(confirmationCode: string): void {
-		this.confirmationCode = confirmationCode;
-	}
-
-	async updatePassword(password: string): Promise<void> {
-		const passwordSalt = await bcrypt.genSalt(10);
-		this.password = await generateHash(password, passwordSalt);
-		this.salt = passwordSalt;
-	}
+	@OneToMany(() => Blog, (b) => b.userId)
+	blogs: Blog[];
 }
-
-export const UserSchema = SchemaFactory.createForClass(User);
-
-UserSchema.methods.updateIsConfirmed = User.prototype.updateIsConfirmed;
-UserSchema.methods.updateConfirmationCode = User.prototype.updateConfirmationCode;
-UserSchema.methods.updatePassword = User.prototype.updatePassword;
-UserSchema.methods.banUnbanUser = User.prototype.banUnbanUser;*/
