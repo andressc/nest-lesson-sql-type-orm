@@ -1,3 +1,6 @@
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from '../../users/domain/user.schema';
+
 export class SessionModel {
 	id: string;
 	ip: string;
@@ -9,39 +12,29 @@ export class SessionModel {
 	userId: string;
 }
 
-/*@Schema()
+@Entity()
 export class Session {
-	@Prop({ required: true })
+	@PrimaryGeneratedColumn()
+	id: number;
+
+	@Column()
 	ip: string;
 
-	@Prop({ required: true })
+	@Column()
 	title: string;
 
-	@Prop({ required: true })
+	@Column()
+	userAgent: string;
+
+	@Column()
 	lastActiveDate: string;
 
-	@Prop({ required: true })
+	@Column()
 	expirationDate: string;
 
-	@Prop({ required: true })
+	@Column()
 	deviceId: string;
 
-	@Prop({ required: true })
-	userId: string;
-
-	updateSession(
-		lastActiveDate: string,
-		expirationDate: string,
-		ip: string,
-		userAgent: string,
-	): void {
-		this.lastActiveDate = lastActiveDate;
-		this.expirationDate = expirationDate;
-		this.ip = ip;
-		this.title = userAgent;
-	}
+	@ManyToOne(() => User, (u) => u.sessions)
+	userId: User;
 }
-
-export const SessionSchema = SchemaFactory.createForClass(Session);
-
-SessionSchema.methods.updateSession = Session.prototype.updateSession;*/

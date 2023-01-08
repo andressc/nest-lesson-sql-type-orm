@@ -1,5 +1,9 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Blog } from '../../blogs/domain/blog.schema';
+import { Comment } from '../../comments/domain/comment.schema';
+import { Session } from '../../session/domain/session.schema';
+import { PostLike } from '../../likes/domain/post.like.schema';
+import { CommentLike } from '../../likes/domain/comment.like.schema';
 
 export class UserModel {
 	id: string;
@@ -56,4 +60,16 @@ export class User {
 
 	@OneToMany(() => Blog, (b) => b.userId)
 	blogs: Blog[];
+
+	@OneToMany(() => Comment, (c) => c.userId)
+	comments: Comment[];
+
+	@OneToMany(() => Session, (c) => c.userId)
+	sessions: Session[];
+
+	@OneToMany(() => PostLike, (c) => c.userId)
+	postLikes: PostLike[];
+
+	@OneToMany(() => CommentLike, (c) => c.userId)
+	commentLikes: CommentLike[];
 }

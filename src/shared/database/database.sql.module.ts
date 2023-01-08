@@ -26,8 +26,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 					username: 'andressc',
 					password: 'e2Ji8jTuSPok',
 					database: 'neondb',
-					autoLoadEntities: false,
-					synchronize: false,
+					autoLoadEntities: true,
+					synchronize: true,
 					ssl: true,
 				};
 			},

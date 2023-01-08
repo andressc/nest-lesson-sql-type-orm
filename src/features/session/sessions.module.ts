@@ -5,13 +5,15 @@ import { RemoveUserSessionHandler } from './application/commands/remove-user-ses
 import { CqrsModule } from '@nestjs/cqrs';
 import { QuerySessionsRepositoryProvider } from './infrastructure/providers/query-sessions-repository.provider';
 import { SessionsRepositoryProvider } from './infrastructure/providers/sessions-repository.provider';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Session } from './domain/session.schema';
 
 export const CommandHandlers = [RemoveAllUserSessionHandler, RemoveUserSessionHandler];
 export const Repositories = [QuerySessionsRepositoryProvider, SessionsRepositoryProvider];
 export const Services = [];
 
 @Module({
-	imports: [CqrsModule],
+	imports: [CqrsModule, TypeOrmModule.forFeature([Session])],
 
 	controllers: [SessionsController],
 	providers: [...Services, ...Repositories, ...CommandHandlers],

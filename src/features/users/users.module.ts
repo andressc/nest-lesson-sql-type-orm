@@ -10,11 +10,19 @@ import { LikesModule } from '../likes/likes.module';
 import { PaginationModule } from '../../shared/pagination/pagination.module';
 import { QueryUsersRepositoryProvider } from './infrastructure/providers/query-users-repository.provider';
 import { UsersRepositoryProvider } from './infrastructure/providers/users-repository.provider';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './domain/user.schema';
 
 export const CommandHandlers = [RemoveUserHandler, CreateUserHandler, BanUnbanUserHandler];
 export const Repositories = [QueryUsersRepositoryProvider, UsersRepositoryProvider];
 export const Services = [UsersService];
-export const Modules = [SessionsModule, CqrsModule, LikesModule, PaginationModule];
+export const Modules = [
+	SessionsModule,
+	CqrsModule,
+	LikesModule,
+	PaginationModule,
+	TypeOrmModule.forFeature([User]),
+];
 
 @Module({
 	imports: Modules,

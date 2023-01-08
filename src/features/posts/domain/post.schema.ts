@@ -1,3 +1,8 @@
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Blog } from '../../blogs/domain/blog.schema';
+import { Comment } from '../../comments/domain/comment.schema';
+import { PostLike } from '../../likes/domain/post.like.schema';
+
 export class PostModel {
 	id: string;
 	title: string;
@@ -18,42 +23,32 @@ export class PostModel {
 	}>;
 }
 
-/*@Schema()
+@Entity()
 export class Post {
-	@Prop({ required: true })
+	@PrimaryGeneratedColumn()
+	id: number;
+
+	@Column()
 	title: string;
 
-	@Prop({ required: true })
+	@Column()
 	shortDescription: string;
 
-	@Prop({ required: true })
+	@Column()
 	content: string;
 
-	@Prop({ required: true })
-	blogId: string;
-
-	@Prop({ required: true })
-	blogName: string;
-
-	@Prop({ required: true })
-	blogUserId: string;
-
-	@Prop({ default: false })
+	@Column()
 	isBanned: boolean;
 
-	@Prop({ required: true })
+	@Column()
 	createdAt: string;
 
-	@Prop({ type: [] })
-	likes: LikesDto[];
+	@ManyToOne(() => Blog, (b) => b.posts)
+	blogId: Blog;
 
-	updateData(data: UpdatePostOfBlogDto): void {
-		this.title = data.title;
-		this.shortDescription = data.shortDescription;
-		this.content = data.content;
-	}
+	@OneToMany(() => Comment, (c) => c.postId)
+	posts: Comment[];
+
+	@OneToMany(() => PostLike, (pl) => pl.postId)
+	likes: PostLike[];
 }
-
-export const PostSchema = SchemaFactory.createForClass(Post);
-
-PostSchema.methods.updateData = Post.prototype.updateData;*/

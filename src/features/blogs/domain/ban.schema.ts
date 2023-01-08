@@ -1,4 +1,6 @@
-//export type BanModel = Ban & Document;
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from '../../users/domain/user.schema';
+import { Blog } from './blog.schema';
 
 export class BanModel {
 	id: string;
@@ -12,36 +14,26 @@ export class BanModel {
 	createdAt: string;
 }
 
-/*@Schema()
+@Entity()
 export class Ban {
-	@Prop({ required: true })
-	userId: string;
+	@PrimaryGeneratedColumn()
+	id: number;
 
-	@Prop({ required: true })
-	login: string;
+	@ManyToOne(() => User)
+	userId: User;
 
-	@Prop({ required: true })
-	blogId: string;
+	@ManyToOne(() => Blog)
+	blogId: Blog;
 
-	@Prop({ required: true })
-	blogName: string;
-
-	@Prop({ default: false })
+	@Column()
 	isBanned: boolean;
 
-	@Prop({ default: null })
+	@Column()
 	banReason: string;
 
-	@Prop({ default: null })
+	@Column()
 	banDate: string;
 
-	banUnbanUser(isBanned, banReason, banDate): void {
-		this.isBanned = isBanned;
-		this.banReason = !isBanned ? null : banReason;
-		this.banDate = !isBanned ? null : banDate;
-	}
+	@Column()
+	createdAt: string;
 }
-
-export const BanSchema = SchemaFactory.createForClass(Ban);
-
-BanSchema.methods.banUnbanUser = Ban.prototype.banUnbanUser;*/

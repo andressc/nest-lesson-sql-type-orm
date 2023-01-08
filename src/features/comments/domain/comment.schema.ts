@@ -1,4 +1,8 @@
-//export type CommentModel = Comment & Document;
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from '../../users/domain/user.schema';
+import { Blog } from '../../blogs/domain/blog.schema';
+import { Post } from '../../posts/domain/post.schema';
+import { CommentLike } from '../../likes/domain/comment.like.schema';
 
 export class CommentModel {
 	id: string;
@@ -18,46 +22,29 @@ export class CommentModel {
 	status: string | null;
 }
 
-/*@Schema()
+@Entity()
 export class Comment {
-	@Prop({ required: true })
+	@PrimaryGeneratedColumn()
+	id: number;
+
+	@Column()
 	content: string;
 
-	@Prop({ required: true })
-	userId: string;
-
-	@Prop({ required: true })
-	userLogin: string;
-
-	@Prop({ required: true })
-	postId: string;
-
-	@Prop({ required: true })
-	blogUserId: string;
-
-	@Prop({ required: true })
-	postTitle: string;
-
-	@Prop({ required: true })
-	blogId: string;
-
-	@Prop({ required: true })
-	blogName: string;
-
-	@Prop({ required: true })
+	@Column()
 	createdAt: string;
 
-	@Prop({ default: false })
+	@Column()
 	isBanned: boolean;
 
-	@Prop({ type: [] })
-	likes: LikesDto[];
+	@ManyToOne(() => User, (u) => u.comments)
+	userId: User;
 
-	updateData(data: UpdateCommentDto): void {
-		this.content = data.content;
-	}
+	@ManyToOne(() => Post, (p) => p.posts)
+	postId: Post;
+
+	@ManyToOne(() => Blog, (b) => b.comments)
+	blogId: Blog;
+
+	@OneToMany(() => CommentLike, (cl) => cl.postId)
+	likes: CommentLike[];
 }
-
-export const CommentSchema = SchemaFactory.createForClass(Comment);
-
-CommentSchema.methods.updateData = Comment.prototype.updateData;*/

@@ -36,6 +36,11 @@ import { BloggerBlogsController } from './blogs/api/blogger.blogs.controller';
 import { AdminBlogsController } from './blogs/api/admin.blogs.controller';
 import { BlogsController } from './blogs/api/blogs.controller';
 import { BloggerUsersController } from './users/api/blogger.users.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Blog } from './blogs/domain/blog.schema';
+import { Post } from './posts/domain/post.schema';
+import { Comment } from './comments/domain/comment.schema';
+import { Ban } from './blogs/domain/ban.schema';
 
 export const CommandHandlers = [
 	//Comments
@@ -80,7 +85,13 @@ export const Services = [
 	BlogsService,
 	IsUserCommentValidatorConstraint,
 ];
-export const Modules = [CqrsModule, UsersModule, LikesModule, PaginationModule];
+export const Modules = [
+	CqrsModule,
+	UsersModule,
+	LikesModule,
+	PaginationModule,
+	TypeOrmModule.forFeature([Blog, Post, Comment, Ban]),
+];
 
 @Module({
 	imports: Modules,
